@@ -10,7 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:smooth_scroll_multiplatform/smooth_scroll_multiplatform.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../db/obj/grupo.dart';
+import '../../db/obj/nivel.dart';
 import '../../db/obj/situacionRutina.dart';
 import '../../widgets/ArasaacAccionDialog.dart';
 import '../../widgets/ArasaacPersonajeDialog.dart';
@@ -40,9 +40,9 @@ class AddRutinaState extends State<AddRutina> {
 
   late ImageTextButton btnVolver;
 
-  late List<Grupo> grupos;
+  late List<Nivel> nivels;
 
-  Grupo? selectedGrupo; // Variable para almacenar el grupo seleccionado
+  Nivel? selectedNivel; // Variable para almacenar el nivel seleccionado
 
   late String situacionText, keywords;
 
@@ -69,29 +69,29 @@ class AddRutinaState extends State<AddRutina> {
 
   late List<int> personajeImage;
 
-  late Color colorSituacion, colorGrupo;
+  late Color colorSituacion, colorNivel;
 
   @override
   void initState() {
     super.initState();
     firstLoad = false;
 
-    grupos = [];
+    nivels = [];
     personajes = [];
     situacionText = "";
     keywords = "";
     firstLoad = false;
     personajeImage = [];
     acciones = [];
-    selectedGrupo = null;
+    selectedNivel = null;
     colorSituacion = Colors.transparent;
-    colorGrupo = Colors.transparent;
+    colorNivel = Colors.transparent;
 
     _initializeState();
   }
 
   Future<void> _initializeState() async {
-    await _getGrupos();
+    await _getNivels();
     await _getExistsPersonajes('assets/img/personajes/');
 
     _createDialogs();
@@ -191,7 +191,7 @@ class AddRutinaState extends State<AddRutina> {
                     Row(
                       children: [
                         Text(
-                          'Grupo*:',
+                          'Nivel*:',
                           style: TextStyle(
                             fontFamily: 'ComicNeue',
                             fontSize: textSize,
@@ -200,25 +200,25 @@ class AddRutinaState extends State<AddRutina> {
                         SizedBox(width: espacioPadding),
                         Container(
                           decoration: BoxDecoration(
-                            color: colorGrupo,
+                            color: colorNivel,
                           ),
-                          child: DropdownButton<Grupo>(
+                          child: DropdownButton<Nivel>(
                             padding: EdgeInsets.only(
                               left: espacioPadding,
                             ),
                             hint: Text(
-                              'Selecciona el grupo',
+                              'Selecciona el nivel',
                               style: TextStyle(
                                 fontFamily: 'ComicNeue',
                                 fontSize: textSize,
                               ),
                             ),
-                            value: selectedGrupo,
-                            items: grupos.map((Grupo grupo) {
-                              return DropdownMenuItem<Grupo>(
-                                value: grupo,
+                            value: selectedNivel,
+                            items: nivels.map((Nivel nivel) {
+                              return DropdownMenuItem<Nivel>(
+                                value: nivel,
                                 child: Text(
-                                  grupo.nombre,
+                                  nivel.nombre,
                                   style: TextStyle(
                                     fontFamily: 'ComicNeue',
                                     fontSize: textSize,
@@ -226,9 +226,9 @@ class AddRutinaState extends State<AddRutina> {
                                 ),
                               );
                             }).toList(),
-                            onChanged: (Grupo? grupo) {
+                            onChanged: (Nivel? nivel) {
                               setState(() {
-                                selectedGrupo = grupo;
+                                selectedNivel = nivel;
                                 acciones = acciones.map((accion) {
                                   return ElementAccion(
                                     text1: accion.text1,
@@ -246,8 +246,8 @@ class AddRutinaState extends State<AddRutina> {
                                     accionText: accion.accionText,
                                     accionImage: accion.accionImage,
                                     color: accion.color,
-                                    flagAdolescencia:
-                                        selectedGrupo?.nombre == "Adolescencia",
+                                    flagDificil:
+                                        selectedNivel?.nombre == "Difícil",
                                   );
                                 }).toList();
                               });
@@ -421,15 +421,15 @@ class AddRutinaState extends State<AddRutina> {
     );
   }
 
-  ///Método que nos permite obtener los grupos con los que cuenta la aplicación y almacenarlos en la variable [grupos]
-  Future<void> _getGrupos() async {
+  ///Método que nos permite obtener los nivels con los que cuenta la aplicación y almacenarlos en la variable [nivels]
+  Future<void> _getNivels() async {
     try {
-      List<Grupo> gruposList = await getGrupos();
+      List<Nivel> nivelsList = await getNiveles();
       setState(() {
-        grupos = gruposList;
+        nivels = nivelsList;
       });
     } catch (e) {
-      print("Error al obtener la lista de grupos: $e");
+      print("Error al obtener la lista de nivels: $e");
     }
   }
 
@@ -850,7 +850,7 @@ class AddRutinaState extends State<AddRutina> {
           accionText: acciones[index].accionText,
           accionImage: bytes,
           color: acciones[index].color,
-          flagAdolescencia: acciones[index].flagAdolescencia,
+          flagDificil: acciones[index].flagDificil,
         );
       });
     }
@@ -897,7 +897,7 @@ class AddRutinaState extends State<AddRutina> {
               accionText: acciones[index].accionText,
               accionImage: bytes,
               color: acciones[index].color,
-              flagAdolescencia: acciones[index].flagAdolescencia,
+              flagDificil: acciones[index].flagDificil,
             );
           });
         },
@@ -928,7 +928,7 @@ class AddRutinaState extends State<AddRutina> {
         imgWidth: imgWidth,
         onPressedGaleria: () => _selectNewActionGallery(acciones.length - 1),
         onPressedArasaac: () => _selectNewActionArasaac(acciones.length - 1),
-        flagAdolescencia: selectedGrupo?.nombre == "Adolescencia",
+        flagDificil: selectedNivel?.nombre == "Difícil",
       ));
     });
   }
@@ -946,13 +946,13 @@ class AddRutinaState extends State<AddRutina> {
   bool _completedParams() {
     bool correct = true;
     // compruebo que todos los parametros obligatorios están completos
-    if (selectedGrupo == null) {
+    if (selectedNivel == null) {
       correct = false;
       setState(() {
-        colorGrupo = Colors.red;
+        colorNivel = Colors.red;
       });
     } else
-      colorGrupo = Colors.transparent;
+      colorNivel = Colors.transparent;
 
     if (situacionText.trim().isEmpty) {
       correct = false;
@@ -965,7 +965,7 @@ class AddRutinaState extends State<AddRutina> {
     for (int i = 0; i < acciones.length; i++) {
       if (acciones[i].accionImage.isEmpty ||
           (acciones[i].accionText.isEmpty &&
-              selectedGrupo?.nombre != "Adolescencia") ||
+              selectedNivel?.nombre != "Difícil") ||
           acciones[i].accionText.characters.length > 30) {
         correct = false;
         setState(() {
@@ -992,10 +992,10 @@ class AddRutinaState extends State<AddRutina> {
 
     if (personajeImage.isEmpty)
       preguntaId =
-          await insertSituacionRutina(db, situacionText, [], selectedGrupo!.id);
+          await insertSituacionRutina(db, situacionText, [], selectedNivel!.id);
     else
       preguntaId = await insertSituacionRutina(db, situacionText,
-          Uint8List.fromList(personajeImage), selectedGrupo!.id);
+          Uint8List.fromList(personajeImage), selectedNivel!.id);
     return preguntaId;
   }
 
@@ -1005,7 +1005,7 @@ class AddRutinaState extends State<AddRutina> {
   Future<void> _addAcciones(int preguntaId) async {
     Database db = await openDatabase('rutinas.db');
     for (int i = 0; i < acciones.length; i++) {
-      if (selectedGrupo!.nombre != "Adolescencia")
+      if (selectedNivel!.nombre != "Difícil")
         await insertAccion(db, acciones[i].accionText, i,
             Uint8List.fromList(acciones[i].accionImage), preguntaId);
       else

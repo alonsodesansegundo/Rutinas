@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:smooth_scroll_multiplatform/smooth_scroll_multiplatform.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../db/obj/grupo.dart';
+import '../../db/obj/nivel.dart';
 import '../../db/obj/preguntaSentimiento.dart';
 import '../../widgets/ArasaacImageDialog.dart';
 import '../../widgets/ImageTextButton.dart';
@@ -36,9 +36,9 @@ class AddSentimientoState extends State<AddSentimiento> {
 
   late ImageTextButton btnVolver;
 
-  late List<Grupo> grupos;
+  late List<Nivel> nivels;
 
-  Grupo? selectedGrupo; // Variable para almacenar el grupo seleccionado
+  Nivel? selectedNivel; // Variable para almacenar el nivel seleccionado
 
   late String preguntaText, correctText;
 
@@ -57,7 +57,7 @@ class AddSentimientoState extends State<AddSentimiento> {
   late List<ElementRespuestaSentimientos> respuestas;
 
   late Color colorSituacion,
-      colorGrupo,
+      colorNivel,
       colorCorrectText,
       colorBordeImagen,
       colorCheckbox;
@@ -67,16 +67,16 @@ class AddSentimientoState extends State<AddSentimiento> {
     super.initState();
     firstLoad = false;
 
-    grupos = [];
+    nivels = [];
     preguntaText = "";
     correctText = "";
     respuestas = [];
     firstLoad = false;
     image = [];
-    selectedGrupo = null;
+    selectedNivel = null;
     colorSituacion = Colors.transparent;
     colorCorrectText = Colors.transparent;
-    colorGrupo = Colors.transparent;
+    colorNivel = Colors.transparent;
     colorBordeImagen = Colors.transparent;
     colorCheckbox = Colors.transparent;
     esIronia = false;
@@ -86,7 +86,7 @@ class AddSentimientoState extends State<AddSentimiento> {
   }
 
   Future<void> _initializeState() async {
-    await _getGrupos();
+    await _getNivels();
 
     _createDialogs();
   }
@@ -157,7 +157,7 @@ class AddSentimientoState extends State<AddSentimiento> {
                     Row(
                       children: [
                         Text(
-                          'Grupo*:',
+                          'Nivel*:',
                           style: TextStyle(
                             fontFamily: 'ComicNeue',
                             fontSize: textSize,
@@ -166,25 +166,25 @@ class AddSentimientoState extends State<AddSentimiento> {
                         SizedBox(width: espacioPadding),
                         Container(
                           decoration: BoxDecoration(
-                            color: colorGrupo,
+                            color: colorNivel,
                           ),
-                          child: DropdownButton<Grupo>(
+                          child: DropdownButton<Nivel>(
                             padding: EdgeInsets.only(
                               left: espacioPadding,
                             ),
                             hint: Text(
-                              'Selecciona el grupo',
+                              'Selecciona el nivel',
                               style: TextStyle(
                                 fontFamily: 'ComicNeue',
                                 fontSize: textSize,
                               ),
                             ),
-                            value: selectedGrupo,
-                            items: grupos.map((Grupo grupo) {
-                              return DropdownMenuItem<Grupo>(
-                                value: grupo,
+                            value: selectedNivel,
+                            items: nivels.map((Nivel nivel) {
+                              return DropdownMenuItem<Nivel>(
+                                value: nivel,
                                 child: Text(
-                                  grupo.nombre,
+                                  nivel.nombre,
                                   style: TextStyle(
                                     fontFamily: 'ComicNeue',
                                     fontSize: textSize,
@@ -192,9 +192,9 @@ class AddSentimientoState extends State<AddSentimiento> {
                                 ),
                               );
                             }).toList(),
-                            onChanged: (Grupo? grupo) {
+                            onChanged: (Nivel? nivel) {
                               setState(() {
-                                selectedGrupo = grupo;
+                                selectedNivel = nivel;
                                 respuestas = [];
                                 setState(() {
                                   respuestas
@@ -214,8 +214,8 @@ class AddSentimientoState extends State<AddSentimiento> {
                                     onPressedArasaac: () =>
                                         _selectNewRespuestaArasaac(0),
                                     showPregunta: false,
-                                    flagAdolescencia: (selectedGrupo!.nombre ==
-                                        "Adolescencia"),
+                                    flagDificil: (selectedNivel!.nombre ==
+                                        "Difícil"),
                                   ));
 
                                   respuestas
@@ -235,8 +235,8 @@ class AddSentimientoState extends State<AddSentimiento> {
                                     onPressedArasaac: () =>
                                         _selectNewRespuestaArasaac(1),
                                     showPregunta: false,
-                                    flagAdolescencia: (selectedGrupo!.nombre ==
-                                        "Adolescencia"),
+                                    flagDificil: (selectedNivel!.nombre ==
+                                        "Difícil"),
                                   ));
                                 });
                               });
@@ -348,11 +348,11 @@ class AddSentimientoState extends State<AddSentimiento> {
                     );
                   },
                 ),
-                if (selectedGrupo != null)
+                if (selectedNivel != null)
                   Row(
                     children: [
-                      if (selectedGrupo != null &&
-                          selectedGrupo!.nombre != "Atención T.")
+                      if (selectedNivel != null &&
+                          selectedNivel!.nombre != "Fácil")
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
@@ -440,7 +440,7 @@ class AddSentimientoState extends State<AddSentimiento> {
             _selectNewRespuestaArasaac(respuestas.length - 1),
         isCorrect: true,
         showPregunta: true,
-        flagAdolescencia: (selectedGrupo!.nombre == "Adolescencia"),
+        flagDificil: (selectedNivel!.nombre == "Difícil"),
       ));
     });
   }
@@ -452,15 +452,15 @@ class AddSentimientoState extends State<AddSentimiento> {
     });
   }
 
-  ///Método que nos permite obtener los grupos con los que cuenta la aplicación y almacenarlos en la variable [grupos]
-  Future<void> _getGrupos() async {
+  ///Método que nos permite obtener los nivels con los que cuenta la aplicación y almacenarlos en la variable [nivels]
+  Future<void> _getNivels() async {
     try {
-      List<Grupo> gruposList = await getGrupos();
+      List<Nivel> nivelsList = await getNiveles();
       setState(() {
-        grupos = gruposList;
+        nivels = nivelsList;
       });
     } catch (e) {
-      print("Error al obtener la lista de grupos: $e");
+      print("Error al obtener la lista de nivels: $e");
     }
   }
 
@@ -766,7 +766,7 @@ class AddSentimientoState extends State<AddSentimiento> {
                 showPregunta: respuestas[index].showPregunta,
                 respuestaText: respuestas[index].respuestaText,
                 respuestaImage: bytes,
-                flagAdolescencia: respuestas[index].flagAdolescencia);
+                flagDificil: respuestas[index].flagDificil);
           });
         },
       );
@@ -804,7 +804,7 @@ class AddSentimientoState extends State<AddSentimiento> {
             showPregunta: respuestas[index].showPregunta,
             respuestaText: respuestas[index].respuestaText,
             respuestaImage: bytes,
-            flagAdolescencia: respuestas[index].flagAdolescencia);
+            flagDificil: respuestas[index].flagDificil);
       });
     }
   }
@@ -815,13 +815,13 @@ class AddSentimientoState extends State<AddSentimiento> {
   bool _completedParams() {
     bool correct = true;
     // compruebo que todos los parametros obligatorios están completos
-    if (selectedGrupo == null) {
+    if (selectedNivel == null) {
       correct = false;
       setState(() {
-        colorGrupo = Colors.red;
+        colorNivel = Colors.red;
       });
     } else
-      colorGrupo = Colors.transparent;
+      colorNivel = Colors.transparent;
 
     if (preguntaText.trim().isEmpty) {
       correct = false;
@@ -839,12 +839,12 @@ class AddSentimientoState extends State<AddSentimiento> {
     } else
       colorBordeImagen = Colors.transparent;
 
-    // si es el grupo adolescencia, la imagen no puede estar vacia
+    // si es el nivel adolescencia, la imagen no puede estar vacia
     // en cualquier otro el texto no puede estar vacio
     for (int i = 0; i < respuestas.length; i++)
       if (respuestas[i].respuestaImage.isEmpty ||
           (respuestas[i].respuestaText.trim().isEmpty &&
-              selectedGrupo!.nombre != "Adolescencia")) {
+              selectedNivel!.nombre != "Difícil")) {
         correct = false;
         setState(() {
           respuestas[i].color = Colors.red;
@@ -861,7 +861,7 @@ class AddSentimientoState extends State<AddSentimiento> {
   Future<void> _addRespuestas(int preguntaId) async {
     Database db = await openDatabase('rutinas.db');
     for (int i = 0; i < respuestas.length; i++) {
-      if (selectedGrupo!.nombre != "Adolescencia")
+      if (selectedNivel!.nombre != "Difícil")
         await db.rawInsert(
           'INSERT INTO situacion (texto, correcta, imagen, preguntaSentimientoId) VALUES (?,?,?,?)',
           [
@@ -899,10 +899,10 @@ class AddSentimientoState extends State<AddSentimiento> {
 
     if (image.isEmpty)
       preguntaId = await insertPreguntaSentimiento(
-          db, preguntaText, [], selectedGrupo!.id);
+          db, preguntaText, [], selectedNivel!.id);
     else
       preguntaId = await insertPreguntaSentimiento(
-          db, preguntaText, Uint8List.fromList(image), selectedGrupo!.id);
+          db, preguntaText, Uint8List.fromList(image), selectedNivel!.id);
     return preguntaId;
   }
 }

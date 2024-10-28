@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:smooth_scroll_multiplatform/smooth_scroll_multiplatform.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../db/obj/grupo.dart';
+import '../../db/obj/nivel.dart';
 import '../../db/obj/respuestaIronia.dart';
 import '../../db/obj/situacionIronia.dart';
 import '../../obj/Respuesta.dart';
@@ -38,9 +38,9 @@ class AddHumorState extends State<AddHumor> {
 
   late ImageTextButton btnVolver;
 
-  late List<Grupo> grupos;
+  late List<Nivel> nivels;
 
-  Grupo? selectedGrupo; // Variable para almacenar el grupo seleccionado
+  Nivel? selectedNivel; // Variable para almacenar el nivel seleccionado
 
   late String situacionText, correctText;
 
@@ -59,7 +59,7 @@ class AddHumorState extends State<AddHumor> {
   late List<Respuesta> respuestasIncorrectas;
 
   late Color colorSituacion,
-      colorGrupo,
+      colorNivel,
       colorCorrectText,
       colorBordeImagen,
       colorCheckbox;
@@ -69,16 +69,16 @@ class AddHumorState extends State<AddHumor> {
     super.initState();
     firstLoad = false;
 
-    grupos = [];
+    nivels = [];
     situacionText = "";
     correctText = "";
     respuestasIncorrectas = [];
     firstLoad = false;
     image = [];
-    selectedGrupo = null;
+    selectedNivel = null;
     colorSituacion = Colors.transparent;
     colorCorrectText = Colors.transparent;
-    colorGrupo = Colors.transparent;
+    colorNivel = Colors.transparent;
     colorBordeImagen = Colors.transparent;
     colorCheckbox = Colors.transparent;
     esIronia = false;
@@ -88,7 +88,7 @@ class AddHumorState extends State<AddHumor> {
   }
 
   Future<void> _initializeState() async {
-    await _getGrupos();
+    await _getNivels();
 
     _createDialogs();
   }
@@ -159,7 +159,7 @@ class AddHumorState extends State<AddHumor> {
                     Row(
                       children: [
                         Text(
-                          'Grupo*:',
+                          'Nivel*:',
                           style: TextStyle(
                             fontFamily: 'ComicNeue',
                             fontSize: textSize,
@@ -168,25 +168,25 @@ class AddHumorState extends State<AddHumor> {
                         SizedBox(width: espacioPadding),
                         Container(
                           decoration: BoxDecoration(
-                            color: colorGrupo,
+                            color: colorNivel,
                           ),
-                          child: DropdownButton<Grupo>(
+                          child: DropdownButton<Nivel>(
                             padding: EdgeInsets.only(
                               left: espacioPadding,
                             ),
                             hint: Text(
-                              'Selecciona el grupo',
+                              'Selecciona el nivel',
                               style: TextStyle(
                                 fontFamily: 'ComicNeue',
                                 fontSize: textSize,
                               ),
                             ),
-                            value: selectedGrupo,
-                            items: grupos.map((Grupo grupo) {
-                              return DropdownMenuItem<Grupo>(
-                                value: grupo,
+                            value: selectedNivel,
+                            items: nivels.map((Nivel nivel) {
+                              return DropdownMenuItem<Nivel>(
+                                value: nivel,
                                 child: Text(
-                                  grupo.nombre,
+                                  nivel.nombre,
                                   style: TextStyle(
                                     fontFamily: 'ComicNeue',
                                     fontSize: textSize,
@@ -194,14 +194,14 @@ class AddHumorState extends State<AddHumor> {
                                 ),
                               );
                             }).toList(),
-                            onChanged: (Grupo? grupo) {
+                            onChanged: (Nivel? nivel) {
                               setState(() {
-                                selectedGrupo = grupo;
+                                selectedNivel = nivel;
                                 respuestasIncorrectas = [];
-                                if (selectedGrupo!.nombre == "Infancia")
+                                if (selectedNivel!.nombre == "Medio")
                                   respuestasIncorrectas.add(new Respuesta(
                                       texto: "", color: Colors.transparent));
-                                if (selectedGrupo!.nombre == "Adolescencia") {
+                                if (selectedNivel!.nombre == "Difícil") {
                                   respuestasIncorrectas.add(new Respuesta(
                                       texto: "", color: Colors.transparent));
                                   respuestasIncorrectas.add(new Respuesta(
@@ -295,8 +295,8 @@ class AddHumorState extends State<AddHumor> {
                   ),
                 ),
                 SizedBox(height: espacioAlto),
-                if (selectedGrupo != null &&
-                    selectedGrupo!.nombre == 'Atención T.')
+                if (selectedNivel != null &&
+                    selectedNivel!.nombre == 'Fácil')
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -352,8 +352,8 @@ class AddHumorState extends State<AddHumor> {
                       ],
                     ),
                   ),
-                if (selectedGrupo != null &&
-                    selectedGrupo!.nombre != 'Atención T.')
+                if (selectedNivel != null &&
+                    selectedNivel!.nombre != 'Fácil')
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
@@ -389,7 +389,7 @@ class AddHumorState extends State<AddHumor> {
                       SizedBox(
                         height: espacioAlto / 2,
                       ),
-                      if (selectedGrupo!.nombre == 'Infancia')
+                      if (selectedNivel!.nombre == 'Medio')
                         Text(
                           "Respuesta incorrecta*:",
                           style: TextStyle(
@@ -397,7 +397,7 @@ class AddHumorState extends State<AddHumor> {
                             fontSize: textSize,
                           ),
                         ),
-                      if (selectedGrupo!.nombre == 'Adolescencia')
+                      if (selectedNivel!.nombre == 'Difícil')
                         Text(
                           "Respuestas incorrectas*:",
                           style: TextStyle(
@@ -429,7 +429,7 @@ class AddHumorState extends State<AddHumor> {
                       SizedBox(
                         height: espacioAlto / 2,
                       ),
-                      if (selectedGrupo!.nombre == 'Adolescencia')
+                      if (selectedNivel!.nombre == 'Difícil')
                         Column(
                           children: [
                             Container(
@@ -518,15 +518,15 @@ class AddHumorState extends State<AddHumor> {
     );
   }
 
-  ///Método que nos permite obtener los grupos con los que cuenta la aplicación y almacenarlos en la variable [grupos]
-  Future<void> _getGrupos() async {
+  ///Método que nos permite obtener los nivels con los que cuenta la aplicación y almacenarlos en la variable [nivels]
+  Future<void> _getNivels() async {
     try {
-      List<Grupo> gruposList = await getGrupos();
+      List<Nivel> nivelsList = await getNiveles();
       setState(() {
-        grupos = gruposList;
+        nivels = nivelsList;
       });
     } catch (e) {
-      print("Error al obtener la lista de grupos: $e");
+      print("Error al obtener la lista de nivels: $e");
     }
   }
 
@@ -799,13 +799,13 @@ class AddHumorState extends State<AddHumor> {
   bool _completedParams() {
     bool correct = true;
     // compruebo que todos los parametros obligatorios están completos
-    if (selectedGrupo == null) {
+    if (selectedNivel == null) {
       correct = false;
       setState(() {
-        colorGrupo = Colors.red;
+        colorNivel = Colors.red;
       });
     } else
-      colorGrupo = Colors.transparent;
+      colorNivel = Colors.transparent;
 
     if (situacionText.trim().isEmpty) {
       correct = false;
@@ -823,8 +823,8 @@ class AddHumorState extends State<AddHumor> {
     } else
       colorBordeImagen = Colors.transparent;
 
-    if (selectedGrupo != null &&
-        selectedGrupo!.nombre == "Atención T." &&
+    if (selectedNivel != null &&
+        selectedNivel!.nombre == "Fácil" &&
         !esIronia &&
         !noEsIronia) {
       correct = false;
@@ -834,8 +834,8 @@ class AddHumorState extends State<AddHumor> {
     } else
       colorCheckbox = Colors.transparent;
 
-    if (selectedGrupo != null &&
-        selectedGrupo!.nombre != "Atención T." &&
+    if (selectedNivel != null &&
+        selectedNivel!.nombre != "Fácil" &&
         correctText.trim().isEmpty) {
       correct = false;
       setState(() {
@@ -869,7 +869,7 @@ class AddHumorState extends State<AddHumor> {
     int preguntaId;
     Database db = await openDatabase('rutinas.db');
     preguntaId = await insertSituacionIronia(
-        db, situacionText, Uint8List.fromList(image), selectedGrupo!.id);
+        db, situacionText, Uint8List.fromList(image), selectedNivel!.id);
     return preguntaId;
   }
 
@@ -879,7 +879,7 @@ class AddHumorState extends State<AddHumor> {
   Future<void> _addRespuestas(int ironiaId) async {
     Database db = await openDatabase('rutinas.db');
 
-    if (selectedGrupo!.nombre == "Atención T.") {
+    if (selectedNivel!.nombre == "Fácil") {
       int aux, aux2;
       if (esIronia)
         aux = 1;

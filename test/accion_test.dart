@@ -1,6 +1,6 @@
 import 'package:Rutirse/db/db.dart';
 import 'package:Rutirse/db/obj/accion.dart';
-import 'package:Rutirse/db/obj/grupo.dart';
+import 'package:Rutirse/db/obj/nivel.dart';
 import 'package:Rutirse/db/obj/situacionRutina.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,7 +20,7 @@ void main() async {
   setUp(() async {
     database = await databaseFactory.openDatabase(inMemoryDatabasePath);
     createTables(database);
-    insertGrupos(database);
+    insertNiveles(database);
   });
 
   // Elimino la tabla situacionRutina después de cada prueba

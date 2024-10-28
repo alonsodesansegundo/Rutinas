@@ -1,7 +1,7 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'obj/grupo.dart';
+import 'obj/nivel.dart';
 import 'obj/preguntaSentimiento.dart';
 import 'obj/situacionIronia.dart';
 import 'obj/situacionRutina.dart';
@@ -21,7 +21,7 @@ Future<Database> initializeDB() async {
 
       // inserción de datos iniciales (grupos, preguntas...)
       insertDefaultPassword(database);
-      insertGrupos(database);
+      insertNiveles(database);
       insertRutinas(database);
       insertIronias(database);
       insertSentimientos(database);
@@ -33,12 +33,11 @@ Future<Database> initializeDB() async {
 ///Método para crear la tabla grupo
 ///<br><b>Parámetros</b><br>
 ///[database] Objeto Database sobre la cual se crea la tabla
-void createTableGrupo(Database database) {
+void createTableNivel(Database database) {
   database.execute(
-    """CREATE TABLE grupo (
+    """CREATE TABLE nivel (
           id INTEGER PRIMARY KEY AUTOINCREMENT, 
-          nombre TEXT NOT NULL,
-          edades TEXT NOT NULL)""",
+          nombre TEXT NOT NULL)""",
   );
 }
 
@@ -50,8 +49,8 @@ void createTableJugador(Database database) {
     CREATE TABLE jugador (
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       nombre TEXT NOT NULL,
-      grupoId INTEGER,
-      FOREIGN KEY (grupoId) REFERENCES grupo(id))""");
+      nivelId INTEGER,
+      FOREIGN KEY (nivelId) REFERENCES nivel(id))""");
 }
 
 ///Método para crear la tabla partida
@@ -97,10 +96,10 @@ void createTableSituacionRutina(Database database) {
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       enunciado TEXT NOT NULL,
       personajeImg BLOB,
-      grupoId INTEGER NOT NULL,
+      nivelId INTEGER NOT NULL,
       fecha TEXT NOT NULL,
       byTerapeuta INTEGER DEFAULT 0 NOT NULL,
-      FOREIGN KEY (grupoId) REFERENCES grupo(id)
+      FOREIGN KEY (nivelId) REFERENCES nivel(id)
       ON DELETE CASCADE 
     )""");
 }
@@ -130,10 +129,10 @@ void createTableSituacionIronia(Database database) {
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       enunciado TEXT NOT NULL,
       imagen BLOB,
-      grupoId INTEGER NOT NULL,
+      nivelId INTEGER NOT NULL,
       fecha TEXT NOT NULL,
       byTerapeuta INTEGER DEFAULT 0 NOT NULL,
-      FOREIGN KEY (grupoId) REFERENCES grupo(id)
+      FOREIGN KEY (nivelId) REFERENCES nivel(id)
       ON DELETE CASCADE 
     )""");
 }
@@ -162,10 +161,10 @@ void createTablePreguntaSentimiento(Database database) {
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       enunciado TEXT NOT NULL,
       imagen BLOB,
-      grupoId INTEGER NOT NULL,
+      nivelId INTEGER NOT NULL,
       fecha TEXT NOT NULL,
       byTerapeuta INTEGER DEFAULT 0 NOT NULL,
-      FOREIGN KEY (grupoId) REFERENCES grupo(id)
+      FOREIGN KEY (nivelId) REFERENCES nivel(id)
       ON DELETE CASCADE 
     )""");
 }
@@ -201,7 +200,7 @@ void createTableTerapeuta(Database database) {
 ///<br><b>Parámetros</b><br>
 ///[database] Objeto Database sobre la cual se crean la tablas
 void createTables(Database database) {
-  createTableGrupo(database);
+  createTableNivel(database);
   createTableJugador(database);
   createTablePartida(database);
   createTableSituacionRutina(database);

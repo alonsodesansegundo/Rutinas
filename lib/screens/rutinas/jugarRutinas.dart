@@ -473,9 +473,9 @@ class JugarRutinasState extends State<JugarRutinas>
       flag = true;
       try {
         var myProvider = Provider.of<MyProvider>(context);
-        // obtengo las preguntas del grupo correspondiente
+        // obtengo las preguntas del nivel correspondiente
         List<SituacionRutina> situaciones =
-            await getSituacionesRutinas(myProvider.grupo.id);
+            await getSituacionesRutinas(myProvider.nivel.id);
         setState(() {
           situacionRutinaList = situaciones; // actualizo la lista
           indiceActual =

@@ -20,7 +20,7 @@ class ElementAccion extends StatefulWidget {
   List<int> accionImage;
   Color color;
   final TextEditingController accionTextController = TextEditingController();
-  bool flagAdolescencia;
+  bool flagDificil;
 
   ///Constructor de la clase ElementAccion
   ElementAccion({
@@ -39,7 +39,7 @@ class ElementAccion extends StatefulWidget {
     this.accionText = "",
     this.accionImage = const [],
     this.color = Colors.transparent,
-    this.flagAdolescencia = false,
+    this.flagDificil = false,
   });
 
   @override
@@ -58,7 +58,7 @@ class _ElementAccionState extends State<ElementAccion> {
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
-            if (!widget.flagAdolescencia)
+            if (!widget.flagDificil)
               Row(
                 children: [
                   Column(

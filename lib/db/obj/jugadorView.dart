@@ -2,37 +2,37 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../obj/JugadoresPaginacion.dart';
 import '../db.dart';
-import 'grupo.dart';
+import 'nivel.dart';
 
 /**
 
  */
-///Clase que nos permite obtener los datos de un jugador, así obtenemos el nombre del grupo
+///Clase que nos permite obtener los datos de un jugador, así obtenemos el nombre del nivel
 ///en lugar de su identificador
 class JugadorView {
   final int id;
   final String jugadorName;
-  final String grupoName;
+  final String nivelName;
 
   ///Constructor de la clase JugadorView
   JugadorView(
-      {required this.id, required this.jugadorName, required this.grupoName});
+      {required this.id, required this.jugadorName, required this.nivelName});
 
-  ///Crea una instancia de JugadorView a partir de un mapa de datos, dicho mapa debe contener: id, jugadorName y grupoName
+  ///Crea una instancia de JugadorView a partir de un mapa de datos, dicho mapa debe contener: id, jugadorName y nivelName
   JugadorView.jugadoresFromMap(Map<String, dynamic> item)
       : id = item["id"],
         jugadorName = item["jugadorName"],
-        grupoName = item["grupoName"];
+        nivelName = item["nivelName"];
 
   ///Convierte una instancia de JugadorView a un mapa de datos
   Map<String, Object> jugadoresToMap() {
-    return {'jugadorName': jugadorName, 'grupoName': grupoName};
+    return {'jugadorName': jugadorName, 'nivelName': nivelName};
   }
 
   ///Sobreescritura del método equals
   @override
   String toString() {
-    return 'Jugador {id: $id, jugadorName: $jugadorName, grupoName: $grupoName}';
+    return 'Jugador {id: $id, jugadorName: $jugadorName, nivelName: $nivelName}';
   }
 }
 
@@ -41,29 +41,29 @@ class JugadorView {
 ///[pageNumber] Página de la que queremos obtener los resultados. Comenzamos en la página 1<br>
 ///[pageSize] Cantidad de resultados que queremos obtener por página<br>
 ///[txtNombre] Nombre del jugador para filtrar la búsqueda<br>
-///[grupo] Grupo para filtrar la búsqueda
+///[nivel] Nivel para filtrar la búsqueda
 ///<br><b>Salida</b><br>
 ///Resultado de la búsqueda con paginación
 Future<JugadoresPaginacion> getAllJugadoresView(
-    int pageNumber, int pageSize, String txtNombre, Grupo? grupo) async {
+    int pageNumber, int pageSize, String txtNombre, Nivel? nivel) async {
   try {
     final Database db = await initializeDB();
     int offset = (pageNumber - 1) * pageSize;
     String whereClause = '';
 
-    // Agregar condiciones de búsqueda por nombre de jugador y nombre de grupo
+    // Agregar condiciones de búsqueda por nombre de jugador y nombre de nivel
     if (txtNombre.isNotEmpty) {
       whereClause += " WHERE jugador.nombre LIKE '%$txtNombre%'";
     }
-    if (grupo != null) {
+    if (nivel != null) {
       whereClause += (whereClause.isEmpty ? ' WHERE' : ' AND');
-      whereClause += " grupo.id = ${grupo.id}";
+      whereClause += " nivel.id = ${nivel.id}";
     }
 
     final List<Map<String, dynamic>> jugadoresMap = await db.rawQuery('''
-      SELECT jugador.id as id, jugador.nombre AS jugadorName, grupo.nombre AS grupoName
+      SELECT jugador.id as id, jugador.nombre AS jugadorName, nivel.nombre AS nivelName
       FROM jugador
-      JOIN grupo ON jugador.grupoId = grupo.id
+      JOIN nivel ON jugador.nivelId = nivel.id
       $whereClause
       ORDER BY jugador.id 
       LIMIT $pageSize OFFSET $offset
@@ -76,7 +76,7 @@ Future<JugadoresPaginacion> getAllJugadoresView(
     final List<Map<String, dynamic>> totalJugadoresMap = await db.rawQuery('''
       SELECT COUNT(*) AS total
       FROM jugador
-      JOIN grupo ON jugador.grupoId = grupo.id
+      JOIN nivel ON jugador.nivelId = nivel.id
       $whereClause
     ''');
     final int totalJugadores =

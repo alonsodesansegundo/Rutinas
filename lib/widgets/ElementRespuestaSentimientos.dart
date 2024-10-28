@@ -19,7 +19,7 @@ class ElementRespuestaSentimientos extends StatefulWidget {
   List<int> respuestaImage;
   Color color;
   final TextEditingController accionTextController = TextEditingController();
-  bool flagAdolescencia;
+  bool flagDificil;
   bool showPregunta;
 
   ///Constructor de la clase ElementRespuestaSentimientos
@@ -38,7 +38,7 @@ class ElementRespuestaSentimientos extends StatefulWidget {
     this.respuestaText = "",
     this.respuestaImage = const [],
     this.color = Colors.transparent,
-    this.flagAdolescencia = false,
+    this.flagDificil = false,
     required this.showPregunta,
   });
 
@@ -60,12 +60,12 @@ class _ElementRespuestaSentimientosState
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
-            if (!widget.flagAdolescencia)
+            if (!widget.flagDificil)
               Row(
                 children: [
                   Column(
                     children: [
-                      if (!widget.flagAdolescencia && widget.isCorrect)
+                      if (!widget.flagDificil && widget.isCorrect)
                         Container(
                           width: widget.espacioPadding,
                           child: Text(
@@ -76,7 +76,7 @@ class _ElementRespuestaSentimientosState
                             ),
                           ),
                         ),
-                      if (!widget.flagAdolescencia && !widget.isCorrect)
+                      if (!widget.flagDificil && !widget.isCorrect)
                         Container(
                           width: widget.espacioPadding,
                           child: Text(
@@ -127,7 +127,7 @@ class _ElementRespuestaSentimientosState
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
-            if (widget.flagAdolescencia && widget.isCorrect)
+            if (widget.flagDificil && widget.isCorrect)
               Container(
                 width: widget.espacioPadding,
                 child: Text(
@@ -138,7 +138,7 @@ class _ElementRespuestaSentimientosState
                   ),
                 ),
               ),
-            if (widget.flagAdolescencia && !widget.isCorrect)
+            if (widget.flagDificil && !widget.isCorrect)
               Container(
                 width: widget.espacioPadding,
                 child: Text(
@@ -149,7 +149,7 @@ class _ElementRespuestaSentimientosState
                   ),
                 ),
               ),
-            if (!widget.flagAdolescencia)
+            if (!widget.flagDificil)
               Container(
                 width: widget.espacioPadding,
                 child: Text(

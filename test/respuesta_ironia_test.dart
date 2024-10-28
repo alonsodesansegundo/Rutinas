@@ -1,5 +1,5 @@
 import 'package:Rutirse/db/db.dart';
-import 'package:Rutirse/db/obj/grupo.dart';
+import 'package:Rutirse/db/obj/nivel.dart';
 import 'package:Rutirse/db/obj/respuestaIronia.dart';
 import 'package:Rutirse/db/obj/situacionIronia.dart';
 import 'package:flutter/services.dart';
@@ -19,7 +19,7 @@ void main() async {
   setUp(() async {
     database = await databaseFactory.openDatabase(inMemoryDatabasePath);
     createTables(database);
-    insertGrupos(database);
+    insertNiveles(database);
   });
 
   // Elimino la tabla situacionIronia después de cada prueba

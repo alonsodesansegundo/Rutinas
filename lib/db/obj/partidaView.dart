@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../obj/PartidasPaginacion.dart';
 import '../db.dart';
-import 'grupo.dart';
+import 'nivel.dart';
 
 ///Clase que nos permite obtener los datos que queremos mostrar de una partida
 class PartidaView {
@@ -12,7 +12,7 @@ class PartidaView {
   final int aciertos;
   final int fallos;
   final String jugadorName;
-  final String grupoName;
+  final String nivelName;
 
   ///Constructor de la clase PartidaView
   PartidaView(
@@ -22,10 +22,10 @@ class PartidaView {
       required this.aciertos,
       required this.fallos,
       required this.jugadorName,
-      required this.grupoName});
+      required this.nivelName});
 
   ///Crea una instancia de PartidaView a partir de un mapa de datos, dicho mapa debe contener:
-  ///id, fechaFin, duracionSegundos, aciertos, fallos, jugadorName y grupoName
+  ///id, fechaFin, duracionSegundos, aciertos, fallos, jugadorName y nivelName
   PartidaView.partidasFromMap(Map<String, dynamic> item)
       : id = item["id"],
         fechaFin = item["fechaFin"],
@@ -33,7 +33,7 @@ class PartidaView {
         aciertos = item["aciertos"],
         fallos = item["fallos"],
         jugadorName = item["jugadorName"],
-        grupoName = item["grupoName"];
+        nivelName = item["nivelName"];
 
   /// Convierte una instancia de PartidaView a un mapa de datos
   Map<String, Object> partidasToMap() {
@@ -43,7 +43,7 @@ class PartidaView {
       'aciertos': aciertos,
       'fallos': fallos,
       'jugadorName': jugadorName,
-      'grupoName': grupoName
+      'nivelName': nivelName
     };
   }
 
@@ -51,7 +51,7 @@ class PartidaView {
   @override
   String toString() {
     return 'Partida {id: $id, fechaFin: $fechaFin, duracionSegundos: $duracionSegundos,'
-        'aciertos: $aciertos, fallos: $fallos, jugadorName: $jugadorName, grupoName: $grupoName}';
+        'aciertos: $aciertos, fallos: $fallos, jugadorName: $jugadorName, nivelName: $nivelName}';
   }
 }
 
@@ -61,12 +61,12 @@ class PartidaView {
 ///[pageNumber] Página de la que queremos obtener los resultados. Comenzamos en la página 1<br>
 ///[pageSize] Cantidad de resultados que queremos obtener por página<br>
 ///[txtNombre] Nombre del jugador para filtrar la búsqueda<br>
-///[grupo] Grupo para filtrar la búsqueda<br>
+///[nivel] Nivel para filtrar la búsqueda<br>
 ///[game] Juego sobre el que queremos obtener las partidas. Posibles valores: Ironias, Rutinas o Sentimientos
 ///<br><b>Salida</b><br>
 ///Lista de las partidas de forma paginada
 Future<PartidasPaginacion> getAllPartidasView(int pageNumber, int pageSize,
-    String txtNombre, Grupo? grupo, String game) async {
+    String txtNombre, Nivel? nivel, String game) async {
   try {
     final Database db = await initializeDB();
     int offset = (pageNumber - 1) * pageSize;
@@ -75,13 +75,13 @@ Future<PartidasPaginacion> getAllPartidasView(int pageNumber, int pageSize,
     if (txtNombre.isNotEmpty) {
       whereClause += " WHERE jugador.nombre LIKE '%$txtNombre%'";
     }
-    if (grupo != null) {
+    if (nivel != null) {
       whereClause += (whereClause.isEmpty ? ' WHERE' : ' AND');
-      whereClause += " grupo.id = ${grupo.id}";
+      whereClause += " nivel.id = ${nivel.id}";
     }
 
     final List<Map<String, dynamic>> partidasMap = await db.rawQuery('''
-      SELECT partida.*, jugador.nombre AS jugadorName, grupo.nombre AS grupoName
+      SELECT partida.*, jugador.nombre AS jugadorName, nivel.nombre AS nivelName
       FROM partida
       JOIN partida''' +
         game +
@@ -89,7 +89,7 @@ Future<PartidasPaginacion> getAllPartidasView(int pageNumber, int pageSize,
         game +
         '''.partidaId
       JOIN jugador ON partida.jugadorId = jugador.id
-      JOIN grupo ON jugador.grupoId = grupo.id
+      JOIN nivel ON jugador.nivelId = nivel.id
       $whereClause
       ORDER BY fechaFin DESC
       LIMIT $pageSize OFFSET $offset
@@ -102,7 +102,7 @@ Future<PartidasPaginacion> getAllPartidasView(int pageNumber, int pageSize,
       FROM partida
       JOIN partidaRutinas ON partida.id = partidaRutinas.partidaId
       JOIN jugador ON partida.jugadorId = jugador.id
-      JOIN grupo ON jugador.grupoId = grupo.id
+      JOIN nivel ON jugador.nivelId = nivel.id
       $whereClause
     ''');
     final int totalPartidas =

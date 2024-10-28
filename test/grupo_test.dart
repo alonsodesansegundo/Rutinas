@@ -1,5 +1,5 @@
 import 'package:Rutirse/db/db.dart';
-import 'package:Rutirse/db/obj/grupo.dart';
+import 'package:Rutirse/db/obj/nivel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
@@ -21,90 +21,90 @@ void main() async {
   });
 
   // Test 1
-  test('Test for check gruposToMap', () async {
-    insertGrupos(database);
-    Grupo grupoExpected =
-        new Grupo(id: 1, nombre: "Atención T.", edades: "4 - 7 años");
-    List<Grupo> grupos = await getGrupos(database);
-    expect(grupos[0].gruposToMap(), grupoExpected.gruposToMap());
+  test('Test for check nivelesToMap', () async {
+    insertNiveles(database);
+    Nivel grupoExpected =
+        new Nivel(id: 1, nombre: "Atención T.");
+    List<Nivel> niveles = await getNiveles(database);
+    expect(niveles[0].nivelesToMap(), grupoExpected.nivelesToMap());
   });
 
   // Test 2
   test('Test for check toString', () async {
-    insertGrupos(database);
-    Grupo grupoExpected =
-        new Grupo(id: 1, nombre: "Atención T.", edades: "4 - 7 años");
-    List<Grupo> grupos = await getGrupos(database);
-    expect(grupos[0].toString(), grupoExpected.toString());
+    insertNiveles(database);
+    Nivel grupoExpected =
+        new Nivel(id: 1, nombre: "Atención T.");
+    List<Nivel> niveles = await getNiveles(database);
+    expect(niveles[0].toString(), grupoExpected.toString());
   });
 
   // Test 3
   test('Test for check insert groups', () async {
-    insertGrupos(database);
+    insertNiveles(database);
     final List<Map<String, dynamic>> result = await database.query('grupo');
     expect(result.length, 3);
   });
 
   // Test 4
-  test('Test for check getGrupos (length)', () async {
-    insertGrupos(database);
-    List<Grupo> grupos = await getGrupos(database);
-    expect(grupos.length, 3);
+  test('Test for check getNiveles (length)', () async {
+    insertNiveles(database);
+    List<Nivel> niveles = await getNiveles(database);
+    expect(niveles.length, 3);
   });
 
   // Test 5
-  test('Test for check getGrupos (order element 0)', () async {
-    Grupo grupoExpected =
-        new Grupo(id: 1, nombre: "Atención T.", edades: "4 - 7 años");
-    insertGrupos(database);
-    List<Grupo> grupos = await getGrupos(database);
-    expect(grupos[0], grupoExpected);
+  test('Test for check getNiveles (order element 0)', () async {
+    Nivel grupoExpected =
+        new Nivel(id: 1, nombre: "Atención T.");
+    insertNiveles(database);
+    List<Nivel> niveles = await getNiveles(database);
+    expect(niveles[0], grupoExpected);
   });
 
   // Test
-  test('Test for check getGrupos (order element 1)', () async {
-    insertGrupos(database);
-    Grupo grupoExpected =
-        new Grupo(id: 2, nombre: "Infancia", edades: "8 - 11 años");
-    List<Grupo> grupos = await getGrupos(database);
-    expect(grupos[1], grupoExpected);
+  test('Test for check getNiveles (order element 1)', () async {
+    insertNiveles(database);
+    Nivel grupoExpected =
+        new Nivel(id: 2, nombre: "Infancia");
+    List<Nivel> niveles = await getNiveles(database);
+    expect(niveles[1], grupoExpected);
   });
 
   // Test
-  test('Test for check getGrupos (order element 2)', () async {
-    insertGrupos(database);
-    Grupo grupoExpected =
-        new Grupo(id: 3, nombre: "Adolescencia", edades: "12 - 17 años");
-    List<Grupo> grupos = await getGrupos(database);
-    expect(grupos[2], grupoExpected);
+  test('Test for check getNiveles (order element 2)', () async {
+    insertNiveles(database);
+    Nivel grupoExpected =
+        new Nivel(id: 3, nombre: "Adolescencia");
+    List<Nivel> niveles = await getNiveles(database);
+    expect(niveles[2], grupoExpected);
   });
 
   // Test
   test('Test for check hashCode', () async {
-    insertGrupos(database);
-    Grupo grupoExpected =
-        new Grupo(id: 1, nombre: "Atención T.", edades: "4 - 7 años");
-    List<Grupo> grupos = await getGrupos(database);
-    expect(grupos[0].hashCode, grupoExpected.hashCode);
+    insertNiveles(database);
+    Nivel grupoExpected =
+        new Nivel(id: 1, nombre: "Atención T.");
+    List<Nivel> niveles = await getNiveles(database);
+    expect(niveles[0].hashCode, grupoExpected.hashCode);
   });
 
   // Test
-  test('Test for check getGrupos without insert of groups', () async {
-    List<Grupo> grupos = await getGrupos(database);
-    expect(grupos, []);
+  test('Test for check getNiveles without insert of groups', () async {
+    List<Nivel> niveles = await getNiveles(database);
+    expect(niveles, []);
   });
 
   // Test
-  test('Test for check getGrupoById with existent id', () async {
-    insertGrupos(database);
-    Grupo grupoExpected =
-        new Grupo(id: 1, nombre: "Atención T.", edades: "4 - 7 años");
-    Grupo grupo = await getGrupoById(1, database);
+  test('Test for check getNivelById with existent id', () async {
+    insertNiveles(database);
+    Nivel grupoExpected =
+        new Nivel(id: 1, nombre: "Atención T.");
+    Nivel grupo = await getNivelById(1, database);
     expect(grupo, grupoExpected);
   });
 
   // Test
-  test('Test for check getGrupoById with not existent id', () async {
-    expect(getGrupoById(-1, database), throwsA(isA<Exception>()));
+  test('Test for check getNivelById with not existent id', () async {
+    expect(getNivelById(-1, database), throwsA(isA<Exception>()));
   });
 }

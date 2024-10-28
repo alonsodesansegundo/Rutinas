@@ -10,7 +10,7 @@ import 'package:smooth_scroll_multiplatform/smooth_scroll_multiplatform.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../../db/obj/accion.dart';
-import '../../db/obj/grupo.dart';
+import '../../db/obj/nivel.dart';
 import '../../db/obj/situacionRutina.dart';
 import '../../widgets/ArasaacAccionDialog.dart';
 import '../../widgets/ArasaacPersonajeDialog.dart';
@@ -21,9 +21,9 @@ import '../main.dart';
 ///Pantalla que le permite al terapeuta la edición de una pregunta del juego Rutinas y sus respuestas
 class EditRutina extends StatefulWidget {
   SituacionRutina situacionRutina;
-  Grupo grupo;
+  Nivel nivel;
 
-  EditRutina({required this.situacionRutina, required this.grupo});
+  EditRutina({required this.situacionRutina, required this.nivel});
 
   @override
   EditRutinaState createState() => EditRutinaState();
@@ -34,7 +34,7 @@ class EditRutina extends StatefulWidget {
 class EditRutinaState extends State<EditRutina> {
   late ImageTextButton btnVolver;
 
-  late Color colorSituacion, colorGrupo;
+  late Color colorSituacion, colorNivel;
 
   late double titleSize,
       textSize,
@@ -55,11 +55,11 @@ class EditRutinaState extends State<EditRutina> {
       btnArasaac,
       btnEliminarPersonaje;
 
-  late List<Grupo> grupos;
+  late List<Nivel> nivels;
 
   late List<ElementAccion> acciones, accionesToDelete;
 
-  late Grupo? selectedGrupo;
+  late Nivel? selectedNivel;
 
   late String situacionText;
 
@@ -78,28 +78,28 @@ class EditRutinaState extends State<EditRutina> {
       noInternetDialog,
       removePreguntaOk;
 
-  late bool firstLoad = true, changeGrupo, loadData;
+  late bool firstLoad = true, changeNivel, loadData;
 
-  late Grupo defaultGrupo;
+  late Nivel defaultNivel;
 
   @override
   void initState() {
     super.initState();
-    defaultGrupo = widget.grupo;
+    defaultNivel = widget.nivel;
     loadData = false;
-    grupos = [];
+    nivels = [];
     acciones = [];
     accionesToDelete = [];
     personajes = [];
     _getExistsPersonajes('assets/img/personajes/');
-    selectedGrupo = null;
+    selectedNivel = null;
     colorSituacion = Colors.transparent;
-    colorGrupo = Colors.transparent;
-    changeGrupo = false;
+    colorNivel = Colors.transparent;
+    changeNivel = false;
 
     if (firstLoad) {
       firstLoad = false;
-      _getGrupos();
+      _getNiveles();
       situacionText = widget.situacionRutina.enunciado;
       if (widget.situacionRutina.personajeImg != null) {
         setState(() {
@@ -114,7 +114,7 @@ class EditRutinaState extends State<EditRutina> {
   }
 
   Future<void> _initializeState() async {
-    await _getGrupos();
+    await _getNiveles();
     await _getExistsPersonajes('assets/img/personajes/');
 
     _createDialogs();
@@ -171,7 +171,7 @@ class EditRutinaState extends State<EditRutina> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Aquí tienes la posibilidad de editar la pregunta sobre la rutina y sus opciones o acciones, incluso el grupo al que pertenece.',
+                        'Aquí tienes la posibilidad de editar la pregunta sobre la rutina y sus opciones o acciones, incluso el nivel al que pertenece.',
                         style: TextStyle(
                           fontFamily: 'ComicNeue',
                           fontSize: textSize,
@@ -186,7 +186,7 @@ class EditRutinaState extends State<EditRutina> {
                     Row(
                       children: [
                         Text(
-                          'Grupo*:',
+                          'Nivel*:',
                           style: TextStyle(
                             fontFamily: 'ComicNeue',
                             fontSize: textSize,
@@ -195,25 +195,25 @@ class EditRutinaState extends State<EditRutina> {
                         SizedBox(width: espacioPadding),
                         Container(
                           decoration: BoxDecoration(
-                            color: colorGrupo,
+                            color: colorNivel,
                           ),
-                          child: DropdownButton<Grupo>(
+                          child: DropdownButton<Nivel>(
                             padding: EdgeInsets.only(
                               left: espacioPadding,
                             ),
                             hint: Text(
-                              widget.grupo.nombre,
+                              widget.nivel.nombre,
                               style: TextStyle(
                                 fontFamily: 'ComicNeue',
                                 fontSize: textSize,
                               ),
                             ),
-                            value: selectedGrupo,
-                            items: grupos.map((Grupo grupo) {
-                              return DropdownMenuItem<Grupo>(
-                                value: grupo,
+                            value: selectedNivel,
+                            items: nivels.map((Nivel nivel) {
+                              return DropdownMenuItem<Nivel>(
+                                value: nivel,
                                 child: Text(
-                                  grupo.nombre,
+                                  nivel.nombre,
                                   style: TextStyle(
                                     fontFamily: 'ComicNeue',
                                     fontSize: textSize,
@@ -221,10 +221,10 @@ class EditRutinaState extends State<EditRutina> {
                                 ),
                               );
                             }).toList(),
-                            onChanged: (Grupo? grupo) {
+                            onChanged: (Nivel? nivel) {
                               setState(() {
-                                changeGrupo = true;
-                                selectedGrupo = grupo;
+                                changeNivel = true;
+                                selectedNivel = nivel;
                                 acciones = acciones.map((accion) {
                                   return ElementAccion(
                                     id: accion.id,
@@ -243,8 +243,8 @@ class EditRutinaState extends State<EditRutina> {
                                     accionText: accion.accionText,
                                     accionImage: accion.accionImage,
                                     color: accion.color,
-                                    flagAdolescencia:
-                                        selectedGrupo!.nombre == "Adolescencia",
+                                    flagDificil:
+                                        selectedNivel!.nombre == "Difícil",
                                   );
                                 }).toList();
                               });
@@ -393,10 +393,10 @@ class EditRutinaState extends State<EditRutina> {
                         ),
                       ),
                       onPressed: () {
-                        if (!changeGrupo) {
-                          for (Grupo grupo in grupos) {
-                            if (grupo.nombre == widget.grupo.nombre) {
-                              selectedGrupo = grupo;
+                        if (!changeNivel) {
+                          for (Nivel nivel in nivels) {
+                            if (nivel.nombre == widget.nivel.nombre) {
+                              selectedNivel = nivel;
                               break;
                             }
                           }
@@ -445,7 +445,7 @@ class EditRutinaState extends State<EditRutina> {
                             ),
                           ),
                           content: Text(
-                            'Estás a punto de eliminar la siguiente pregunta del grupo ${widget.grupo.nombre}:\n'
+                            'Estás a punto de eliminar la siguiente pregunta del nivel ${widget.nivel.nombre}:\n'
                             '${widget.situacionRutina.enunciado}\n'
                             '¿Estás seguro de ello?',
                             style: TextStyle(
@@ -935,7 +935,7 @@ class EditRutinaState extends State<EditRutina> {
           accionText: acciones[index].accionText,
           accionImage: bytes,
           color: acciones[index].color,
-          flagAdolescencia: acciones[index].flagAdolescencia,
+          flagDificil: acciones[index].flagDificil,
         );
       });
     }
@@ -980,7 +980,7 @@ class EditRutinaState extends State<EditRutina> {
               accionText: acciones[index].accionText,
               accionImage: bytes,
               color: acciones[index].color,
-              flagAdolescencia: acciones[index].flagAdolescencia,
+              flagDificil: acciones[index].flagDificil,
             );
           });
         },
@@ -1012,10 +1012,10 @@ class EditRutinaState extends State<EditRutina> {
       String accionText = 'Acción ' + (acciones.length + 1).toString() + "*";
 
       bool flag;
-      if (!changeGrupo)
-        flag = defaultGrupo.nombre == "Adolescencia";
+      if (!changeNivel)
+        flag = defaultNivel.nombre == "Difícil";
       else
-        flag = selectedGrupo!.nombre == "Adolescencia";
+        flag = selectedNivel!.nombre == "Difícil";
 
       acciones.add(ElementAccion(
         text1: accionText,
@@ -1029,7 +1029,7 @@ class EditRutinaState extends State<EditRutina> {
         imgWidth: imgWidth,
         onPressedGaleria: () => _selectNewActionGallery(acciones.length - 1),
         onPressedArasaac: () => _selectNewActionArasaac(acciones.length - 1),
-        flagAdolescencia: flag,
+        flagDificil: flag,
       ));
     });
   }
@@ -1059,7 +1059,7 @@ class EditRutinaState extends State<EditRutina> {
     for (int i = 0; i < acciones.length; i++) {
       if (acciones[i].accionImage.isEmpty ||
           (acciones[i].accionText.isEmpty &&
-              selectedGrupo?.nombre != "Adolescencia") ||
+              selectedNivel?.nombre != "Difícil") ||
           acciones[i].accionText.characters.length > 30) {
         correct = false;
         setState(() {
@@ -1081,7 +1081,7 @@ class EditRutinaState extends State<EditRutina> {
   Future<void> _editPregunta() async {
     Database db = await openDatabase('rutinas.db');
     await updatePregunta(db, widget.situacionRutina.id!, situacionText,
-        Uint8List.fromList(personajeImage), selectedGrupo!.id);
+        Uint8List.fromList(personajeImage), selectedNivel!.id);
   }
 
   ///Método encargado de editar las respuestas a una pregunta del juego Rutinas
@@ -1089,7 +1089,7 @@ class EditRutinaState extends State<EditRutina> {
     Database db = await openDatabase('rutinas.db');
     for (int i = 0; i < acciones.length; i++) {
       if (i < this.sizeAccionesInitial) {
-        if (selectedGrupo!.nombre != "Adolescencia") {
+        if (selectedNivel!.nombre != "Difícil") {
           await db.update(
             'accion',
             {
@@ -1115,7 +1115,7 @@ class EditRutinaState extends State<EditRutina> {
           );
         }
       } else {
-        if (selectedGrupo!.nombre != "Adolescencia") {
+        if (selectedNivel!.nombre != "Difícil") {
           await db.insert(
             'accion',
             {
@@ -1142,15 +1142,15 @@ class EditRutinaState extends State<EditRutina> {
       deleteAccion(db, accionesToDelete[i].id!);
   }
 
-  ///Método que nos permite obtener los grupos con los que cuenta la aplicación y almacenarlos en la variable [grupos]
-  Future<void> _getGrupos() async {
+  ///Método que nos permite obtener los nivels con los que cuenta la aplicación y almacenarlos en la variable [nivels]
+  Future<void> _getNiveles() async {
     try {
-      List<Grupo> gruposList = await getGrupos();
+      List<Nivel> nivelsList = await getNiveles();
       setState(() {
-        grupos = gruposList;
+        nivels = nivelsList;
       });
     } catch (e) {
-      print("Error al obtener la lista de grupos: $e");
+      print("Error al obtener la lista de nivels: $e");
     }
   }
 
@@ -1179,7 +1179,7 @@ class EditRutinaState extends State<EditRutina> {
         onPressedGaleria: () => _selectNewActionGallery(i),
         onPressedArasaac: () => _selectNewActionArasaac(i),
         accionText: aux[i].texto,
-        flagAdolescencia: widget.grupo.nombre == "Adolescencia",
+        flagDificil: widget.nivel.nombre == "Difícil",
         accionImage: aux[i].imagen!.toList(),
       );
       setState(() {

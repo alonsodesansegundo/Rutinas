@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../db/obj/grupo.dart';
+import '../../db/obj/nivel.dart';
 import '../../db/obj/jugador.dart';
 import '../../db/obj/jugadorView.dart';
 import '../../obj/JugadoresPaginacion.dart';
 import '../../widgets/ImageTextButton.dart';
 
-///Pantalla que nos brinda la posibilidad de buscar un jugador a través de su nombre y/o grupo y poder eliminarlo
+///Pantalla que nos brinda la posibilidad de buscar un jugador a través de su nombre y/o nivel y poder eliminarlo
 class RemovePlayer extends StatefulWidget {
   @override
   RemovePlayerState createState() => RemovePlayerState();
@@ -24,8 +24,8 @@ class RemovePlayerState extends State<RemovePlayer> {
   late bool loadData;
   late int jugadoresPagina, paginaActual;
   late String txtBuscar, txtBuscarAux;
-  Grupo? selectedGrupo, selectedGrupoAux;
-  late List<Grupo> grupos;
+  Nivel? selectedNivel, selectedNivelAux;
+  late List<Nivel> nivels;
   List<JugadorView>? jugadores;
   late bool hayMasJugadores;
   late ElevatedButton btnAnterior, btnSiguiente, btnBuscar;
@@ -39,10 +39,10 @@ class RemovePlayerState extends State<RemovePlayer> {
     paginaActual = 1;
     txtBuscar = "";
     txtBuscarAux = "";
-    selectedGrupo = null;
-    selectedGrupoAux = null;
-    grupos = [];
-    _getGrupos();
+    selectedNivel = null;
+    selectedNivelAux = null;
+    nivels = [];
+    _getNivels();
     hayMasJugadores = false;
     _loadJugadores();
   }
@@ -155,30 +155,30 @@ class RemovePlayerState extends State<RemovePlayer> {
                         borderRadius: BorderRadius.circular(8.0),
                         color: Colors.grey[200],
                       ),
-                      child: DropdownButton<Grupo>(
+                      child: DropdownButton<Nivel>(
                         hint: Text(
-                          'Grupo',
+                          'Nivel',
                           style: TextStyle(
                             fontFamily: 'ComicNeue',
                             fontSize: textSize * 0.75,
                           ),
                         ),
-                        value: selectedGrupoAux,
+                        value: selectedNivelAux,
                         items: [
                           DropdownMenuItem(
                             child: Text(
-                              'Grupo',
+                              'Nivel',
                               style: TextStyle(
                                 fontFamily: 'ComicNeue',
                                 fontSize: textSize * 0.75,
                               ),
                             ),
                           ),
-                          ...grupos.map((Grupo grupo) {
-                            return DropdownMenuItem<Grupo>(
-                              value: grupo,
+                          ...nivels.map((Nivel nivel) {
+                            return DropdownMenuItem<Nivel>(
+                              value: nivel,
                               child: Text(
-                                grupo.nombre,
+                                nivel.nombre,
                                 style: TextStyle(
                                   fontFamily: 'ComicNeue',
                                   fontSize: textSize * 0.75,
@@ -187,12 +187,12 @@ class RemovePlayerState extends State<RemovePlayer> {
                             );
                           }).toList(),
                         ],
-                        onChanged: (Grupo? grupo) {
+                        onChanged: (Nivel? nivel) {
                           setState(() {
-                            if (grupo?.nombre == 'Grupo')
-                              selectedGrupoAux = null;
+                            if (nivel?.nombre == 'Nivel')
+                              selectedNivelAux = null;
                             else
-                              selectedGrupoAux = grupo;
+                              selectedNivelAux = nivel;
                           });
                         },
                       ),
@@ -217,7 +217,7 @@ class RemovePlayerState extends State<RemovePlayer> {
                     Container(
                       width: widthColumn,
                       child: Text(
-                        'Grupo',
+                        'Nivel',
                         style: TextStyle(
                           fontFamily: 'ComicNeue',
                           fontSize: textSize,
@@ -233,7 +233,7 @@ class RemovePlayerState extends State<RemovePlayer> {
                 ),
                 FutureBuilder<void>(
                   future: getAllJugadoresView(
-                      paginaActual, jugadoresPagina, txtBuscar, selectedGrupo),
+                      paginaActual, jugadoresPagina, txtBuscar, selectedNivel),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
@@ -266,7 +266,7 @@ class RemovePlayerState extends State<RemovePlayer> {
                                 Container(
                                   width: widthColumn,
                                   child: Text(
-                                    jugador.grupoName,
+                                    jugador.nivelName,
                                     style: TextStyle(
                                       fontFamily: 'ComicNeue',
                                       fontSize: textSize * 0.75,
@@ -289,7 +289,7 @@ class RemovePlayerState extends State<RemovePlayer> {
                                             ),
                                           ),
                                           content: Text(
-                                            'Estás a punto de eliminar al jugador ${jugador.jugadorName} del grupo ${jugador.grupoName}.\n'
+                                            'Estás a punto de eliminar al jugador ${jugador.jugadorName} del nivel ${jugador.nivelName}.\n'
                                             '¿Estás seguro de ello?',
                                             style: TextStyle(
                                               fontFamily: 'ComicNeue',
@@ -393,15 +393,15 @@ class RemovePlayerState extends State<RemovePlayer> {
     deletePlayer(jugadorId);
   }
 
-  ///Método que nos permite obtener los grupos con los que cuenta la aplicación y almacenarlos en la variable [grupos]
-  Future<void> _getGrupos() async {
+  ///Método que nos permite obtener los nivels con los que cuenta la aplicación y almacenarlos en la variable [nivels]
+  Future<void> _getNivels() async {
     try {
-      List<Grupo> gruposList = await getGrupos();
+      List<Nivel> nivelsList = await getNiveles();
       setState(() {
-        grupos = gruposList;
+        nivels = nivelsList;
       });
     } catch (e) {
-      print("Error al obtener la lista de grupos: $e");
+      print("Error al obtener la lista de nivels: $e");
     }
   }
 
@@ -450,7 +450,7 @@ class RemovePlayerState extends State<RemovePlayer> {
     btnBuscar = ElevatedButton(
       onPressed: () {
         paginaActual = 1;
-        selectedGrupo = selectedGrupoAux;
+        selectedNivel = selectedNivelAux;
         txtBuscar = txtBuscarAux;
         FocusScope.of(context).unfocus();
         _loadJugadores();
@@ -504,10 +504,10 @@ class RemovePlayerState extends State<RemovePlayer> {
   }
 
   ///Método que nos permite carcar y realizar la búsqueda de jugadores de forma paginada, para ello se tienen en cuenta las variables:
-  ///[paginaActual], [jugadoresPagina], [txtBuscar] y [selectedGrupo]
+  ///[paginaActual], [jugadoresPagina], [txtBuscar] y [selectedNivel]
   Future<void> _loadJugadores() async {
     JugadoresPaginacion aux = await getAllJugadoresView(
-        paginaActual, jugadoresPagina, txtBuscar, selectedGrupo);
+        paginaActual, jugadoresPagina, txtBuscar, selectedNivel);
 
     setState(() {
       this.jugadores = aux.jugadores;

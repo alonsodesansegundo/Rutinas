@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:Rutirse/db/db.dart';
-import 'package:Rutirse/db/obj/grupo.dart';
+import 'package:Rutirse/db/obj/nivel.dart';
 import 'package:Rutirse/db/obj/situacionRutina.dart';
 import 'package:Rutirse/obj/SituacionRutinaPaginacion.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,7 +21,7 @@ void main() async {
   setUp(() async {
     database = await databaseFactory.openDatabase(inMemoryDatabasePath);
     createTables(database);
-    insertGrupos(database);
+    insertNiveles(database);
   });
 
   // Elimino la tabla situacionRutina después de cada prueba
@@ -64,7 +64,7 @@ void main() async {
     SituacionRutina situacionRutinaExpected = new SituacionRutina(
         id: 1,
         enunciado: 'Enunciado pregunta rutinas 1',
-        grupoId: 1,
+        nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 0,
         personajeImg: situaciones[0].personajeImg);
@@ -84,7 +84,7 @@ void main() async {
     SituacionRutina situacionRutinaExpected = new SituacionRutina(
         id: 1,
         enunciado: 'Enunciado pregunta rutinas 1',
-        grupoId: 1,
+        nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 0,
         personajeImg: situaciones[0].personajeImg);
@@ -104,7 +104,7 @@ void main() async {
     SituacionRutina situacionRutinaExpected = new SituacionRutina(
         id: 1,
         enunciado: 'Enunciado pregunta rutinas 1',
-        grupoId: 1,
+        nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 0,
         personajeImg: situaciones[0].personajeImg);
@@ -140,17 +140,17 @@ void main() async {
 
   // Test 5
   test('Test for check getSituacionesPafinacion empty', () async {
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionRutinaPaginacion situacionesPaginacion =
-        await getSituacionRutinaPaginacion(1, 3, "", grupos[0], database);
+        await getSituacionRutinaPaginacion(1, 3, "", nivels[0], database);
     expect(situacionesPaginacion.situaciones.length, 0);
   });
 
   test('Test for check getSituacionesPafinacion with not existent group',
       () async {
-    Grupo grupo = new Grupo(id: -1, nombre: "Invented", edades: "Invented");
+    Nivel nivel = new Nivel(id: -1, nombre: "Invented");
     SituacionRutinaPaginacion situacionesPaginacion =
-        await getSituacionRutinaPaginacion(1, 3, "", grupo, database);
+        await getSituacionRutinaPaginacion(1, 3, "", nivel, database);
     expect(situacionesPaginacion.situaciones.length, 0);
   });
 
@@ -162,9 +162,9 @@ void main() async {
         'Enunciado pregunta rutinas 2', pathPersonaje + 'cerdo.png', 1);
     int id_P3 = await insertSituacionRutinaInitialData(database,
         'Enunciado pregunta rutinas 3', pathPersonaje + 'cerdo.png', 1);
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionRutinaPaginacion situacionesPaginacion =
-        await getSituacionRutinaPaginacion(1, 3, "", grupos[0], database);
+        await getSituacionRutinaPaginacion(1, 3, "", nivels[0], database);
     expect(situacionesPaginacion.situaciones.length, 3);
   });
 
@@ -176,9 +176,9 @@ void main() async {
         'Enunciado pregunta rutinas 2', pathPersonaje + 'cerdo.png', 1);
     int id_P3 = await insertSituacionRutinaInitialData(database,
         'Enunciado pregunta rutinas 3', pathPersonaje + 'cerdo.png', 1);
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionRutinaPaginacion situacionesPaginacion =
-        await getSituacionRutinaPaginacion(1, 2, "", grupos[0], database);
+        await getSituacionRutinaPaginacion(1, 2, "", nivels[0], database);
     expect(situacionesPaginacion.hayMasSituaciones, true);
   });
 
@@ -191,9 +191,9 @@ void main() async {
         'Enunciado pregunta rutinas 2', pathPersonaje + 'cerdo.png', 1);
     int id_P3 = await insertSituacionRutinaInitialData(database,
         'Enunciado pregunta rutinas 3', pathPersonaje + 'cerdo.png', 1);
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionRutinaPaginacion situacionesPaginacion =
-        await getSituacionRutinaPaginacion(2, 2, "", grupos[0], database);
+        await getSituacionRutinaPaginacion(2, 2, "", nivels[0], database);
     expect(situacionesPaginacion.situaciones.length, 1);
   });
 
@@ -204,10 +204,10 @@ void main() async {
         'Enunciado pregunta rutinas 2', pathPersonaje + 'cerdo.png', 1);
     int id_P3 = await insertSituacionRutinaInitialData(database,
         'Enunciado pregunta rutinas 3', pathPersonaje + 'cerdo.png', 1);
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionRutinaPaginacion situacionesPaginacion =
         await getSituacionRutinaPaginacion(
-            1, 5, "rutinas 2", grupos[0], database);
+            1, 5, "rutinas 2", nivels[0], database);
     expect(situacionesPaginacion.situaciones.length, 1);
   });
 
@@ -218,9 +218,9 @@ void main() async {
         'Enunciado pregunta rutinas 2', pathPersonaje + 'cerdo.png', 2);
     int id_P3 = await insertSituacionRutinaInitialData(database,
         'Enunciado pregunta rutinas 3', pathPersonaje + 'cerdo.png', 1);
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionRutinaPaginacion situacionesPaginacion =
-        await getSituacionRutinaPaginacion(1, 5, "", grupos[0], database);
+        await getSituacionRutinaPaginacion(1, 5, "", nivels[0], database);
     expect(situacionesPaginacion.situaciones.length, 2);
   });
 
@@ -236,10 +236,10 @@ void main() async {
         'Enunciado pregunta rutinas 3', pathPersonaje + 'cerdo.png', 3);
     int id_P5 = await insertSituacionRutinaInitialData(database,
         'Enunciado pregunta rutinas 2', pathPersonaje + 'cerdo.png', 3);
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionRutinaPaginacion situacionesPaginacion =
         await getSituacionRutinaPaginacion(
-            1, 5, "rutinas 3", grupos[2], database);
+            1, 5, "rutinas 3", nivels[2], database);
     expect(situacionesPaginacion.situaciones.length, 1);
   });
 
@@ -299,7 +299,7 @@ void main() async {
         await getSituacionesRutinas(1, database);
 
     updatePregunta(database, situaciones[0].id!, situaciones[0].enunciado,
-        Uint8List.fromList([111, 123, 321]), situaciones[0].grupoId);
+        Uint8List.fromList([111, 123, 321]), situaciones[0].nivelId);
     situaciones = await getSituacionesRutinas(1, database);
     expect(situaciones[0].personajeImg, Uint8List.fromList([111, 123, 321]));
   });
@@ -313,7 +313,7 @@ void main() async {
         await getSituacionesRutinas(1, database);
 
     updatePregunta(database, situaciones[0].id!, situaciones[0].enunciado, [],
-        situaciones[0].grupoId);
+        situaciones[0].nivelId);
     situaciones = await getSituacionesRutinas(1, database);
     expect(situaciones[0].personajeImg, null);
   });
@@ -327,7 +327,7 @@ void main() async {
     SituacionRutina situacionRutinaExpected = new SituacionRutina(
         id: 1,
         enunciado: "Enunciado pregunta",
-        grupoId: 1,
+        nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 1,
         personajeImg: Uint8List.fromList([111, 123, 321]));

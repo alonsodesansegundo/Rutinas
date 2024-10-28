@@ -1,5 +1,5 @@
 import 'package:Rutirse/db/db.dart';
-import 'package:Rutirse/db/obj/grupo.dart';
+import 'package:Rutirse/db/obj/nivel.dart';
 import 'package:Rutirse/db/obj/jugador.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -13,7 +13,7 @@ void main() async {
   setUp(() async {
     database = await databaseFactory.openDatabase(inMemoryDatabasePath);
     createTables(database);
-    insertGrupos(database);
+    insertNiveles(database);
   });
 
   // Elimino la tabla jugador después de cada prueba
@@ -24,7 +24,7 @@ void main() async {
 
   // Test 1
   test('Test for check insert jugador (new) length', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
 
     await insertJugador(jugador, database);
 
@@ -34,7 +34,7 @@ void main() async {
 
   // Test 2
   test('Test for check insert jugador (existent) length', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
     await insertJugador(jugador, database);
 
     await insertJugador(jugador, database);
@@ -45,9 +45,9 @@ void main() async {
 
   // Test 3
   test('Test for check toString', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
     Jugador jugadorExpected =
-        new Jugador(id: 1, nombre: 'Jugador 1', grupoId: 1);
+        new Jugador(id: 1, nombre: 'Jugador 1', nivelId: 1);
 
     await insertJugador(jugador, database);
     final List<Map<String, dynamic>> jugadoresMap =
@@ -59,9 +59,9 @@ void main() async {
 
   // Test 4
   test('Test for check equals', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
     Jugador jugadorExpected =
-        new Jugador(id: 1, nombre: 'Jugador 1', grupoId: 1);
+        new Jugador(id: 1, nombre: 'Jugador 1', nivelId: 1);
 
     await insertJugador(jugador, database);
     final List<Map<String, dynamic>> jugadoresMap =
@@ -73,9 +73,9 @@ void main() async {
 
   // Test 5
   test('Test for check hashCode', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
     Jugador jugadorExpected =
-        new Jugador(id: 1, nombre: 'Jugador 1', grupoId: 1);
+        new Jugador(id: 1, nombre: 'Jugador 1', nivelId: 1);
 
     await insertJugador(jugador, database);
     final List<Map<String, dynamic>> jugadoresMap =
@@ -87,7 +87,7 @@ void main() async {
 
   // Test 6
   test('Test for check exiteJugador (true)', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
     await insertJugador(jugador, database);
 
     bool result = await existeJugador(jugador, database);
@@ -97,7 +97,7 @@ void main() async {
 
   // Test 7
   test('Test for check exiteJugador (false)', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
 
     bool result = await existeJugador(jugador, database);
 
@@ -106,7 +106,7 @@ void main() async {
 
   // Test 8
   test('Test for check deletePlayer (existent)', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
     jugador = await insertJugador(jugador, database);
 
     await deletePlayer(jugador.id!, database);

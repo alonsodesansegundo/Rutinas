@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../db/obj/grupo.dart';
+import '../../db/obj/nivel.dart';
 import '../../db/obj/jugador.dart';
 import '../../provider/MyProvider.dart';
 import '../../widgets/ImageTextButton.dart';
@@ -27,10 +27,10 @@ class Home extends StatefulWidget {
 /// Estado asociado a la pantalla [Home] que gestiona la lógica
 /// y la interfaz de usuario de la pantalla
 class HomeState extends State<Home> {
-  late List<Grupo> gruposList; // lista de grupos obtenidos de la BBDD
-  late String txtGrupo; // texto del grupo seleccionado
+  late List<Nivel> nivelesList; // lista de niveles obtenidos de la BBDD
+  late String txtnivel; // texto del nivel seleccionado
   late List<bool>
-      btnGruposFlags; // para tener en cuenta que boton ha sido pulsado
+      btnnivelesFlags; // para tener en cuenta que boton ha sido pulsado
 
   late double titleSize,
       textSize,
@@ -42,7 +42,7 @@ class HomeState extends State<Home> {
 
   // Datos que se deben de completar para empezar a jugar
   String nombre = "Introduce tu nombre";
-  Grupo? selectedGrupo = null;
+  Nivel? selectednivel = null;
 
   late AlertDialog dialogoCamposIncompletos;
 
@@ -52,10 +52,10 @@ class HomeState extends State<Home> {
   void initState() {
     super.initState();
     loadData = false;
-    _getGrupos();
-    gruposList = [];
-    txtGrupo = "";
-    btnGruposFlags = [false, false, false];
+    _getniveles();
+    nivelesList = [];
+    txtnivel = "";
+    btnnivelesFlags = [false, false, false];
   }
 
   @override
@@ -122,7 +122,7 @@ class HomeState extends State<Home> {
                 SizedBox(height: espacioAlto), // Espacio entre los textos
                 // Explicación pantalla
                 Text(
-                  'Antes de empezar, ¿puedes decirnos tu nombre y a qué grupo perteneces? '
+                  'Antes de empezar, ¿puedes decirnos tu nombre y a qué nivel perteneces? '
                   'Esto nos va a ayudar a seguir tu progreso. '
                   '¡Muchas gracias!',
                   style: TextStyle(
@@ -160,11 +160,11 @@ class HomeState extends State<Home> {
                   ],
                 ),
                 SizedBox(height: espacioAlto),
-                // Fila para el grupo
+                // Fila para el nivel
                 Row(
                   children: [
                     Text(
-                      'Grupo:',
+                      'Nivel:',
                       style: TextStyle(
                         fontFamily: 'ComicNeue',
                         fontSize: textSize,
@@ -172,7 +172,7 @@ class HomeState extends State<Home> {
                     ),
                     SizedBox(width: espacioPadding * 1.5),
                     Text(
-                      txtGrupo,
+                      txtnivel,
                       style: TextStyle(
                         fontFamily: 'ComicNeue',
                         fontSize: textSize,
@@ -181,23 +181,23 @@ class HomeState extends State<Home> {
                   ],
                 ),
                 SizedBox(height: espacioAlto),
-                // Fila para los botones de seleccionar grupo
+                // Fila para los botones de seleccionar nivel
                 Row(
-                  children: gruposList.isNotEmpty
-                      ? gruposList.asMap().entries.map((entry) {
+                  children: nivelesList.isNotEmpty
+                      ? nivelesList.asMap().entries.map((entry) {
                           int index = entry.key;
-                          Grupo grupo = entry.value;
+                          Nivel nivel = entry.value;
                           return Row(
                             children: [
                               ImageTextButton(
                                 image: Image.asset(
-                                  'assets/img/grupos/' +
-                                      grupo.nombre.toLowerCase() +
+                                  'assets/img/niveles/' +
+                                      nivel.nombre.toLowerCase() +
                                       '.png',
                                   width: imgWidth,
                                 ),
                                 text: Text(
-                                  grupo.nombre + '\n' + grupo.edades,
+                                  nivel.nombre,
                                   style: TextStyle(
                                     fontFamily: 'ComicNeue',
                                     fontSize: textSize,
@@ -209,14 +209,14 @@ class HomeState extends State<Home> {
                                     _selectGroup(index);
                                   });
                                 },
-                                buttonColor: btnGruposFlags[index]
+                                buttonColor: btnnivelesFlags[index]
                                     ? Colors.grey
                                     : Colors.transparent,
                               ),
                             ],
                           );
                         }).toList()
-                      : [Center(child: Text('No hay grupos disponibles'))],
+                      : [Center(child: Text('No hay niveles disponibles'))],
                 ),
                 SizedBox(height: espacioAlto * 2),
                 Text(
@@ -245,13 +245,13 @@ class HomeState extends State<Home> {
                       onPressed: () async {
                         if (this.nombre.trim() != "" &&
                             this.nombre != "Introduce tu nombre" &&
-                            selectedGrupo != null) {
+                            selectednivel != null) {
                           Jugador jugador = new Jugador(
                               nombre: nombre.trim(),
-                              grupoId: selectedGrupo!.id);
+                              nivelId: selectednivel!.id);
 
                           myProvider.jugador = await insertJugador(jugador);
-                          myProvider.grupo = selectedGrupo!;
+                          myProvider.nivel = selectednivel!;
                           if (widget.juego == 'rutinas')
                             Navigator.push(
                               context,
@@ -352,7 +352,7 @@ class HomeState extends State<Home> {
         ),
       ),
       content: Text(
-        "Por favor, recuerda indicarnos tu nombre y grupo para poder medir tu progreso.\n"
+        "Por favor, recuerda indicarnos tu nombre y nivel para poder medir tu progreso.\n"
         "Mientras no tengamos esos datos, no podemos dejarte jugar. "
         "\n¡Lo sentimos!",
         style: TextStyle(
@@ -382,32 +382,32 @@ class HomeState extends State<Home> {
     );
   }
 
-  ///Método que nos permite obtener los grupos con los que cuenta la aplicación y almacenarlos en la variable [gruposList]
-  Future<void> _getGrupos() async {
+  ///Método que nos permite obtener los niveles con los que cuenta la aplicación y almacenarlos en la variable [nivelesList]
+  Future<void> _getniveles() async {
     try {
-      List<Grupo> grupos = await getGrupos();
+      List<Nivel> niveles = await getNiveles();
       setState(() {
-        gruposList = grupos;
+        nivelesList = niveles;
       });
     } catch (e) {
-      print("Error al obtener la lista de grupos: $e");
+      print("Error al obtener la lista de niveles: $e");
     }
   }
 
-  ///Método que se encarga de que haya únicamente un [selectedGrupo], es decir, no puede haber más de un grupo
+  ///Método que se encarga de que haya únicamente un [selectednivel], es decir, no puede haber más de un nivel
   ///seleccionado a la vez
   void _selectGroup(int index) {
-    btnGruposFlags[index] = !btnGruposFlags[index]; // se actualiza su pulsación
-    if (btnGruposFlags[index]) {
+    btnnivelesFlags[index] = !btnnivelesFlags[index]; // se actualiza su pulsación
+    if (btnnivelesFlags[index]) {
       // si está activado
-      txtGrupo = gruposList[index].nombre; // se muestra el nombre
-      selectedGrupo = gruposList[index]; // se actualiza el id seleccionado
-      for (int i = 0; i < btnGruposFlags.length; i++) // pongo los demás a false
-        if (index != i) btnGruposFlags[i] = false;
+      txtnivel = nivelesList[index].nombre; // se muestra el nombre
+      selectednivel = nivelesList[index]; // se actualiza el id seleccionado
+      for (int i = 0; i < btnnivelesFlags.length; i++) // pongo los demás a false
+        if (index != i) btnnivelesFlags[i] = false;
     } else {
       // si con la pulsación ha sido deseleccionado
-      txtGrupo = "";
-      selectedGrupo = null;
+      txtnivel = "";
+      selectednivel = null;
     }
   }
 }

@@ -493,9 +493,9 @@ class JugarSentimientosState extends State<JugarSentimientos>
       flag = true;
       try {
         var myProvider = Provider.of<MyProvider>(context);
-        // obtengo las preguntas del grupo correspondiente
+        // obtengo las preguntas del nivel correspondiente
         List<PreguntaSentimiento> situaciones =
-            await getPreguntasSentimiento(myProvider.grupo.id);
+            await getPreguntasSentimiento(myProvider.nivel.id);
         setState(() {
           preguntaSentimientoList = situaciones; // actualizo la lista
           indiceActual = random
@@ -601,7 +601,7 @@ class JugarSentimientosState extends State<JugarSentimientos>
         _speak(cartaSituacion.situacion.texto);
         cartaSituacion.backgroundColor = Colors.grey;
         var myProvider = Provider.of<MyProvider>(context, listen: false);
-        if (myProvider.grupo.id == 1) {
+        if (myProvider.nivel.id == 1) {
           for (int i = 0; i < cartasSituaciones.length; i++) {
             if (cartasSituaciones[i] != cartaSituacion) {
               cartasSituaciones[i].selected = false;

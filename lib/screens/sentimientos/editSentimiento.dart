@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:smooth_scroll_multiplatform/smooth_scroll_multiplatform.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../db/obj/grupo.dart';
+import '../../db/obj/nivel.dart';
 import '../../db/obj/preguntaSentimiento.dart';
 import '../../db/obj/situacion.dart';
 import '../../widgets/ArasaacImageDialog.dart';
@@ -19,9 +19,9 @@ import '../main.dart';
 ///Pantalla que le permite al terapeuta la edición de una pregunta del juego Sentimientos y sus respuestas
 class EditSentimiento extends StatefulWidget {
   PreguntaSentimiento preguntaSentimiento;
-  Grupo grupo;
+  Nivel nivel;
 
-  EditSentimiento({required this.preguntaSentimiento, required this.grupo});
+  EditSentimiento({required this.preguntaSentimiento, required this.nivel});
 
   @override
   EditSentimientoState createState() => EditSentimientoState();
@@ -41,9 +41,9 @@ class EditSentimientoState extends State<EditSentimiento> {
       imgWidth;
   late ImageTextButton btnVolver;
 
-  late List<Grupo> grupos;
+  late List<Nivel> nivels;
 
-  Grupo? selectedGrupo; // Variable para almacenar el grupo seleccionado
+  Nivel? selectedNivel; // Variable para almacenar el nivel seleccionado
 
   late String preguntaText, correctText;
 
@@ -55,19 +55,19 @@ class EditSentimientoState extends State<EditSentimiento> {
       completedParamsDialog,
       noInternetDialog;
 
-  late bool firstLoad = true, changeGrupo;
+  late bool firstLoad = true, changeNivel;
 
   late List<int> image;
 
   late List<ElementRespuestaSentimientos> respuestas, situacionesToDelete;
 
   late Color colorSituacion,
-      colorGrupo,
+      colorNivel,
       colorCorrectText,
       colorBordeImagen,
       colorCheckbox;
 
-  late Grupo defaultGrupo;
+  late Nivel defaultNivel;
 
   late int sizeRespuestasInitial;
 
@@ -76,24 +76,24 @@ class EditSentimientoState extends State<EditSentimiento> {
   @override
   void initState() {
     super.initState();
-    defaultGrupo = widget.grupo;
-    grupos = [];
+    defaultNivel = widget.nivel;
+    nivels = [];
     preguntaText = "";
     correctText = "";
     respuestas = [];
     situacionesToDelete = [];
     image = [];
-    selectedGrupo = null;
+    selectedNivel = null;
     colorSituacion = Colors.transparent;
     colorCorrectText = Colors.transparent;
-    colorGrupo = Colors.transparent;
+    colorNivel = Colors.transparent;
     colorBordeImagen = Colors.transparent;
     colorCheckbox = Colors.transparent;
-    changeGrupo = false;
+    changeNivel = false;
 
     if (firstLoad) {
       firstLoad = false;
-      _getGrupos();
+      _getNivels();
       preguntaText = widget.preguntaSentimiento.enunciado;
       if (widget.preguntaSentimiento.imagen != null) {
         setState(() {
@@ -108,7 +108,7 @@ class EditSentimientoState extends State<EditSentimiento> {
   }
 
   Future<void> _initializeState() async {
-    await _getGrupos();
+    await _getNivels();
     _createDialogs();
   }
 
@@ -163,7 +163,7 @@ class EditSentimientoState extends State<EditSentimiento> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Aquí tienes la posibilidad de editar la pregunta y sus posibles respuestas, incluso el grupo al que pertenece.',
+                        'Aquí tienes la posibilidad de editar la pregunta y sus posibles respuestas, incluso el nivel al que pertenece.',
                         style: TextStyle(
                           fontFamily: 'ComicNeue',
                           fontSize: textSize,
@@ -178,7 +178,7 @@ class EditSentimientoState extends State<EditSentimiento> {
                     Row(
                       children: [
                         Text(
-                          'Grupo*:',
+                          'Nivel*:',
                           style: TextStyle(
                             fontFamily: 'ComicNeue',
                             fontSize: textSize,
@@ -187,25 +187,25 @@ class EditSentimientoState extends State<EditSentimiento> {
                         SizedBox(width: espacioPadding),
                         Container(
                           decoration: BoxDecoration(
-                            color: colorGrupo,
+                            color: colorNivel,
                           ),
-                          child: DropdownButton<Grupo>(
+                          child: DropdownButton<Nivel>(
                             padding: EdgeInsets.only(
                               left: espacioPadding,
                             ),
                             hint: Text(
-                              widget.grupo.nombre,
+                              widget.nivel.nombre,
                               style: TextStyle(
                                 fontFamily: 'ComicNeue',
                                 fontSize: textSize,
                               ),
                             ),
-                            value: selectedGrupo,
-                            items: grupos.map((Grupo grupo) {
-                              return DropdownMenuItem<Grupo>(
-                                value: grupo,
+                            value: selectedNivel,
+                            items: nivels.map((Nivel nivel) {
+                              return DropdownMenuItem<Nivel>(
+                                value: nivel,
                                 child: Text(
-                                  grupo.nombre,
+                                  nivel.nombre,
                                   style: TextStyle(
                                     fontFamily: 'ComicNeue',
                                     fontSize: textSize,
@@ -213,10 +213,10 @@ class EditSentimientoState extends State<EditSentimiento> {
                                 ),
                               );
                             }).toList(),
-                            onChanged: (Grupo? grupo) {
+                            onChanged: (Nivel? nivel) {
                               setState(() {
-                                changeGrupo = true;
-                                selectedGrupo = grupo;
+                                changeNivel = true;
+                                selectedNivel = nivel;
                                 respuestas = respuestas.map((respuesta) {
                                   return ElementRespuestaSentimientos(
                                     id: respuesta.id,
@@ -236,8 +236,8 @@ class EditSentimientoState extends State<EditSentimiento> {
                                     onPressedArasaac: () =>
                                         respuesta.onPressedArasaac,
                                     showPregunta: respuesta.showPregunta,
-                                    flagAdolescencia: (selectedGrupo!.nombre ==
-                                        "Adolescencia"),
+                                    flagDificil: (selectedNivel!.nombre ==
+                                        "Difícil"),
                                   );
                                 }).toList();
                               });
@@ -348,8 +348,8 @@ class EditSentimientoState extends State<EditSentimiento> {
                     );
                   },
                 ),
-                if ((changeGrupo && selectedGrupo!.nombre != "Atención T.") ||
-                    (!changeGrupo && defaultGrupo!.nombre != "Atención T."))
+                if ((changeNivel && selectedNivel!.nombre != "Fácil") ||
+                    (!changeNivel && defaultNivel!.nombre != "Fácil"))
                   Row(
                     children: [
                       ElevatedButton(
@@ -393,10 +393,10 @@ class EditSentimientoState extends State<EditSentimiento> {
                         ),
                       ),
                       onPressed: () {
-                        if (!changeGrupo) {
-                          for (Grupo grupo in grupos) {
-                            if (grupo.nombre == widget.grupo.nombre) {
-                              selectedGrupo = grupo;
+                        if (!changeNivel) {
+                          for (Nivel nivel in nivels) {
+                            if (nivel.nombre == widget.nivel.nombre) {
+                              selectedNivel = nivel;
                               break;
                             }
                           }
@@ -445,7 +445,7 @@ class EditSentimientoState extends State<EditSentimiento> {
                             ),
                           ),
                           content: Text(
-                            'Estás a punto de eliminar la siguiente pregunta del grupo ${widget.grupo.nombre}:\n'
+                            'Estás a punto de eliminar la siguiente pregunta del nivel ${widget.nivel.nombre}:\n'
                             '${widget.preguntaSentimiento.enunciado}\n'
                             '¿Estás seguro de ello?',
                             style: TextStyle(
@@ -534,9 +534,9 @@ class EditSentimientoState extends State<EditSentimiento> {
               _selectNewRespuestaArasaac(respuestas.length - 1),
           isCorrect: true,
           showPregunta: true,
-          flagAdolescencia:
-              (!changeGrupo && defaultGrupo!.nombre == "Adolescencia") ||
-                  (changeGrupo && selectedGrupo!.nombre == "Adolescencia")));
+          flagDificil:
+              (!changeNivel && defaultNivel!.nombre == "Difícil") ||
+                  (changeNivel && selectedNivel!.nombre == "Difícil")));
     });
   }
 
@@ -565,7 +565,7 @@ class EditSentimientoState extends State<EditSentimiento> {
   Future<void> _editPregunta() async {
     Database db = await openDatabase('rutinas.db');
     await updatePregunta(db, widget.preguntaSentimiento.id!, preguntaText,
-        Uint8List.fromList(image), selectedGrupo!.id);
+        Uint8List.fromList(image), selectedNivel!.id);
   }
 
   ///Método encargado de editar las respuestas a una pregunta del juego Sentimientos
@@ -574,7 +574,7 @@ class EditSentimientoState extends State<EditSentimiento> {
     for (int i = 0; i < respuestas.length; i++) {
       print("probando: " + respuestas[i].respuestaText);
       if (i < this.sizeRespuestasInitial) {
-        if (selectedGrupo!.nombre != "Adolescencia") {
+        if (selectedNivel!.nombre != "Difícil") {
           print("update: " + respuestas[i].respuestaText);
 
           await db.update(
@@ -607,7 +607,7 @@ class EditSentimientoState extends State<EditSentimiento> {
           );
         }
       } else {
-        if (selectedGrupo!.nombre != "Adolescencia") {
+        if (selectedNivel!.nombre != "Difícil") {
           await db.insert(
             'situacion',
             {
@@ -635,15 +635,15 @@ class EditSentimientoState extends State<EditSentimiento> {
     }
   }
 
-  ///Método que nos permite obtener los grupos con los que cuenta la aplicación y almacenarlos en la variable [grupos]
-  Future<void> _getGrupos() async {
+  ///Método que nos permite obtener los nivels con los que cuenta la aplicación y almacenarlos en la variable [nivels]
+  Future<void> _getNivels() async {
     try {
-      List<Grupo> gruposList = await getGrupos();
+      List<Nivel> nivelsList = await getNiveles();
       setState(() {
-        grupos = gruposList;
+        nivels = nivelsList;
       });
     } catch (e) {
-      print("Error al obtener la lista de grupos: $e");
+      print("Error al obtener la lista de nivels: $e");
     }
   }
 
@@ -983,7 +983,7 @@ class EditSentimientoState extends State<EditSentimiento> {
                 showPregunta: respuestas[index].showPregunta,
                 respuestaText: respuestas[index].respuestaText,
                 respuestaImage: bytes,
-                flagAdolescencia: respuestas[index].flagAdolescencia);
+                flagDificil: respuestas[index].flagDificil);
           });
         },
       );
@@ -1018,7 +1018,7 @@ class EditSentimientoState extends State<EditSentimiento> {
             showPregunta: respuestas[index].showPregunta,
             respuestaText: respuestas[index].respuestaText,
             respuestaImage: bytes,
-            flagAdolescencia: respuestas[index].flagAdolescencia);
+            flagDificil: respuestas[index].flagDificil);
       });
     }
   }
@@ -1029,13 +1029,13 @@ class EditSentimientoState extends State<EditSentimiento> {
   bool _completedParams() {
     bool correct = true;
     // compruebo que todos los parametros obligatorios están completos
-    if (selectedGrupo == null) {
+    if (selectedNivel == null) {
       correct = false;
       setState(() {
-        colorGrupo = Colors.red;
+        colorNivel = Colors.red;
       });
     } else
-      colorGrupo = Colors.transparent;
+      colorNivel = Colors.transparent;
 
     if (preguntaText.trim().isEmpty) {
       correct = false;
@@ -1053,12 +1053,12 @@ class EditSentimientoState extends State<EditSentimiento> {
     } else
       colorBordeImagen = Colors.transparent;
 
-    // si es el grupo adolescencia, la imagen no puede estar vacia
+    // si es el nivel adolescencia, la imagen no puede estar vacia
     // en cualquier otro el texto no puede estar vacio
     for (int i = 0; i < respuestas.length; i++)
       if (respuestas[i].respuestaImage.isEmpty ||
           (respuestas[i].respuestaText.trim().isEmpty &&
-              selectedGrupo!.nombre != "Adolescencia")) {
+              selectedNivel!.nombre != "Difícil")) {
         correct = false;
         setState(() {
           respuestas[i].color = Colors.red;
@@ -1090,7 +1090,7 @@ class EditSentimientoState extends State<EditSentimiento> {
         onPressedGaleria: () => _selectNewActionGallery(i),
         onPressedArasaac: () => _selectNewRespuestaArasaac(i),
         showPregunta: (i != 0 && i != 1),
-        flagAdolescencia: (widget.grupo.nombre == "Adolescencia"),
+        flagDificil: (widget.nivel.nombre == "Difícil"),
       );
       setState(() {
         this.respuestas.add(elementRespuestaSentimientos);

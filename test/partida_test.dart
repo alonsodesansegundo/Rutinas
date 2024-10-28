@@ -1,5 +1,5 @@
 import 'package:Rutirse/db/db.dart';
-import 'package:Rutirse/db/obj/grupo.dart';
+import 'package:Rutirse/db/obj/nivel.dart';
 import 'package:Rutirse/db/obj/jugador.dart';
 import 'package:Rutirse/db/obj/partida.dart';
 import 'package:Rutirse/db/obj/partidaIronias.dart';
@@ -17,7 +17,7 @@ void main() async {
   setUp(() async {
     database = await databaseFactory.openDatabase(inMemoryDatabasePath);
     createTables(database);
-    insertGrupos(database);
+    insertNiveles(database);
   });
 
   // Elimino la tabla partida después de cada prueba
@@ -28,7 +28,7 @@ void main() async {
 
   // Test 1
   test('Test for check deletePartidaById (length)', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
 
     jugador = await insertJugador(jugador, database);
 
@@ -51,7 +51,7 @@ void main() async {
   });
 
   test('Test for check deletePartidaById (length)', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
 
     jugador = await insertJugador(jugador, database);
 

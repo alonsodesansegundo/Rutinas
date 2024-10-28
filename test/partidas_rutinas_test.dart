@@ -1,5 +1,5 @@
 import 'package:Rutirse/db/db.dart';
-import 'package:Rutirse/db/obj/grupo.dart';
+import 'package:Rutirse/db/obj/nivel.dart';
 import 'package:Rutirse/db/obj/jugador.dart';
 import 'package:Rutirse/db/obj/partidaRutinas.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +16,7 @@ void main() async {
   setUp(() async {
     database = await databaseFactory.openDatabase(inMemoryDatabasePath);
     createTables(database);
-    insertGrupos(database);
+    insertNiveles(database);
   });
 
   // Elimino la tabla partida después de cada prueba
@@ -27,7 +27,7 @@ void main() async {
 
   // Test 1
   test('Test for check insertPartidaRutinas (length)', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
 
     jugador = await insertJugador(jugador, database);
 
@@ -47,7 +47,7 @@ void main() async {
   });
 
   test('Test for check insertPartidaRutinas (toString)', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
 
     jugador = await insertJugador(jugador, database);
 
@@ -76,7 +76,7 @@ void main() async {
   });
 
   test('Test for check insertPartidaRutinas (toString)', () async {
-    Jugador jugador = new Jugador(nombre: 'Jugador 1', grupoId: 1);
+    Jugador jugador = new Jugador(nombre: 'Jugador 1', nivelId: 1);
 
     jugador = await insertJugador(jugador, database);
 
@@ -105,8 +105,8 @@ void main() async {
   });
 
   test('Test for check getPartidasRutinasByUserId (length)', () async {
-    Jugador jugador1 = new Jugador(nombre: 'Jugador 1', grupoId: 1);
-    Jugador jugador2 = new Jugador(nombre: 'Jugador 2', grupoId: 3);
+    Jugador jugador1 = new Jugador(nombre: 'Jugador 1', nivelId: 1);
+    Jugador jugador2 = new Jugador(nombre: 'Jugador 2', nivelId: 3);
 
     jugador1 = await insertJugador(jugador1, database);
     jugador2 = await insertJugador(jugador2, database);
@@ -143,8 +143,8 @@ void main() async {
   });
 
   test('Test for check getPartidasRutinasByUserId (id partida 0)', () async {
-    Jugador jugador1 = new Jugador(nombre: 'Jugador 1', grupoId: 1);
-    Jugador jugador2 = new Jugador(nombre: 'Jugador 2', grupoId: 3);
+    Jugador jugador1 = new Jugador(nombre: 'Jugador 1', nivelId: 1);
+    Jugador jugador2 = new Jugador(nombre: 'Jugador 2', nivelId: 3);
 
     jugador1 = await insertJugador(jugador1, database);
     jugador2 = await insertJugador(jugador2, database);
@@ -181,8 +181,8 @@ void main() async {
   });
 
   test('Test for check getPartidasRutinasByUserId (id partida 0)', () async {
-    Jugador jugador1 = new Jugador(nombre: 'Jugador 1', grupoId: 1);
-    Jugador jugador2 = new Jugador(nombre: 'Jugador 2', grupoId: 3);
+    Jugador jugador1 = new Jugador(nombre: 'Jugador 1', nivelId: 1);
+    Jugador jugador2 = new Jugador(nombre: 'Jugador 2', nivelId: 3);
 
     jugador1 = await insertJugador(jugador1, database);
     jugador2 = await insertJugador(jugador2, database);

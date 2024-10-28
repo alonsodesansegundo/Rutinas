@@ -7,14 +7,14 @@ import '../db.dart';
 import '../sentimientosScripts/adolescencia.dart';
 import '../sentimientosScripts/atenciont.dart';
 import '../sentimientosScripts/infancia.dart';
-import 'grupo.dart';
+import 'nivel.dart';
 
 ///Clase relativa a la tabla PreguntaSentimiento
 class PreguntaSentimiento {
   final int? id;
   final String enunciado;
   final Uint8List? imagen;
-  final int grupoId;
+  final int nivelId;
   final String fecha;
   final int byTerapeuta;
 
@@ -23,17 +23,17 @@ class PreguntaSentimiento {
       {this.id,
       required this.enunciado,
       this.imagen,
-      required this.grupoId,
+      required this.nivelId,
       required this.fecha,
       required this.byTerapeuta});
 
   ///Crea una instancia de PreguntaSentimiento a partir de un mapa de datos, dicho mapa debe contener:
-  ///id, enunciado, imagen, grupoId, fecha y byTerapeuta
+  ///id, enunciado, imagen, nivelId, fecha y byTerapeuta
   PreguntaSentimiento.sentimientosFromMap(Map<String, dynamic> item)
       : id = item["id"],
         enunciado = item["enunciado"],
         imagen = item["imagen"],
-        grupoId = item["grupoId"],
+        nivelId = item["nivelId"],
         fecha = item["fecha"],
         byTerapeuta = item["byTerapeuta"];
 
@@ -41,7 +41,7 @@ class PreguntaSentimiento {
   Map<String, Object> sentimientosToMap() {
     return {
       'enunciado': enunciado,
-      'grupoId': grupoId,
+      'nivelId': nivelId,
       'fecha': fecha,
       'byTerapeuta': byTerapeuta
     };
@@ -55,7 +55,7 @@ class PreguntaSentimiento {
     return other is PreguntaSentimiento &&
         other.id == id &&
         other.enunciado == enunciado &&
-        other.grupoId == grupoId &&
+        other.nivelId == nivelId &&
         other.fecha == fecha &&
         other.byTerapeuta == byTerapeuta;
   }
@@ -65,7 +65,7 @@ class PreguntaSentimiento {
   int get hashCode =>
       id.hashCode ^
       enunciado.hashCode ^
-      grupoId.hashCode ^
+      nivelId.hashCode ^
       fecha.hashCode ^
       byTerapeuta.hashCode;
 
@@ -74,26 +74,26 @@ class PreguntaSentimiento {
   String toString() {
     return 'PreguntaSentimiento {id: $id, enunciado: $enunciado,'
         ' imagen: $imagen, '
-        'grupoId: $grupoId}, '
+        'nivelId: $nivelId}, '
         'fecha: $fecha}, '
         'byTerapeuta: $byTerapeuta, ';
   }
 }
 
-///Método que nos permite obtener todas las preguntas de un grupo del juego Sentimientos
+///Método que nos permite obtener todas las preguntas de un nivel del juego Sentimientos
 ///<br><b>Parámetros</b><br>
-///[grupoId] Identificador del grupo que queremos obtener las preguntas<br>
+///[nivelId] Identificador del nivel que queremos obtener las preguntas<br>
 ///[db] Parámetro opcional. Le pasamos un objeto Database en caso de estar probando dicho método
 ///<br><b>Salida</b><br>
 ///Lista de las preguntas del juego Sentimientos
-Future<List<PreguntaSentimiento>> getPreguntasSentimiento(int grupoId,
+Future<List<PreguntaSentimiento>> getPreguntasSentimiento(int nivelId,
     [Database? db]) async {
   try {
     final Database database = db ?? await initializeDB();
     final List<Map<String, dynamic>> preguntasMap = await database.query(
         'preguntaSentimiento',
-        where: 'grupoId = ?',
-        whereArgs: [grupoId]);
+        where: 'nivelId = ?',
+        whereArgs: [nivelId]);
     return preguntasMap
         .map((map) => PreguntaSentimiento.sentimientosFromMap(map))
         .toList();
@@ -109,25 +109,25 @@ Future<List<PreguntaSentimiento>> getPreguntasSentimiento(int grupoId,
 ///[pageNumber] Página de la que queremos obtener los resultados. Comenzamos en la página 1<br>
 ///[pageSize] Cantidad de resultados que queremos obtener por página<br>
 ///[txtBuscar] Texto de la pregunta para filtrar la búsqueda<br>
-///[grupo] Grupo para filtrar la búsqueda<br>
+///[nivel] Nivel para filtrar la búsqueda<br>
 ///[db] Parámetro opcional. Le pasamos un objeto Database en caso de estar probando dicho método
 ///<br><b>Salida</b><br>
 ///Resultado de la búsqueda con paginación
 Future<PreguntaSentimientoPaginacion> getPreguntaSentimientoPaginacion(
-    int pageNumber, int pageSize, String txtBuscar, Grupo? grupo,
+    int pageNumber, int pageSize, String txtBuscar, Nivel? nivel,
     [Database? db]) async {
   try {
     final Database database = db ?? await initializeDB();
     int offset = (pageNumber - 1) * pageSize;
     String whereClause = '';
 
-    // Agregar condiciones de búsqueda por enunciado y grupo
+    // Agregar condiciones de búsqueda por enunciado y nivel
     if (txtBuscar.isNotEmpty) {
       whereClause += "enunciado LIKE '%$txtBuscar%'";
     }
-    if (grupo != null) {
+    if (nivel != null) {
       whereClause +=
-          (whereClause.isNotEmpty ? ' AND ' : '') + "grupoId = ${grupo.id}";
+          (whereClause.isNotEmpty ? ' AND ' : '') + "nivelId = ${nivel.id}";
     }
 
     final List<Map<String, dynamic>> preguntasMap = await database.query(
@@ -160,31 +160,31 @@ Future<PreguntaSentimientoPaginacion> getPreguntaSentimientoPaginacion(
 ///[database] Objeto Database sobre la cual se ejecutan las insercciones<br>
 ///[enunciado] Enunciado de la pregunta<br>
 ///[imgPersonaje] Lista de enteros que es la imagen del personaje<br>
-///[grupoId] Identificador del grupo al que va a pertenecer la pregunta
+///[nivelId] Identificador del nivel al que va a pertenecer la pregunta
 ///<br><b>Salida</b><br>
 ///Identificador de la pregunta que ha sido añadida
 Future<int> insertPreguntaSentimiento(Database database, String enunciado,
-    List<int> imgPersonaje, int grupoId) async {
+    List<int> imgPersonaje, int nivelId) async {
   int id = -1;
   await database.transaction((txn) async {
     if (imgPersonaje.isEmpty)
       id = await txn.rawInsert(
-        "INSERT INTO preguntaSentimiento (enunciado, imagen, grupoId, byTerapeuta, fecha) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO preguntaSentimiento (enunciado, imagen, nivelId, byTerapeuta, fecha) VALUES (?, ?, ?, ?, ?)",
         [
           enunciado,
           null,
-          grupoId,
+          nivelId,
           1,
           DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
         ],
       );
     else
       id = await txn.rawInsert(
-        "INSERT INTO preguntaSentimiento (enunciado, imagen, grupoId, byTerapeuta, fecha) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO preguntaSentimiento (enunciado, imagen, nivelId, byTerapeuta, fecha) VALUES (?, ?, ?, ?, ?)",
         [
           enunciado,
           imgPersonaje,
-          grupoId,
+          nivelId,
           1,
           DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
         ],
@@ -199,21 +199,21 @@ Future<int> insertPreguntaSentimiento(Database database, String enunciado,
 ///[database] Objeto Database sobre la cual se ejecutan las insercciones<br>
 ///[enunciado] Enunciado de la pregunta<br>
 ///[pathImg] Ruta en la que se encuentra la imagen del personaje<br>
-///[grupoId] Identificador del grupo al que va a pertenecer la pregunta
+///[nivelId] Identificador del nivel al que va a pertenecer la pregunta
 ///<br><b>Salida</b><br>
 ///Identificador de la pregunta que ha sido añadida
 Future<int> insertPreguntaSentimientoInitialData(
-    Database database, String enunciado, String pathImg, int grupoId) async {
+    Database database, String enunciado, String pathImg, int nivelId) async {
   int id = -1;
   ByteData imageData = await rootBundle.load(pathImg);
   List<int> bytes = imageData.buffer.asUint8List();
   await database.transaction((txn) async {
     id = await txn.rawInsert(
-      "INSERT INTO preguntaSentimiento (enunciado, imagen, grupoId, fecha) VALUES (?, ?, ?, ?)",
+      "INSERT INTO preguntaSentimiento (enunciado, imagen, nivelId, fecha) VALUES (?, ?, ?, ?)",
       [
         enunciado,
         bytes,
-        grupoId,
+        nivelId,
         DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
       ],
     );
@@ -246,9 +246,9 @@ Future<void> removePreguntaSentimiento(int preguntaSentimientoId,
 ///[id] Identificador de la pregunta que queremos actualizar<br>
 ///[enunciado] Nuevo valor del enunciado<br>
 ///[imgPersonaje] Nueva lista de enteros que representa la imagen del personaje<br>
-///[grupoId] Nuevo valor del grupo al que pertenece la pregunta
+///[nivelId] Nuevo valor del nivel al que pertenece la pregunta
 Future<void> updatePregunta(Database database, int id, String enunciado,
-    List<int> imgPersonaje, int grupoId,
+    List<int> imgPersonaje, int nivelId,
     [Database? db]) async {
   final Database database = db ?? await initializeDB();
   if (imgPersonaje.isEmpty)
@@ -257,7 +257,7 @@ Future<void> updatePregunta(Database database, int id, String enunciado,
       {
         'enunciado': enunciado,
         'imagen': null,
-        'grupoId': grupoId,
+        'nivelId': nivelId,
         'fecha': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
       },
       where: 'id = ?',
@@ -269,7 +269,7 @@ Future<void> updatePregunta(Database database, int id, String enunciado,
       {
         'enunciado': enunciado,
         'imagen': imgPersonaje,
-        'grupoId': grupoId,
+        'nivelId': nivelId,
         'fecha': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
       },
       where: 'id = ?',

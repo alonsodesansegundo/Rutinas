@@ -6,21 +6,21 @@ import '../db.dart';
 class Jugador {
   int? id; // campo id opcional
   final String nombre;
-  final int grupoId;
+  final int nivelId;
 
   ///Constructor de la clase Jugador
-  Jugador({this.id, required this.nombre, required this.grupoId});
+  Jugador({this.id, required this.nombre, required this.nivelId});
 
-  ///Crea una instancia de Jugador a partir de un mapa de datos, dicho mapa debe contener: id, nombre y grupoId
+  ///Crea una instancia de Jugador a partir de un mapa de datos, dicho mapa debe contener: id, nombre y nivelId
   Jugador.jugadoresFromMap(Map<String, dynamic> item)
       : id = item["id"],
         nombre = item["nombre"],
-        grupoId = item["grupoId"];
+        nivelId = item["nivelId"];
 
   ///Convierte una instancia de Jugador a un mapa de datos
   Map<String, Object> jugadoresToMap() {
     // no incluir id aquí ya que se generará automáticamente
-    return {'nombre': nombre, 'grupoId': grupoId};
+    return {'nombre': nombre, 'nivelId': nivelId};
   }
 
   ///Sobreescritura del método equals
@@ -31,17 +31,17 @@ class Jugador {
     return other is Jugador &&
         other.id == id &&
         other.nombre == nombre &&
-        other.grupoId == grupoId;
+        other.nivelId == nivelId;
   }
 
   ///Sobreescritura del método hashCode
   @override
-  int get hashCode => id.hashCode ^ nombre.hashCode ^ grupoId.hashCode;
+  int get hashCode => id.hashCode ^ nombre.hashCode ^ nivelId.hashCode;
 
   ///Sobreescritura del método toString
   @override
   String toString() {
-    return 'Jugador {id: $id, nombre: $nombre, grupoId: $grupoId}';
+    return 'Jugador {id: $id, nombre: $nombre, nivelId: $nivelId}';
   }
 }
 
@@ -57,20 +57,20 @@ Future<Jugador> insertJugador(Jugador jugador, [Database? db]) async {
   // si el jugador aun no existe en la base de datos
   if (!await existeJugador(jugador, database)) {
     int id = await database.insert("jugador", jugador.jugadoresToMap());
-    sol = Jugador(id: id, nombre: jugador.nombre, grupoId: jugador.grupoId);
+    sol = Jugador(id: id, nombre: jugador.nombre, nivelId: jugador.nivelId);
   } else {
     // el jugador ya existe en la base de datos
     List<Map<String, dynamic>> result = await database.query(
       'jugador',
-      where: 'nombre = ? AND grupoId = ?',
-      whereArgs: [jugador.nombre, jugador.grupoId],
+      where: 'nombre = ? AND nivelId = ?',
+      whereArgs: [jugador.nombre, jugador.nivelId],
     );
     sol = Jugador.jugadoresFromMap(result.first);
   }
   return sol;
 }
 
-///Método que nos permite conocer si un jugador (nombre y grupo) ya está presente en la base de datos
+///Método que nos permite conocer si un jugador (nombre y nivel) ya está presente en la base de datos
 ///<br><b>Parámetros</b><br>
 ///[jugador] Jugador que queremos consultar si está presente en la base de datos<br>
 ///[database] Objeto Database sobre la cual se ejecuta la consulta
@@ -79,8 +79,8 @@ Future<Jugador> insertJugador(Jugador jugador, [Database? db]) async {
 Future<bool> existeJugador(Jugador jugador, Database database) async {
   List<Map<String, dynamic>> result = await database.query(
     'jugador',
-    where: 'nombre = ? AND grupoId = ?',
-    whereArgs: [jugador.nombre, jugador.grupoId],
+    where: 'nombre = ? AND nivelId = ?',
+    whereArgs: [jugador.nombre, jugador.nivelId],
   );
   return result.isNotEmpty;
 }

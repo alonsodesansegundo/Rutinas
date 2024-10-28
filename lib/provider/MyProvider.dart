@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../db/obj/grupo.dart';
+import '../db/obj/nivel.dart';
 import '../db/obj/jugador.dart';
 
-///Clase MyProvider de la aplicación, para almacenar de manera eficiente y rápida datos de uso (jugador y grupo)
+///Clase MyProvider de la aplicación, para almacenar de manera eficiente y rápida datos de uso (jugador y nivel)
 class MyProvider with ChangeNotifier {
   late Jugador _jugador;
-  late Grupo _grupo;
+  late Nivel _nivel;
 
   ///Getter de jugador
   Jugador get jugador => this._jugador;
@@ -17,12 +17,12 @@ class MyProvider with ChangeNotifier {
     notifyListeners(); //notificamos a los widgets que esten escuchando el stream.
   }
 
-  ///Getter de grupo
-  Grupo get grupo => this._grupo;
+  ///Getter de nivel
+  Nivel get nivel => this._nivel;
 
-  ///Setter de grupo
-  set grupo(Grupo grupo) {
-    this._grupo = grupo; //actualizamos el valor
+  ///Setter de nivel
+  set nivel(Nivel nivel) {
+    this._nivel = nivel; //actualizamos el valor
     notifyListeners(); //notificamos a los widgets que esten escuchando el stream.
   }
 }

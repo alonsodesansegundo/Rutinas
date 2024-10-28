@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../db/obj/grupo.dart';
+import '../../db/obj/nivel.dart';
 import '../../db/obj/partida.dart';
 import '../../db/obj/partidaView.dart';
 import '../../obj/PartidasPaginacion.dart';
 import '../../widgets/ImageTextButton.dart';
 
 ///Pantalla que le permite al terapeuta ver las partidas de todos los jugadores en el juego Rutinas e incluso buscar partidas
-///por nombre de jugador y/o grupo
+///por nombre de jugador y/o nivel
 class AllProgress extends StatefulWidget {
   @override
   AllProgressState createState() => AllProgressState();
@@ -46,11 +46,11 @@ class AllProgressState extends State<AllProgress> {
       cabeceraProgreso,
       cabeceraDuracion;
 
-  Grupo? selectedGrupo, selectedGrupoAux;
+  Nivel? selectedNivel, selectedNivelAux;
 
   late String txtBuscar, txtBuscarAux;
 
-  late List<Grupo> grupos;
+  late List<Nivel> nivels;
 
   late bool hayMasPartidas;
 
@@ -65,16 +65,16 @@ class AllProgressState extends State<AllProgress> {
     super.initState();
     loadData = false;
     loadPartidas = false;
-    selectedGrupo = null;
-    selectedGrupoAux = null;
+    selectedNivel = null;
+    selectedNivelAux = null;
     txtBuscar = "";
     txtBuscarAux = "";
     paginaActual = 1;
     partidasPagina = 4;
     hayMasPartidas = false;
     _loadProgresos();
-    grupos = [];
-    _getGrupos();
+    nivels = [];
+    _getNivels();
     partidasToRemove = [];
     flagCheck = [];
     partidas = [];
@@ -193,30 +193,30 @@ class AllProgressState extends State<AllProgress> {
                       borderRadius: BorderRadius.circular(8.0),
                       color: Colors.grey[200],
                     ),
-                    child: DropdownButton<Grupo>(
+                    child: DropdownButton<Nivel>(
                       hint: Text(
-                        'Grupo',
+                        'Nivel',
                         style: TextStyle(
                           fontFamily: 'ComicNeue',
                           fontSize: textSize * 0.75,
                         ),
                       ),
-                      value: selectedGrupoAux,
+                      value: selectedNivelAux,
                       items: [
                         DropdownMenuItem(
                           child: Text(
-                            'Grupo',
+                            'Nivel',
                             style: TextStyle(
                               fontFamily: 'ComicNeue',
                               fontSize: textSize * 0.75,
                             ),
                           ),
                         ),
-                        ...grupos.map((Grupo grupo) {
-                          return DropdownMenuItem<Grupo>(
-                            value: grupo,
+                        ...nivels.map((Nivel nivel) {
+                          return DropdownMenuItem<Nivel>(
+                            value: nivel,
                             child: Text(
-                              grupo.nombre,
+                              nivel.nombre,
                               style: TextStyle(
                                 fontFamily: 'ComicNeue',
                                 fontSize: textSize * 0.75,
@@ -225,12 +225,12 @@ class AllProgressState extends State<AllProgress> {
                           );
                         }).toList(),
                       ],
-                      onChanged: (Grupo? grupo) {
+                      onChanged: (Nivel? nivel) {
                         setState(() {
-                          if (grupo?.nombre == 'Grupo')
-                            selectedGrupoAux = null;
+                          if (nivel?.nombre == 'Nivel')
+                            selectedNivelAux = null;
                           else
-                            selectedGrupoAux = grupo;
+                            selectedNivelAux = nivel;
                         });
                       },
                     ),
@@ -255,7 +255,7 @@ class AllProgressState extends State<AllProgress> {
                   Container(
                     width: widthJugador,
                     child: Text(
-                      'Jugador\n(grupo)',
+                      'Jugador\n(nivel)',
                       style: TextStyle(
                         fontFamily: 'ComicNeue',
                         fontSize: textHeaderSize,
@@ -294,7 +294,7 @@ class AllProgressState extends State<AllProgress> {
               ),
               FutureBuilder<void>(
                 future: getAllPartidasView(paginaActual, partidasPagina,
-                    txtBuscar, selectedGrupo, 'Rutinas'),
+                    txtBuscar, selectedNivel, 'Rutinas'),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -330,7 +330,7 @@ class AllProgressState extends State<AllProgress> {
                                 child: Text(
                                   partida.jugadorName +
                                       "\n(" +
-                                      partida.grupoName +
+                                      partida.nivelName +
                                       ")",
                                   style: TextStyle(
                                     fontFamily: 'ComicNeue',
@@ -393,7 +393,7 @@ class AllProgressState extends State<AllProgress> {
                                           ),
                                         ),
                                         content: Text(
-                                          'Estás a punto de eliminar una partida del usuario ${partida.jugadorName} del grupo ${partida.grupoName}.\n'
+                                          'Estás a punto de eliminar una partida del usuario ${partida.jugadorName} del nivel ${partida.nivelName}.\n'
                                           '¿Estás seguro de ello?',
                                           style: TextStyle(
                                             fontFamily: 'ComicNeue',
@@ -595,7 +595,7 @@ class AllProgressState extends State<AllProgress> {
     btnBuscar = ElevatedButton(
       onPressed: () {
         paginaActual = 1;
-        selectedGrupo = selectedGrupoAux;
+        selectedNivel = selectedNivelAux;
         txtBuscar = txtBuscarAux;
         flagCheck = [];
         partidasToRemove = [];
@@ -846,23 +846,23 @@ class AllProgressState extends State<AllProgress> {
     return tiempoFormateado;
   }
 
-  ///Método que nos permite obtener los grupos con los que cuenta la aplicación y almacenarlos en la variable [grupos]
-  Future<void> _getGrupos() async {
+  ///Método que nos permite obtener los nivels con los que cuenta la aplicación y almacenarlos en la variable [nivels]
+  Future<void> _getNivels() async {
     try {
-      List<Grupo> gruposList = await getGrupos();
+      List<Nivel> nivelsList = await getNiveles();
       setState(() {
-        grupos = gruposList;
+        nivels = nivelsList;
       });
     } catch (e) {
-      print("Error al obtener la lista de grupos: $e");
+      print("Error al obtener la lista de nivels: $e");
     }
   }
 
   ///Método que nos permite obtener las partidas del juego Rutinas forma paginada, para ello se tienen en cuenta las siguientes variables:
-  ///[paginaActual], [partidasPagina], [txtBuscar] y [selectedGrupo]
+  ///[paginaActual], [partidasPagina], [txtBuscar] y [selectedNivel]
   Future<void> _loadProgresos() async {
     PartidasPaginacion aux = await getAllPartidasView(
-        paginaActual, partidasPagina, txtBuscar, selectedGrupo, 'Rutinas');
+        paginaActual, partidasPagina, txtBuscar, selectedNivel, 'Rutinas');
 
     setState(() {
       this.partidas = aux.partidas;

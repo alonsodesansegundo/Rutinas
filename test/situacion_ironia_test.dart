@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:Rutirse/db/db.dart';
-import 'package:Rutirse/db/obj/grupo.dart';
+import 'package:Rutirse/db/obj/nivel.dart';
 import 'package:Rutirse/db/obj/situacionIronia.dart';
 import 'package:Rutirse/obj/SituacionIroniaPaginacion.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,7 +20,7 @@ void main() async {
   setUp(() async {
     database = await databaseFactory.openDatabase(inMemoryDatabasePath);
     createTables(database);
-    insertGrupos(database);
+    insertNiveles(database);
   });
 
   // Elimino la tabla situacionIronia después de cada prueba
@@ -62,7 +62,7 @@ void main() async {
     SituacionIronia situacionIroniaExpected = new SituacionIronia(
         id: 1,
         enunciado: 'Enunciado pregunta humor 1',
-        grupoId: 1,
+        nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 0,
         imagen: situaciones[0].imagen);
@@ -81,7 +81,7 @@ void main() async {
     SituacionIronia situacionIroniaExpected = new SituacionIronia(
         id: 1,
         enunciado: 'Enunciado pregunta humor 1',
-        grupoId: 1,
+        nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 0,
         imagen: situaciones[0].imagen);
@@ -100,7 +100,7 @@ void main() async {
     SituacionIronia situacionIroniaExpected = new SituacionIronia(
         id: 1,
         enunciado: 'Enunciado pregunta humor 1',
-        grupoId: 1,
+        nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 0,
         imagen: situaciones[0].imagen);
@@ -135,9 +135,9 @@ void main() async {
 
   // Test 5
   test('Test for check getSituacionIroniaPaginacion empty', () async {
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionIroniaPaginacion situacionesPaginacion =
-        await getSituacionIroniaPaginacion(1, 3, "", grupos[0], database);
+        await getSituacionIroniaPaginacion(1, 3, "", nivels[0], database);
     expect(situacionesPaginacion.situaciones.length, 0);
   });
 
@@ -148,9 +148,9 @@ void main() async {
         database, 'Enunciado pregunta humor 2', pathIronias + 'vaca.png', 1);
     int id_P3 = await insertSituacionIroniaInitialData(
         database, 'Enunciado pregunta humor 3', pathIronias + 'vaca.png', 1);
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionIroniaPaginacion situacionesPaginacion =
-        await getSituacionIroniaPaginacion(1, 3, "", grupos[0], database);
+        await getSituacionIroniaPaginacion(1, 3, "", nivels[0], database);
     expect(situacionesPaginacion.situaciones.length, 3);
   });
 
@@ -163,9 +163,9 @@ void main() async {
         database, 'Enunciado pregunta humor 2', pathIronias + 'vaca.png', 1);
     int id_P3 = await insertSituacionIroniaInitialData(
         database, 'Enunciado pregunta humor 3', pathIronias + 'vaca.png', 1);
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionIroniaPaginacion situacionesPaginacion =
-        await getSituacionIroniaPaginacion(1, 2, "", grupos[0], database);
+        await getSituacionIroniaPaginacion(1, 2, "", nivels[0], database);
     expect(situacionesPaginacion.hayMasSituaciones, true);
   });
 
@@ -178,9 +178,9 @@ void main() async {
         database, 'Enunciado pregunta humor 2', pathIronias + 'vaca.png', 1);
     int id_P3 = await insertSituacionIroniaInitialData(
         database, 'Enunciado pregunta humor 3', pathIronias + 'vaca.png', 1);
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionIroniaPaginacion situacionesPaginacion =
-        await getSituacionIroniaPaginacion(2, 2, "", grupos[0], database);
+        await getSituacionIroniaPaginacion(2, 2, "", nivels[0], database);
     expect(situacionesPaginacion.situaciones.length, 1);
   });
 
@@ -192,10 +192,10 @@ void main() async {
         database, 'Enunciado pregunta humor 2', pathIronias + 'vaca.png', 1);
     int id_P3 = await insertSituacionIroniaInitialData(
         database, 'Enunciado pregunta humor 3', pathIronias + 'vaca.png', 1);
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionIroniaPaginacion situacionesPaginacion =
         await getSituacionIroniaPaginacion(
-            1, 5, "humor 2", grupos[0], database);
+            1, 5, "humor 2", nivels[0], database);
     expect(situacionesPaginacion.situaciones.length, 1);
   });
 
@@ -207,9 +207,9 @@ void main() async {
         database, 'Enunciado pregunta humor 2', pathIronias + 'vaca.png', 2);
     int id_P3 = await insertSituacionIroniaInitialData(
         database, 'Enunciado pregunta humor 3', pathIronias + 'vaca.png', 1);
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionIroniaPaginacion situacionesPaginacion =
-        await getSituacionIroniaPaginacion(1, 5, "", grupos[0], database);
+        await getSituacionIroniaPaginacion(1, 5, "", nivels[0], database);
     expect(situacionesPaginacion.situaciones.length, 2);
   });
 
@@ -226,10 +226,10 @@ void main() async {
         database, 'Enunciado pregunta humor 3', pathIronias + 'vaca.png', 3);
     int id_P5 = await insertSituacionIroniaInitialData(
         database, 'Enunciado pregunta humor 2', pathIronias + 'vaca.png', 3);
-    List<Grupo> grupos = await getGrupos(database);
+    List<Nivel> nivels = await getNiveles(database);
     SituacionIroniaPaginacion situacionesPaginacion =
         await getSituacionIroniaPaginacion(
-            1, 5, "humor 3", grupos[2], database);
+            1, 5, "humor 3", nivels[2], database);
     expect(situacionesPaginacion.situaciones.length, 1);
   });
 
@@ -288,7 +288,7 @@ void main() async {
     SituacionIronia situacionRutinaExpected = new SituacionIronia(
         id: 1,
         enunciado: "Enunciado pregunta",
-        grupoId: 1,
+        nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 1,
         imagen: Uint8List.fromList([111, 123, 321]));
@@ -305,7 +305,7 @@ void main() async {
         await getSituacionesIronias(1, database);
 
     updatePreguntaIronia(database, situaciones[0].id!, situaciones[0].enunciado,
-        Uint8List.fromList([321, 321, 321]), situaciones[0].grupoId);
+        Uint8List.fromList([321, 321, 321]), situaciones[0].nivelId);
     situaciones = await getSituacionesIronias(1, database);
     expect(situaciones[0].imagen, Uint8List.fromList([321, 321, 321]));
   });

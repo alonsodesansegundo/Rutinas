@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:smooth_scroll_multiplatform/smooth_scroll_multiplatform.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../db/obj/grupo.dart';
+import '../../db/obj/nivel.dart';
 import '../../db/obj/respuestaIronia.dart';
 import '../../db/obj/situacionIronia.dart';
 import '../../obj/Respuesta.dart';
@@ -20,9 +20,9 @@ import '../main.dart';
 ///Pantalla que le permite al terapeuta la edición de una pregunta del juego Humor y sus respuestas
 class EditHumor extends StatefulWidget {
   SituacionIronia situacionIronia;
-  Grupo grupo;
+  Nivel nivel;
 
-  EditHumor({required this.situacionIronia, required this.grupo});
+  EditHumor({required this.situacionIronia, required this.nivel});
 
   @override
   EditIroniaState createState() => EditIroniaState();
@@ -49,9 +49,9 @@ class EditIroniaState extends State<EditHumor> {
 
   late ElevatedButton btnGaleria, btnArasaac, btnEliminarImage;
 
-  late List<Grupo> grupos;
+  late List<Nivel> nivels;
 
-  late Grupo? selectedGrupo;
+  late Nivel? selectedNivel;
 
   late String situacionText, correctText;
 
@@ -68,30 +68,30 @@ class EditIroniaState extends State<EditHumor> {
       noInternetDialog,
       removePreguntaOk;
 
-  late bool firstLoad = true, changeGrupo, loadData, esIronia, noEsIronia;
+  late bool firstLoad = true, changeNivel, loadData, esIronia, noEsIronia;
 
-  late Grupo defaultGrupo;
+  late Nivel defaultNivel;
 
   late List<Respuesta> respuestasIncorrectas;
 
   late Color colorSituacion,
-      colorGrupo,
+      colorNivel,
       colorCorrectText,
       colorBordeImagen,
       colorCheckbox;
   @override
   void initState() {
     super.initState();
-    defaultGrupo = widget.grupo;
+    defaultNivel = widget.nivel;
     loadData = false;
-    grupos = [];
+    nivels = [];
     image = [];
     respuestasIncorrectas = [];
-    selectedGrupo = null;
-    changeGrupo = false;
+    selectedNivel = null;
+    changeNivel = false;
     colorSituacion = Colors.transparent;
     colorCorrectText = Colors.transparent;
-    colorGrupo = Colors.transparent;
+    colorNivel = Colors.transparent;
     colorBordeImagen = Colors.transparent;
     colorCheckbox = Colors.transparent;
     correctText = "";
@@ -101,7 +101,7 @@ class EditIroniaState extends State<EditHumor> {
 
     if (firstLoad) {
       firstLoad = false;
-      _getGrupos();
+      _getNivels();
       situacionText = widget.situacionIronia.enunciado;
       setState(() {
         image = widget.situacionIronia.imagen!;
@@ -112,7 +112,7 @@ class EditIroniaState extends State<EditHumor> {
   }
 
   Future<void> _initializeState() async {
-    await _getGrupos();
+    await _getNivels();
     _createDialogs();
   }
 
@@ -168,7 +168,7 @@ class EditIroniaState extends State<EditHumor> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Aquí tienes la posibilidad de editar la pregunta y sus respuestas, incluso el grupo al que pertenece.',
+                        'Aquí tienes la posibilidad de editar la pregunta y sus respuestas, incluso el nivel al que pertenece.',
                         style: TextStyle(
                           fontFamily: 'ComicNeue',
                           fontSize: textSize,
@@ -183,7 +183,7 @@ class EditIroniaState extends State<EditHumor> {
                     Row(
                       children: [
                         Text(
-                          'Grupo*:',
+                          'Nivel*:',
                           style: TextStyle(
                             fontFamily: 'ComicNeue',
                             fontSize: textSize,
@@ -192,25 +192,25 @@ class EditIroniaState extends State<EditHumor> {
                         SizedBox(width: espacioPadding),
                         Container(
                           decoration: BoxDecoration(
-                            color: colorGrupo,
+                            color: colorNivel,
                           ),
-                          child: DropdownButton<Grupo>(
+                          child: DropdownButton<Nivel>(
                             padding: EdgeInsets.only(
                               left: espacioPadding,
                             ),
                             hint: Text(
-                              widget.grupo.nombre,
+                              widget.nivel.nombre,
                               style: TextStyle(
                                 fontFamily: 'ComicNeue',
                                 fontSize: textSize,
                               ),
                             ),
-                            value: selectedGrupo,
-                            items: grupos.map((Grupo grupo) {
-                              return DropdownMenuItem<Grupo>(
-                                value: grupo,
+                            value: selectedNivel,
+                            items: nivels.map((Nivel nivel) {
+                              return DropdownMenuItem<Nivel>(
+                                value: nivel,
                                 child: Text(
-                                  grupo.nombre,
+                                  nivel.nombre,
                                   style: TextStyle(
                                     fontFamily: 'ComicNeue',
                                     fontSize: textSize,
@@ -218,15 +218,15 @@ class EditIroniaState extends State<EditHumor> {
                                 ),
                               );
                             }).toList(),
-                            onChanged: (Grupo? grupo) {
+                            onChanged: (Nivel? nivel) {
                               setState(() {
-                                selectedGrupo = grupo;
-                                changeGrupo = true;
+                                selectedNivel = nivel;
+                                changeNivel = true;
                                 respuestasIncorrectas = [];
-                                if (selectedGrupo!.nombre == "Infancia")
+                                if (selectedNivel!.nombre == "Medio")
                                   respuestasIncorrectas.add(new Respuesta(
                                       texto: "", color: Colors.transparent));
-                                if (selectedGrupo!.nombre == "Adolescencia") {
+                                if (selectedNivel!.nombre == "Difícil") {
                                   respuestasIncorrectas.add(new Respuesta(
                                       texto: "", color: Colors.transparent));
                                   respuestasIncorrectas.add(new Respuesta(
@@ -321,9 +321,9 @@ class EditIroniaState extends State<EditHumor> {
                   ),
                 ),
                 SizedBox(height: espacioAlto),
-                if ((!changeGrupo && widget.grupo.nombre == "Atención T.") ||
-                    (selectedGrupo != null &&
-                        selectedGrupo!.nombre == 'Atención T.'))
+                if ((!changeNivel && widget.nivel.nombre == "Fácil") ||
+                    (selectedNivel != null &&
+                        selectedNivel!.nombre == 'Fácil'))
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -379,9 +379,9 @@ class EditIroniaState extends State<EditHumor> {
                       ],
                     ),
                   ),
-                if ((!changeGrupo && widget.grupo.nombre != "Atención T.") ||
-                    (selectedGrupo != null &&
-                        selectedGrupo!.nombre != 'Atención T.'))
+                if ((!changeNivel && widget.nivel.nombre != "Fácil") ||
+                    (selectedNivel != null &&
+                        selectedNivel!.nombre != 'Fácil'))
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
@@ -419,9 +419,9 @@ class EditIroniaState extends State<EditHumor> {
                       SizedBox(
                         height: espacioAlto / 2,
                       ),
-                      if ((!changeGrupo && widget.grupo.nombre == "Infancia") ||
-                          (selectedGrupo != null &&
-                              selectedGrupo!.nombre == 'Infancia'))
+                      if ((!changeNivel && widget.nivel.nombre == "Medio") ||
+                          (selectedNivel != null &&
+                              selectedNivel!.nombre == 'Medio'))
                         Text(
                           "Respuesta incorrecta*:",
                           style: TextStyle(
@@ -429,10 +429,10 @@ class EditIroniaState extends State<EditHumor> {
                             fontSize: textSize,
                           ),
                         ),
-                      if ((!changeGrupo &&
-                              widget.grupo.nombre == "Adolescencia") ||
-                          (selectedGrupo != null &&
-                              selectedGrupo!.nombre == 'Adolescencia'))
+                      if ((!changeNivel &&
+                              widget.nivel.nombre == "Difícil") ||
+                          (selectedNivel != null &&
+                              selectedNivel!.nombre == 'Difícil'))
                         Text(
                           "Respuestas incorrectas*:",
                           style: TextStyle(
@@ -470,10 +470,10 @@ class EditIroniaState extends State<EditHumor> {
                       SizedBox(
                         height: espacioAlto / 2,
                       ),
-                      if ((!changeGrupo &&
-                              widget.grupo.nombre == "Adolescencia") ||
-                          (selectedGrupo != null &&
-                              selectedGrupo!.nombre == 'Adolescencia'))
+                      if ((!changeNivel &&
+                              widget.nivel.nombre == "Difícil") ||
+                          (selectedNivel != null &&
+                              selectedNivel!.nombre == 'Difícil'))
                         Column(
                           children: [
                             Container(
@@ -589,7 +589,7 @@ class EditIroniaState extends State<EditHumor> {
                             ),
                           ),
                           content: Text(
-                            'Estás a punto de eliminar la siguiente pregunta del grupo ${widget.grupo.nombre}:\n'
+                            'Estás a punto de eliminar la siguiente pregunta del nivel ${widget.nivel.nombre}:\n'
                             '${widget.situacionIronia.enunciado}\n'
                             '¿Estás seguro de ello?',
                             style: TextStyle(
@@ -983,8 +983,8 @@ class EditIroniaState extends State<EditHumor> {
     } else
       colorBordeImagen = Colors.transparent;
 
-    if (selectedGrupo != null &&
-        selectedGrupo!.nombre == "Atención T." &&
+    if (selectedNivel != null &&
+        selectedNivel!.nombre == "Fácil" &&
         !esIronia &&
         !noEsIronia) {
       correct = false;
@@ -994,8 +994,8 @@ class EditIroniaState extends State<EditHumor> {
     } else
       colorCheckbox = Colors.transparent;
 
-    if (selectedGrupo != null &&
-        selectedGrupo!.nombre != "Atención T." &&
+    if (selectedNivel != null &&
+        selectedNivel!.nombre != "Fácil" &&
         correctText.trim().isEmpty) {
       correct = false;
       setState(() {
@@ -1025,12 +1025,12 @@ class EditIroniaState extends State<EditHumor> {
   ///Método encargado de editar una pregunta al juego Humor
   Future<void> _editPregunta() async {
     Database db = await openDatabase('rutinas.db');
-    if (!changeGrupo)
+    if (!changeNivel)
       await updatePreguntaIronia(db, widget.situacionIronia.id!, situacionText,
-          Uint8List.fromList(image), widget.grupo!.id);
+          Uint8List.fromList(image), widget.nivel!.id);
     else
       await updatePreguntaIronia(db, widget.situacionIronia.id!, situacionText,
-          Uint8List.fromList(image), selectedGrupo!.id);
+          Uint8List.fromList(image), selectedNivel!.id);
   }
 
   ///Método encargado de editar las respuestas de la pregunta del juego Humor
@@ -1039,8 +1039,8 @@ class EditIroniaState extends State<EditHumor> {
     // elimino las respuestas anteriores
     deleteRespuestasBySituacionIroniaId(db, widget.situacionIronia.id!);
 
-    if ((changeGrupo && selectedGrupo!.nombre == "Atención T.") ||
-        (!changeGrupo && widget.grupo!.nombre == "Atención T.")) {
+    if ((changeNivel && selectedNivel!.nombre == "Fácil") ||
+        (!changeNivel && widget.nivel!.nombre == "Fácil")) {
       int aux, aux2;
       if (esIronia)
         aux = 1;
@@ -1062,15 +1062,15 @@ class EditIroniaState extends State<EditHumor> {
           db, respuestasIncorrectas[i].texto, 0, widget.situacionIronia.id!);
   }
 
-  ///Método que nos permite obtener los grupos con los que cuenta la aplicación y almacenarlos en la variable [grupos]
-  Future<void> _getGrupos() async {
+  ///Método que nos permite obtener los nivels con los que cuenta la aplicación y almacenarlos en la variable [nivels]
+  Future<void> _getNivels() async {
     try {
-      List<Grupo> gruposList = await getGrupos();
+      List<Nivel> nivelsList = await getNiveles();
       setState(() {
-        grupos = gruposList;
+        nivels = nivelsList;
       });
     } catch (e) {
-      print("Error al obtener la lista de grupos: $e");
+      print("Error al obtener la lista de nivels: $e");
     }
   }
 
@@ -1080,7 +1080,7 @@ class EditIroniaState extends State<EditHumor> {
         await getRespuestasIronia(widget.situacionIronia.id!);
 
     setState(() {
-      if (widget.grupo.nombre == "Atención T.") {
+      if (widget.nivel.nombre == "Fácil") {
         print("CORRECTO: " +
             aux[0].correcta.toString() +
             " TEXTO: " +

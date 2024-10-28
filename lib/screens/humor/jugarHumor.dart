@@ -501,9 +501,9 @@ class JugarHumorState extends State<JugarHumor> with WidgetsBindingObserver {
       flag = true;
       try {
         var myProvider = Provider.of<MyProvider>(context);
-        // obtengo las preguntas del grupo correspondiente
+        // obtengo las preguntas del nivel correspondiente
         List<SituacionIronia> situaciones =
-            await getSituacionesIronias(myProvider.grupo.id);
+            await getSituacionesIronias(myProvider.nivel.id);
         setState(() {
           situacionIroniaList = situaciones; // actualizo la lista
           indiceActual =

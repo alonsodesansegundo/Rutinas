@@ -4,17 +4,17 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../obj/SituacionIroniaPaginacion.dart';
 import '../db.dart';
-import '../ironiasScripts/adolescencia.dart';
-import '../ironiasScripts/atenciont.dart';
-import '../ironiasScripts/infancia.dart';
-import 'grupo.dart';
+import '../ironiasScripts/dificil.dart';
+import '../ironiasScripts/facil.dart';
+import '../ironiasScripts/medio.dart';
+import 'nivel.dart';
 
 ///Clase relativa a la tabla SituacionIronia
 class SituacionIronia {
   final int? id;
   final String enunciado;
   final Uint8List? imagen;
-  final int grupoId;
+  final int nivelId;
   final String fecha;
   final int byTerapeuta;
 
@@ -23,17 +23,17 @@ class SituacionIronia {
       {this.id,
       required this.enunciado,
       this.imagen,
-      required this.grupoId,
+      required this.nivelId,
       required this.fecha,
       required this.byTerapeuta});
 
   ///Crea una instancia de SituacionIronia a partir de un mapa de datos, dicho mapa debe contener:
-  ///id, enunciado, imagen, grupoId, fecha y byTerapeuta
+  ///id, enunciado, imagen, nivelId, fecha y byTerapeuta
   SituacionIronia.situacionesFromMap(Map<String, dynamic> item)
       : id = item["id"],
         enunciado = item["enunciado"],
         imagen = item["imagen"],
-        grupoId = item["grupoId"],
+        nivelId = item["nivelId"],
         fecha = item["fecha"],
         byTerapeuta = item["byTerapeuta"];
 
@@ -41,7 +41,7 @@ class SituacionIronia {
   Map<String, Object> situacionesToMap() {
     return {
       'enunciado': enunciado,
-      'grupoId': grupoId,
+      'nivelId': nivelId,
       'fecha': fecha,
       'byTerapeuta': byTerapeuta
     };
@@ -55,7 +55,7 @@ class SituacionIronia {
     return other is SituacionIronia &&
         other.id == id &&
         other.enunciado == enunciado &&
-        other.grupoId == grupoId &&
+        other.nivelId == nivelId &&
         other.fecha == fecha &&
         other.byTerapeuta == byTerapeuta;
   }
@@ -65,7 +65,7 @@ class SituacionIronia {
   int get hashCode =>
       id.hashCode ^
       enunciado.hashCode ^
-      grupoId.hashCode ^
+      nivelId.hashCode ^
       fecha.hashCode ^
       byTerapeuta.hashCode;
 
@@ -74,7 +74,7 @@ class SituacionIronia {
   String toString() {
     return 'SituacionIronia {id: $id, enunciado: $enunciado,'
         ' imagen: $imagen, '
-        'grupoId: $grupoId}, '
+        'nivelId: $nivelId}, '
         'fecha: $fecha}, '
         'byTerapeuta: $byTerapeuta, ';
   }
@@ -82,16 +82,16 @@ class SituacionIronia {
 
 ///Método que nos permite obtener las preguntas del juego Humor
 ///<br><b>Parámetros</b><br>
-///[grupoId] Identificador del grupo del que queremos obtener las preguntas<br>
+///[nivelId] Identificador del nivel del que queremos obtener las preguntas<br>
 ///[db] Parámetro opcional. Le pasamos un objeto Database en caso de estar probando dicho método
 ///<br><b>Salida</b><br>
-///Lista de preguntas del juego Humor pertenecientes al grupoId
-Future<List<SituacionIronia>> getSituacionesIronias(int grupoId,
+///Lista de preguntas del juego Humor pertenecientes al nivelId
+Future<List<SituacionIronia>> getSituacionesIronias(int nivelId,
     [Database? db]) async {
   try {
     final Database database = db ?? await initializeDB();
     final List<Map<String, dynamic>> preguntasMap = await database
-        .query('situacionIronia', where: 'grupoId = ?', whereArgs: [grupoId]);
+        .query('situacionIronia', where: 'nivelId = ?', whereArgs: [nivelId]);
     return preguntasMap
         .map((map) => SituacionIronia.situacionesFromMap(map))
         .toList();
@@ -107,25 +107,25 @@ Future<List<SituacionIronia>> getSituacionesIronias(int grupoId,
 ///[pageNumber] Página de la que queremos obtener los resultados. Comenzamos en la página 1<br>
 ///[pageSize] Cantidad de resultados que queremos obtener por página<br>
 ///[txtBuscar] Texto de la pregunta para filtrar la búsqueda<br>
-///[grupo] Grupo para filtrar la búsqueda<br>
+///[nivel] Nivel para filtrar la búsqueda<br>
 ///[db] Parámetro opcional. Le pasamos un objeto Database en caso de estar probando dicho método
 ///<br><b>Salida</b><br>
 ///Resultado de la búsqueda con paginación
 Future<SituacionIroniaPaginacion> getSituacionIroniaPaginacion(
-    int pageNumber, int pageSize, String txtBuscar, Grupo? grupo,
+    int pageNumber, int pageSize, String txtBuscar, Nivel? nivel,
     [Database? db]) async {
   try {
     final Database database = db ?? await initializeDB();
     int offset = (pageNumber - 1) * pageSize;
     String whereClause = '';
 
-    // Agregar condiciones de búsqueda por enunciado y grupo
+    // Agregar condiciones de búsqueda por enunciado y nivel
     if (txtBuscar.isNotEmpty) {
       whereClause += "enunciado LIKE '%$txtBuscar%'";
     }
-    if (grupo != null) {
+    if (nivel != null) {
       whereClause +=
-          (whereClause.isNotEmpty ? ' AND ' : '') + "grupoId = ${grupo.id}";
+          (whereClause.isNotEmpty ? ' AND ' : '') + "nivelId = ${nivel.id}";
     }
 
     final List<Map<String, dynamic>> situacionesMap = await database.query(
@@ -158,31 +158,31 @@ Future<SituacionIroniaPaginacion> getSituacionIroniaPaginacion(
 ///[database] Objeto Database sobre la cual se ejecutan las insercciones<br>
 ///[enunciado] Enunciado de la pregunta<br>
 ///[imagen] Lista de enteros que es la imagen<br>
-///[grupoId] Identificador del grupo al que va a pertenecer la pregunta
+///[nivelId] Identificador del nivel al que va a pertenecer la pregunta
 ///<br><b>Salida</b><br>
 ///Identificador de la pregunta añadida
 Future<int> insertSituacionIronia(
-    Database database, String enunciado, List<int> imagen, int grupoId) async {
+    Database database, String enunciado, List<int> imagen, int nivelId) async {
   int id = -1;
   await database.transaction((txn) async {
     if (imagen.isEmpty)
       id = await txn.rawInsert(
-        "INSERT INTO situacionIronia (enunciado, imagen, grupoId, byTerapeuta, fecha) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO situacionIronia (enunciado, imagen, nivelId, byTerapeuta, fecha) VALUES (?, ?, ?, ?, ?)",
         [
           enunciado,
           null,
-          grupoId,
+          nivelId,
           1,
           DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
         ],
       );
     else
       id = await txn.rawInsert(
-        "INSERT INTO situacionIronia (enunciado, imagen, grupoId, byTerapeuta, fecha) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO situacionIronia (enunciado, imagen, nivelId, byTerapeuta, fecha) VALUES (?, ?, ?, ?, ?)",
         [
           enunciado,
           imagen,
-          grupoId,
+          nivelId,
           1,
           DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
         ],
@@ -197,21 +197,21 @@ Future<int> insertSituacionIronia(
 ///[database] Objeto Database sobre la cual se ejecutan las insercciones<br>
 ///[enunciado] Enunciado de la pregunta<br>
 ///[pathImg] Ruta en la que se encuentra la imagen<br>
-///[grupoId] Identificador del grupo al que va a pertenecer la pregunta
+///[nivelId] Identificador del nivel al que va a pertenecer la pregunta
 ///<br><b>Salida</b><br>
 ///Identificador de la pregunta añadida
 Future<int> insertSituacionIroniaInitialData(
-    Database database, String enunciado, String pathImg, int grupoId) async {
+    Database database, String enunciado, String pathImg, int nivelId) async {
   int id = -1;
   ByteData imageData = await rootBundle.load(pathImg);
   List<int> bytes = imageData.buffer.asUint8List();
   await database.transaction((txn) async {
     id = await txn.rawInsert(
-      "INSERT INTO situacionIronia (enunciado, imagen, grupoId, fecha) VALUES (?, ?, ?, ?)",
+      "INSERT INTO situacionIronia (enunciado, imagen, nivelId, fecha) VALUES (?, ?, ?, ?)",
       [
         enunciado,
         bytes,
-        grupoId,
+        nivelId,
         DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
       ],
     );
@@ -243,17 +243,17 @@ Future<void> removePreguntaIronia(int situacionIroniaId, [Database? db]) async {
 ///[id] Identificador de la pregunta que queremos actualizar<br>
 ///[enunciado] Nuevo valor del enunciado<br>
 ///[imagen] Nueva lista de enteros que representa la imagen<br>
-///[grupoId] Nuevo valor del grupo al que pertenece la pregunta
+///[nivelId] Nuevo valor del nivel al que pertenece la pregunta
 ///<br><b>Salida</b><br>
 ///Identificador de la pregunta que ha sido actualizada
 Future<int> updatePreguntaIronia(Database database, int id, String enunciado,
-    List<int> imagen, int grupoId) async {
+    List<int> imagen, int nivelId) async {
   return await database.update(
     'situacionIronia',
     {
       'enunciado': enunciado,
       'imagen': imagen,
-      'grupoId': grupoId,
+      'nivelId': nivelId,
       'fecha': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
     },
     where: 'id = ?',
@@ -265,7 +265,7 @@ Future<int> updatePreguntaIronia(Database database, int id, String enunciado,
 ///<br><b>Parámetros</b><br>
 ///[database] Objeto Database sobre la cual se ejecutan las insercciones
 void insertIronias(Database database) {
-  insertIroniasInitialDataAtencionT(database);
-  insertIroniasInitialDataInfancia(database);
-  insertIroniasInitialDataAdolescencia(database);
+  insertIroniasInitialDataFacil(database);
+  insertIroniasInitialDataMedio(database);
+  insertIroniasInitialDataDificil(database);
 }

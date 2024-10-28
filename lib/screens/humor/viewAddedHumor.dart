@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../db/obj/grupo.dart';
+import '../../db/obj/nivel.dart';
 import '../../db/obj/situacionIronia.dart';
 import '../../obj/SituacionIroniaPaginacion.dart';
 import '../../widgets/ImageTextButton.dart';
 import 'editHumor.dart';
 
 ///Pantalla que le permite al terapeuta ver todas las preguntas del juego Humor, también se permite la búsqueda a través del texto
-///del enunciado y/o grupo al que pertenece
+///del enunciado y/o nivel al que pertenece
 class ViewAddedHumor extends StatefulWidget {
   @override
   ViewAddedHumorState createState() => ViewAddedHumorState();
@@ -28,7 +28,7 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
       columnText,
       celdaText,
       enunciadoWidth,
-      grupoWidth,
+      nivelWidth,
       espacioCeldas;
 
   late ImageTextButton btnVolver;
@@ -39,11 +39,11 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
 
   late List<SituacionIronia> situaciones;
 
-  late bool hayMasPreguntas, loadGrupos, loadData;
+  late bool hayMasPreguntas, loadNivels, loadData;
 
-  late List<Grupo> grupos;
+  late List<Nivel> nivels;
 
-  Grupo? selectedGrupo, selectedGrupoAux;
+  Nivel? selectedNivel, selectedNivelAux;
 
   late String txtBuscar = "", txtBuscarAux;
 
@@ -58,12 +58,12 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
     situaciones = [];
     hayMasPreguntas = false;
     _loadPreguntas();
-    selectedGrupo = null;
-    selectedGrupoAux = null;
+    selectedNivel = null;
+    selectedNivelAux = null;
     txtBuscar = "";
     txtBuscarAux = "";
-    grupos = [];
-    _getGrupos();
+    nivels = [];
+    _getNivels();
   }
 
   @override
@@ -168,30 +168,30 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
                         borderRadius: BorderRadius.circular(8.0),
                         color: Colors.grey[200],
                       ),
-                      child: DropdownButton<Grupo>(
+                      child: DropdownButton<Nivel>(
                         hint: Text(
-                          'Grupo',
+                          'Nivel',
                           style: TextStyle(
                             fontFamily: 'ComicNeue',
                             fontSize: textSize * 0.75,
                           ),
                         ),
-                        value: selectedGrupoAux,
+                        value: selectedNivelAux,
                         items: [
                           DropdownMenuItem(
                             child: Text(
-                              'Grupo',
+                              'Nivel',
                               style: TextStyle(
                                 fontFamily: 'ComicNeue',
                                 fontSize: textSize * 0.75,
                               ),
                             ),
                           ),
-                          ...grupos.map((Grupo grupo) {
-                            return DropdownMenuItem<Grupo>(
-                              value: grupo,
+                          ...nivels.map((Nivel nivel) {
+                            return DropdownMenuItem<Nivel>(
+                              value: nivel,
                               child: Text(
-                                grupo.nombre,
+                                nivel.nombre,
                                 style: TextStyle(
                                   fontFamily: 'ComicNeue',
                                   fontSize: textSize * 0.75,
@@ -200,12 +200,12 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
                             );
                           }).toList(),
                         ],
-                        onChanged: (Grupo? grupo) {
+                        onChanged: (Nivel? nivel) {
                           setState(() {
-                            if (grupo?.nombre == 'Grupo')
-                              selectedGrupoAux = null;
+                            if (nivel?.nombre == 'Nivel')
+                              selectedNivelAux = null;
                             else
-                              selectedGrupoAux = grupo;
+                              selectedNivelAux = nivel;
                           });
                         },
                       ),
@@ -218,9 +218,9 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
                 Row(
                   children: [
                     Container(
-                      width: grupoWidth,
+                      width: nivelWidth,
                       child: Text(
-                        'Grupo',
+                        'Nivel',
                         style: TextStyle(
                           fontFamily: 'ComicNeue',
                           fontSize: columnText,
@@ -248,7 +248,7 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
                 ),
                 FutureBuilder<SituacionIroniaPaginacion>(
                   future: getSituacionIroniaPaginacion(
-                      paginaActual, preguntasPagina, txtBuscar, selectedGrupo),
+                      paginaActual, preguntasPagina, txtBuscar, selectedNivel),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
@@ -266,16 +266,16 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
                                 final situacion = situaciones[index];
                                 return Container(
                                   margin: EdgeInsets.only(bottom: espacioAlto),
-                                  child: FutureBuilder<Grupo>(
-                                    future: getGrupoById(situacion.grupoId),
+                                  child: FutureBuilder<Nivel>(
+                                    future: getNivelById(situacion.nivelId),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
                                         return CircularProgressIndicator();
                                       } else if (snapshot.hasError) {
-                                        return Text('Error al cargar el grupo');
+                                        return Text('Error al cargar el nivel');
                                       } else {
-                                        final grupo = snapshot.data;
+                                        final nivel = snapshot.data;
                                         return GestureDetector(
                                           onTap: () {
                                             Navigator.push(
@@ -283,7 +283,7 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
                                               MaterialPageRoute(
                                                 builder: (context) => EditHumor(
                                                   situacionIronia: situacion,
-                                                  grupo: grupo,
+                                                  nivel: nivel,
                                                 ),
                                               ),
                                             ).then((value) {
@@ -296,14 +296,14 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Container(
-                                                  width: grupoWidth,
+                                                  width: nivelWidth,
                                                   child: Column(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
                                                       Text(
-                                                        '${grupo!.nombre}',
+                                                        '${nivel!.nombre}',
                                                         style: TextStyle(
                                                           fontFamily:
                                                               'ComicNeue',
@@ -348,7 +348,7 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
                                                                     EditHumor(
                                                               situacionIronia:
                                                                   situacion,
-                                                              grupo: grupo,
+                                                              nivel: nivel,
                                                             ),
                                                           ),
                                                         ).then((value) {
@@ -372,7 +372,7 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
                                                             ),
                                                           ),
                                                           content: Text(
-                                                            'Estás a punto de eliminar la siguiente pregunta del grupo ${grupo.nombre}:\n'
+                                                            'Estás a punto de eliminar la siguiente pregunta del nivel ${nivel.nombre}:\n'
                                                             '${situacion.enunciado}\n'
                                                             '¿Estás seguro de ello?',
                                                             style: TextStyle(
@@ -546,14 +546,14 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
     columnText = screenSize.width * 0.025;
     celdaText = screenSize.width * 0.02;
 
-    grupoWidth = getWidthOfText(
-          'Grupo',
+    nivelWidth = getWidthOfText(
+          'Nivel',
           context,
         ) +
         espacioPadding * 2;
 
     enunciadoWidth =
-        screenSize.width - (grupoWidth + 48 * 2 + espacioPadding * 3);
+        screenSize.width - (nivelWidth + 48 * 2 + espacioPadding * 3);
     espacioCeldas = espacioPadding;
   }
 
@@ -604,7 +604,7 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
     btnBuscar = ElevatedButton(
       onPressed: () {
         paginaActual = 1;
-        selectedGrupo = selectedGrupoAux;
+        selectedNivel = selectedNivelAux;
         txtBuscar = txtBuscarAux;
         FocusScope.of(context).unfocus();
         _loadPreguntas();
@@ -657,22 +657,22 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
     );
   }
 
-  ///Método que nos permite obtener los grupos con los que cuenta la aplicación y almacenarlos en la variable [grupos]
-  Future<void> _getGrupos() async {
+  ///Método que nos permite obtener los nivels con los que cuenta la aplicación y almacenarlos en la variable [nivels]
+  Future<void> _getNivels() async {
     try {
-      List<Grupo> gruposList = await getGrupos();
+      List<Nivel> nivelsList = await getNiveles();
       setState(() {
-        grupos = gruposList;
+        nivels = nivelsList;
       });
     } catch (e) {
-      print("Error al obtener la lista de grupos: $e");
+      print("Error al obtener la lista de nivels: $e");
     }
   }
 
   ///Método que nos permite cargar de manera paginada las preguntas del juego Humor
   Future<void> _loadPreguntas() async {
     SituacionIroniaPaginacion aux = await getSituacionIroniaPaginacion(
-        paginaActual, preguntasPagina, txtBuscar, selectedGrupo);
+        paginaActual, preguntasPagina, txtBuscar, selectedNivel);
 
     setState(() {
       this.situaciones = aux.situaciones;
