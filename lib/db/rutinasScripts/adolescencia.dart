@@ -53,7 +53,7 @@ void insertPreguntaRutinaInitialDataAdolescencia(Database database) async {
   // LAVAR CARA
   int id_P3 = await insertSituacionRutinaInitialData(
       database,
-      'Por favor, pon en orden lo que tiene que hacer la abuela Carmen para lavarse la cara.',
+      'Por favor, pon en orden lo que tiene que hacer la abuela Paula para lavarse la cara.',
       pathPersonaje + 'abuela.png',
       grupoAdolescencia);
 
@@ -86,7 +86,7 @@ void insertPreguntaRutinaInitialDataAdolescencia(Database database) async {
   // PONER PARTE DE ARRIBA
   int id_P5 = await insertSituacionRutinaInitialData(
       database,
-      'Por favor, pon en orden lo que tendría que hacer nuestro amigo Jaime si quisiera vestirse la parte de arriba.',
+      'Por favor, pon en orden lo que tendría que hacer nuestro amigo Jaime para vestirse la parte de arriba.',
       pathPersonaje + 'chico.png',
       grupoAdolescencia);
   insertAccionInitialData(database, '', 0,
@@ -101,7 +101,7 @@ void insertPreguntaRutinaInitialDataAdolescencia(Database database) async {
   // QUITAR PARTE DE ARRIBA
   int id_P6 = await insertSituacionRutinaInitialData(
       database,
-      'Por favor, pon en orden lo que tendría que hacer nuestro amigo Jaime si quisiera desvestirse la parte de arriba.',
+      'Por favor, pon en orden lo que tendría que hacer nuestro amigo Jaime para desvestirse la parte de arriba.',
       pathPersonaje + 'chico.png',
       grupoAdolescencia);
   insertAccionInitialData(database, '', 0,
@@ -142,7 +142,7 @@ void insertPreguntaRutinaInitialDataAdolescencia(Database database) async {
   // HACER COMPRA
   int id_P9 = await insertSituacionRutinaInitialData(
       database,
-      'Por favor, pon en orden lo que tiene que hacer nuestra amigo Raúl cuando va a hacer la compra.',
+      'Por favor, pon en orden lo que tiene que hacer nuestro amigo Jaime para hacer la compra.',
       pathPersonaje + 'chico.png',
       grupoAdolescencia);
   insertAccionInitialData(database, '', 0,
@@ -167,7 +167,7 @@ void insertPreguntaRutinaInitialDataAdolescencia(Database database) async {
   // IR AL PARQUE
   int id_P10 = await insertSituacionRutinaInitialData(
       database,
-      'Por favor, pon en orden lo que tenemos que hacer si queremos ir al parque.',
+      'Por favor, pon en orden lo que tenemos que hacer para ir al parque.',
       pathPersonaje + 'ambos.png',
       grupoAdolescencia);
 
@@ -226,7 +226,7 @@ void insertPreguntaRutinaInitialDataAdolescencia(Database database) async {
   // IR AL BAÑO (chico)
   int id_P13 = await insertSituacionRutinaInitialData(
       database,
-      'Por favor, pon en orden lo que tiene que hacer nuestro amigo Pepe para hacer sus necesidades (ir al baño).',
+      'Por favor, pon en orden lo que tiene que hacer nuestro amigo Jaime para hacer sus necesidades (ir al baño).',
       pathPersonaje + 'chico.png',
       grupoAdolescencia);
 
@@ -256,7 +256,7 @@ void insertPreguntaRutinaInitialDataAdolescencia(Database database) async {
   // IR AL BAÑO (chica)
   int id_P14 = await insertSituacionRutinaInitialData(
       database,
-      'Por favor, pon en orden lo que tiene que hacer nuestra amiga Iria para hacer sus necesidades (ir al baño).',
+      'Por favor, pon en orden lo que tiene que hacer nuestra amiga Carmen para hacer sus necesidades (ir al baño).',
       pathPersonaje + 'chica.png',
       grupoAdolescencia);
 

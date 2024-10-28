@@ -18,7 +18,8 @@ void insertPreguntaSentimientoInitialDataInfancia(Database database) async {
 
   int id_P1 = await insertPreguntaSentimientoInitialData(
       database,
-      'Cuando alguien esta alegre puede...',
+      'Cuando alguien esta alegre puede...\n'
+          'Pista: Hay 2 respuestas correctas.',
       pathPersonaje + 'contenta.png',
       grupoInfancia);
   insertSituacionInitialData(
@@ -32,7 +33,8 @@ void insertPreguntaSentimientoInitialDataInfancia(Database database) async {
 
   int id_P2 = await insertPreguntaSentimientoInitialData(
       database,
-      '¿Qué puede hacer que nos sintamos tristes?',
+      '¿Qué puede hacer que nos sintamos tristes?\n'
+          'Pista: Hay 2 respuestas correctas.',
       pathPersonaje + 'triste.png',
       grupoInfancia);
   insertSituacionInitialData(database, "Perder una carrera", 1,
@@ -48,7 +50,8 @@ void insertPreguntaSentimientoInitialDataInfancia(Database database) async {
 
   int id_P3 = await insertPreguntaSentimientoInitialData(
       database,
-      '¿Qué puede hacer que nos sintamos contentos?',
+      '¿Qué puede hacer que nos sintamos contentos?\n'
+          'Pista: Hay 3 respuestas correctas.',
       pathPersonaje + 'contenta.png',
       grupoInfancia);
   insertSituacionInitialData(database, "Perder una carrera", 0,
@@ -64,7 +67,8 @@ void insertPreguntaSentimientoInitialDataInfancia(Database database) async {
 
   int id_P4 = await insertPreguntaSentimientoInitialData(
       database,
-      '¿Qué puede hacer que nos asustemos?',
+      '¿Qué puede hacer que nos asustemos?\n'
+          'Pista: Hay 3 respuestas correctas.',
       pathPersonaje + 'asustado.png',
       grupoInfancia);
   insertSituacionInitialData(
@@ -78,7 +82,8 @@ void insertPreguntaSentimientoInitialDataInfancia(Database database) async {
 
   int id_P5 = await insertPreguntaSentimientoInitialData(
       database,
-      'Cuando alguien está enfadado puede...',
+      'Cuando alguien está enfadado puede...\n'
+          'Pista: Hay 2 respuestas correctas.',
       pathPersonaje + 'enfadada.png',
       grupoInfancia);
   insertSituacionInitialData(

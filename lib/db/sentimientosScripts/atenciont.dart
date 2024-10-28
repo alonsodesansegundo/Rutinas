@@ -38,7 +38,7 @@ void insertPreguntaSentimientoInitialDataAtencionT(Database database) async {
 
   int id_P3 = await insertPreguntaSentimientoInitialData(
       database,
-      'Jesús se ha asustado al ver...',
+      'Jaime se ha asustado al ver...',
       pathPersonaje + 'asustado.png',
       grupoAtencionT);
   insertSituacionInitialData(
@@ -48,7 +48,7 @@ void insertPreguntaSentimientoInitialDataAtencionT(Database database) async {
 
   int id_P4 = await insertPreguntaSentimientoInitialData(
       database,
-      'Celia se ha puesto contenta al ver...',
+      'Carmen se ha puesto contenta al ver...',
       pathPersonaje + 'contenta.png',
       grupoAtencionT);
   insertSituacionInitialData(
@@ -58,7 +58,7 @@ void insertPreguntaSentimientoInitialDataAtencionT(Database database) async {
 
   int id_P5 = await insertPreguntaSentimientoInitialData(
       database,
-      'Jaime y Marisa hoy están muy contentos, por eso están...',
+      'Jaime y Carmen hoy están muy contentos, por eso están...',
       pathPersonaje + 'ambos.png',
       grupoAtencionT);
   insertSituacionInitialData(
@@ -68,7 +68,7 @@ void insertPreguntaSentimientoInitialDataAtencionT(Database database) async {
 
   int id_P6 = await insertPreguntaSentimientoInitialData(
       database,
-      'Marisa y Jaime hoy están muy enfadados, por eso están...',
+      'Carmen y Jaime hoy están muy enfadados, por eso están...',
       pathPersonaje + 'enfadadosAmbos.png',
       grupoAtencionT);
   insertSituacionInitialData(
