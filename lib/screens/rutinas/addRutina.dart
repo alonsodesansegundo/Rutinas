@@ -365,20 +365,6 @@ class AddRutinaState extends State<AddRutina> {
                       onPressed: _addAccion,
                       child: Text("Añadir acción"),
                     ),
-                    SizedBox(width: espacioPadding),
-                    if (acciones.length > 2)
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          textStyle: TextStyle(
-                            fontFamily: 'ComicNeue',
-                            fontSize: textSize,
-                            color: Colors.blue,
-                          ),
-                        ),
-                        onPressed: _removeAccion,
-                        child: Text("Eliminar acción"),
-                      ),
                   ],
                 ),
                 SizedBox(height: espacioAlto),
@@ -1011,13 +997,6 @@ class AddRutinaState extends State<AddRutina> {
         flagDificil: selectedNivel?.nombre == "Difícil",
         onPressedRemove: () => _removeAccionButton(acciones.length - 1),
       ));
-    });
-  }
-
-  ///Método que nos permite eliminar el útlimo [ElementAccion] para que haya menos acciones en la pregunta
-  void _removeAccion() {
-    setState(() {
-      acciones.removeLast();
     });
   }
 
