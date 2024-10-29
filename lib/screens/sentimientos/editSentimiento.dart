@@ -53,7 +53,8 @@ class EditSentimientoState extends State<EditSentimiento> {
 
   late AlertDialog incompletedParamsDialog,
       completedParamsDialog,
-      noInternetDialog;
+      noInternetDialog,
+      noMinAnswers;
 
   late bool firstLoad = true, changeNivel;
 
@@ -217,13 +218,15 @@ class EditSentimientoState extends State<EditSentimiento> {
                               setState(() {
                                 changeNivel = true;
                                 selectedNivel = nivel;
-                                respuestas = respuestas.map((respuesta) {
+                                respuestas = respuestas.asMap().entries.map((entry) {
+                                  int index = entry.key; // Obtener el índice actual
+                                  var respuesta = entry.value; // Obtener el elemento actual
+
                                   return ElementRespuestaSentimientos(
                                     id: respuesta.id,
                                     text1: respuesta.text1,
                                     respuestaText: respuesta.respuestaText,
-                                    respuestaImage:
-                                        respuesta.respuestaImage!.toList(),
+                                    respuestaImage: respuesta.respuestaImage!.toList(),
                                     isCorrect: respuesta.isCorrect,
                                     textSize: respuesta.textSize,
                                     espacioPadding: respuesta.espacioPadding,
@@ -231,15 +234,19 @@ class EditSentimientoState extends State<EditSentimiento> {
                                     btnWidth: respuesta.btnWidth,
                                     btnHeight: respuesta.btnHeight,
                                     imgWidth: respuesta.imgWidth,
-                                    onPressedGaleria: () =>
-                                        respuesta.onPressedGaleria,
-                                    onPressedArasaac: () =>
-                                        respuesta.onPressedArasaac,
+                                    onPressedGaleria: () => respuesta.onPressedGaleria,
+                                    onPressedArasaac: () => respuesta.onPressedArasaac,
                                     showPregunta: respuesta.showPregunta,
-                                    flagDificil: (selectedNivel!.nombre ==
-                                        "Difícil"),
+                                    flagDificil: (selectedNivel!.nombre == "Difícil"),
+                                    flagFacil: (selectedNivel!.nombre == "Fácil"),
+                                    onRemoveAnswer: () => _removeAnswerButton(index), // Cambiar a usar el índice
                                   );
                                 }).toList();
+                                if(selectedNivel!.nombre=="Fácil"){
+                                  setState(() {
+                                    respuestas.removeRange(2, respuestas.length);
+                                  });
+                                }
                               });
                             },
                           ),
@@ -363,20 +370,6 @@ class EditSentimientoState extends State<EditSentimiento> {
                         onPressed: _addRespuesta,
                         child: Text("Añadir respuesta"),
                       ),
-                      SizedBox(width: espacioPadding),
-                      if (respuestas.length > 2)
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            textStyle: TextStyle(
-                              fontFamily: 'ComicNeue',
-                              fontSize: textSize,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          onPressed: _removeRespuesta,
-                          child: Text("Eliminar respuesta"),
-                        ),
                     ],
                   ),
                 SizedBox(height: espacioAlto),
@@ -409,6 +402,17 @@ class EditSentimientoState extends State<EditSentimiento> {
                             },
                           );
                         } else {
+                          if (respuestas.length < 2 ||
+                              !_hayRespuestaCorrecta()) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return noMinAnswers;
+                              },
+                            );
+                            return;
+                          }
+
                           _editSentimiento();
                           showDialog(
                             context: context,
@@ -516,6 +520,14 @@ class EditSentimientoState extends State<EditSentimiento> {
     );
   }
 
+  ///Método que sirve para contar las respuestas correctas, para comprobar que al menos hay una
+  bool _hayRespuestaCorrecta() {
+    for (int i = 0; i < respuestas.length; i++) {
+      if (respuestas[i].isCorrect) return true;
+    }
+    return false;
+  }
+
   ///Método que nos permite añadir un nuevo [ElementRespuestaSentimientos] para que haya más respuestas en la pregunta
   void _addRespuesta() {
     setState(() {
@@ -532,19 +544,21 @@ class EditSentimientoState extends State<EditSentimiento> {
               _selectNewActionGallery(respuestas.length - 1),
           onPressedArasaac: () =>
               _selectNewRespuestaArasaac(respuestas.length - 1),
+          onRemoveAnswer: () => _removeAnswerButton(respuestas.length - 1),
           isCorrect: true,
           showPregunta: true,
-          flagDificil:
-              (!changeNivel && defaultNivel!.nombre == "Difícil") ||
-                  (changeNivel && selectedNivel!.nombre == "Difícil")));
+          flagFacil: (!changeNivel && defaultNivel!.nombre == "Fácil") ||
+              (changeNivel && selectedNivel!.nombre == "Fácil"),
+          flagDificil: (!changeNivel && defaultNivel!.nombre == "Difícil") ||
+              (changeNivel && selectedNivel!.nombre == "Difícil")));
     });
   }
 
-  ///Método que nos permite eliminar el útlimo [ElementRespuestaSentimientos] para que haya menos respuestas en la pregunta
-  void _removeRespuesta() {
+  ///Método que nos permite eliminar la respuesta [index]
+  void _removeAnswerButton(int index) {
     setState(() {
-      situacionesToDelete.add(respuestas[respuestas.length - 1]);
-      respuestas.removeLast();
+      situacionesToDelete.add(respuestas[index]);
+      respuestas.removeAt(index);
     });
   }
 
@@ -572,10 +586,8 @@ class EditSentimientoState extends State<EditSentimiento> {
   Future<void> _editRespuestas() async {
     Database db = await openDatabase('rutinas.db');
     for (int i = 0; i < respuestas.length; i++) {
-      print("probando: " + respuestas[i].respuestaText);
       if (i < this.sizeRespuestasInitial) {
         if (selectedNivel!.nombre != "Difícil") {
-          print("update: " + respuestas[i].respuestaText);
 
           await db.update(
             'situacion',
@@ -589,10 +601,6 @@ class EditSentimientoState extends State<EditSentimiento> {
             whereArgs: [respuestas[i].id],
           );
         } else {
-          print("update : " +
-              respuestas[i].id.toString() +
-              " - " +
-              respuestas[i].respuestaText);
 
           await db.update(
             'situacion',
@@ -930,6 +938,41 @@ class EditSentimientoState extends State<EditSentimiento> {
         )
       ],
     );
+
+    // cuadro de dialogo cuando no hay al menos dos posibles respuestas o ninguna de ellas es correcta
+    noMinAnswers = AlertDialog(
+      title: Text(
+        'Error',
+        style: TextStyle(
+          fontFamily: 'ComicNeue',
+          fontSize: titleSize * 0.75,
+        ),
+      ),
+      content: Text(
+        'No hemos podido editar la pregunta con éxito. Recuerda que debe de haber al'
+        ' menos dos posibles respuestas y al menos una de ellas debe de ser correcta.',
+        style: TextStyle(
+          fontFamily: 'ComicNeue',
+          fontSize: textSize,
+        ),
+      ),
+      actions: [
+        Center(
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'Aceptar',
+              style: TextStyle(
+                fontFamily: 'ComicNeue',
+                fontSize: textSize,
+              ),
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   ///Método que nos permite seleccionar una nueva imagen para la pregunta a través de la galería
@@ -979,11 +1022,13 @@ class EditSentimientoState extends State<EditSentimiento> {
                 imgWidth: respuestas[index].imgWidth,
                 onPressedGaleria: () => _selectNewActionGallery(index),
                 onPressedArasaac: () => _selectNewRespuestaArasaac(index),
+                onRemoveAnswer: () => _removeAnswerButton(index),
                 isCorrect: respuestas[index].isCorrect,
                 showPregunta: respuestas[index].showPregunta,
                 respuestaText: respuestas[index].respuestaText,
                 respuestaImage: bytes,
-                flagDificil: respuestas[index].flagDificil);
+                flagDificil: respuestas[index].flagDificil,
+                flagFacil: respuestas[index].flagFacil);
           });
         },
       );
@@ -1014,11 +1059,13 @@ class EditSentimientoState extends State<EditSentimiento> {
             imgWidth: respuestas[index].imgWidth,
             onPressedGaleria: () => _selectNewActionGallery(index),
             onPressedArasaac: () => _selectNewRespuestaArasaac(index),
+            onRemoveAnswer: () => _removeAnswerButton(index),
             isCorrect: respuestas[index].isCorrect,
             showPregunta: respuestas[index].showPregunta,
             respuestaText: respuestas[index].respuestaText,
             respuestaImage: bytes,
-            flagDificil: respuestas[index].flagDificil);
+            flagDificil: respuestas[index].flagDificil,
+            flagFacil: respuestas[index].flagFacil);
       });
     }
   }
@@ -1089,8 +1136,10 @@ class EditSentimientoState extends State<EditSentimiento> {
         imgWidth: imgWidth,
         onPressedGaleria: () => _selectNewActionGallery(i),
         onPressedArasaac: () => _selectNewRespuestaArasaac(i),
+        onRemoveAnswer: () => _removeAnswerButton(i),
         showPregunta: (i != 0 && i != 1),
         flagDificil: (widget.nivel.nombre == "Difícil"),
+        flagFacil: (widget.nivel.nombre == "Fácil"),
       );
       setState(() {
         this.respuestas.add(elementRespuestaSentimientos);

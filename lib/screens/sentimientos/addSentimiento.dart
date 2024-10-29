@@ -48,7 +48,7 @@ class AddSentimientoState extends State<AddSentimiento> {
 
   late AlertDialog incompletedParamsDialog,
       completedParamsDialog,
-      noInternetDialog;
+      noInternetDialog, noMinAnswers;
 
   late bool firstLoad, esIronia, noEsIronia;
 
@@ -213,9 +213,12 @@ class AddSentimientoState extends State<AddSentimiento> {
                                         _selectNewActionGallery(0),
                                     onPressedArasaac: () =>
                                         _selectNewRespuestaArasaac(0),
+                                    onRemoveAnswer: () => _removeAnswerButton(0),
                                     showPregunta: false,
                                     flagDificil: (selectedNivel!.nombre ==
                                         "Difícil"),
+                                    flagFacil: (selectedNivel!.nombre ==
+                                        "Fácil"),
                                   ));
 
                                   respuestas
@@ -234,9 +237,12 @@ class AddSentimientoState extends State<AddSentimiento> {
                                         _selectNewActionGallery(1),
                                     onPressedArasaac: () =>
                                         _selectNewRespuestaArasaac(1),
+                                    onRemoveAnswer: () => _removeAnswerButton(1),
                                     showPregunta: false,
                                     flagDificil: (selectedNivel!.nombre ==
                                         "Difícil"),
+                                    flagFacil: (selectedNivel!.nombre ==
+                                        "Fácil"),
                                   ));
                                 });
                               });
@@ -365,19 +371,6 @@ class AddSentimientoState extends State<AddSentimiento> {
                           child: Text("Añadir respuesta"),
                         ),
                       SizedBox(width: espacioPadding),
-                      if (respuestas.length > 2)
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            textStyle: TextStyle(
-                              fontFamily: 'ComicNeue',
-                              fontSize: textSize,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          onPressed: _removeRespuesta,
-                          child: Text("Eliminar respuesta"),
-                        ),
                     ],
                   ),
                 SizedBox(height: espacioAlto),
@@ -402,6 +395,15 @@ class AddSentimientoState extends State<AddSentimiento> {
                             },
                           );
                         } else {
+                          if(respuestas.length<2 || !_hayRespuestaCorrecta()){
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return noMinAnswers;
+                              },
+                            );
+                            return;
+                          }
                           _addPreguntaSentimientos();
                           showDialog(
                             context: context,
@@ -423,6 +425,16 @@ class AddSentimientoState extends State<AddSentimiento> {
     );
   }
 
+  ///Método que sirve para contar las respuestas correctas, para comprobar que al menos hay una
+  bool _hayRespuestaCorrecta(){
+    for(int i=0;i<respuestas.length;i++){
+      if(respuestas[i].isCorrect)
+        return true;
+    }
+    return false;
+  }
+
+
   ///Método que nos permite añadir un nuevo [ElementRespuestaSentimientos] para que haya más respuestas en la pregunta
   void _addRespuesta() {
     setState(() {
@@ -438,17 +450,20 @@ class AddSentimientoState extends State<AddSentimiento> {
         onPressedGaleria: () => _selectNewActionGallery(respuestas.length - 1),
         onPressedArasaac: () =>
             _selectNewRespuestaArasaac(respuestas.length - 1),
+        onRemoveAnswer: () => _removeAnswerButton(respuestas.length-1),
         isCorrect: true,
         showPregunta: true,
         flagDificil: (selectedNivel!.nombre == "Difícil"),
+        flagFacil: (selectedNivel!.nombre ==
+            "Fácil"),
       ));
     });
   }
 
-  ///Método que nos permite eliminar el útlimo [ElementRespuestaSentimientos] para que haya menos respuestas en la pregunta
-  void _removeRespuesta() {
+  ///Método que nos permite eliminar la respuesta [index]
+  void _removeAnswerButton(int index){
     setState(() {
-      respuestas.removeLast();
+      respuestas.removeAt(index);
     });
   }
 
@@ -711,6 +726,41 @@ class AddSentimientoState extends State<AddSentimiento> {
         )
       ],
     );
+
+    // cuadro de dialogo cuando no hay al menos dos posibles respuestas o ninguna de ellas es correcta
+    noMinAnswers = AlertDialog(
+      title: Text(
+        'Error',
+        style: TextStyle(
+          fontFamily: 'ComicNeue',
+          fontSize: titleSize * 0.75,
+        ),
+      ),
+      content: Text(
+        'No hemos podido editar la pregunta con éxito. Recuerda que debe de haber al'
+            ' menos dos posibles respuestas y al menos una de ellas debe de ser correcta.',
+        style: TextStyle(
+          fontFamily: 'ComicNeue',
+          fontSize: textSize,
+        ),
+      ),
+      actions: [
+        Center(
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'Aceptar',
+              style: TextStyle(
+                fontFamily: 'ComicNeue',
+                fontSize: textSize,
+              ),
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   ///Método que nos permite seleccionar una imagen de nuestra galería para la pregunta, dicha imagen se guarda en la variable [image]
@@ -762,11 +812,14 @@ class AddSentimientoState extends State<AddSentimiento> {
                 imgWidth: respuestas[index].imgWidth,
                 onPressedGaleria: () => _selectNewActionGallery(index),
                 onPressedArasaac: () => _selectNewRespuestaArasaac(index),
+                onRemoveAnswer: () => _removeAnswerButton(index),
                 isCorrect: respuestas[index].isCorrect,
                 showPregunta: respuestas[index].showPregunta,
                 respuestaText: respuestas[index].respuestaText,
                 respuestaImage: bytes,
-                flagDificil: respuestas[index].flagDificil);
+                flagDificil: respuestas[index].flagDificil,
+                flagFacil: respuestas[index].flagFacil,
+            );
           });
         },
       );
@@ -800,11 +853,13 @@ class AddSentimientoState extends State<AddSentimiento> {
             imgWidth: respuestas[index].imgWidth,
             onPressedGaleria: () => _selectNewActionGallery(index),
             onPressedArasaac: () => _selectNewRespuestaArasaac(index),
+            onRemoveAnswer: () => _removeAnswerButton(index),
             isCorrect: respuestas[index].isCorrect,
             showPregunta: respuestas[index].showPregunta,
             respuestaText: respuestas[index].respuestaText,
             respuestaImage: bytes,
-            flagDificil: respuestas[index].flagDificil);
+            flagDificil: respuestas[index].flagDificil,
+            flagFacil: respuestas[index].flagFacil);
       });
     }
   }

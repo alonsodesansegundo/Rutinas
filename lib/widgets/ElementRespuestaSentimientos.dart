@@ -15,11 +15,12 @@ class ElementRespuestaSentimientos extends StatefulWidget {
   double imgWidth;
   final Function() onPressedGaleria;
   final Function() onPressedArasaac;
+  final Function() onRemoveAnswer;
   String respuestaText;
   List<int> respuestaImage;
   Color color;
   final TextEditingController accionTextController = TextEditingController();
-  bool flagDificil;
+  bool flagFacil, flagDificil;
   bool showPregunta;
 
   ///Constructor de la clase ElementRespuestaSentimientos
@@ -35,9 +36,11 @@ class ElementRespuestaSentimientos extends StatefulWidget {
     required this.imgWidth,
     required this.onPressedGaleria,
     required this.onPressedArasaac,
+    required this.onRemoveAnswer,
     this.respuestaText = "",
     this.respuestaImage = const [],
     this.color = Colors.transparent,
+    this.flagFacil = false,
     this.flagDificil = false,
     required this.showPregunta,
   });
@@ -211,9 +214,9 @@ class _ElementRespuestaSentimientosState
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
-              )
+              ),
           ],
         ),
         if (widget.showPregunta)
@@ -281,6 +284,27 @@ class _ElementRespuestaSentimientosState
               ],
             ),
           ),
+        SizedBox(height: widget.espacioAlto / 3),
+        if (!widget.flagFacil)
+          Row(
+            children: [
+              SizedBox(width: widget.espacioPadding),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(widget.btnWidth, widget.btnHeight / 2),
+                  backgroundColor: Colors.red,
+                ),
+                child: Text(
+                  'Eliminar respuesta',
+                  style: TextStyle(
+                    fontFamily: 'ComicNeue',
+                    fontSize: widget.textSize * 0.8,
+                  ),
+                ),
+                onPressed: widget.onRemoveAnswer,
+              ),
+            ],
+          )
       ],
     );
   }
