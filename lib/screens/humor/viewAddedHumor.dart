@@ -335,8 +335,15 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    SizedBox(
-                                                        width: espacioPadding),
+                                                    IconButton(
+                                                      icon: Icon(situacion.visible==1 ? Icons.visibility : Icons.visibility_off),
+                                                      onPressed: () {
+                                                        changeVisibility(situacion.id!);
+                                                        setState(() {
+                                                          situacion.visible = situacion.visible == 1 ? 0 : 1;
+                                                        });
+                                                      },
+                                                    ),
                                                     IconButton(
                                                       icon: Icon(Icons.edit),
                                                       onPressed: () {
@@ -553,7 +560,7 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
         espacioPadding * 2;
 
     enunciadoWidth =
-        screenSize.width - (nivelWidth + 48 * 2 + espacioPadding * 3);
+        screenSize.width - (nivelWidth + 48 * 3 + espacioPadding * 3);
     espacioCeldas = espacioPadding;
   }
 

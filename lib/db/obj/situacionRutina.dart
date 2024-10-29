@@ -17,6 +17,7 @@ class SituacionRutina {
   final int nivelId;
   final String fecha;
   final int byTerapeuta;
+  int visible;
 
   ///Constructor de la clase SituacionRutina
   SituacionRutina(
@@ -25,7 +26,8 @@ class SituacionRutina {
       this.personajeImg,
       required this.nivelId,
       required this.fecha,
-      required this.byTerapeuta});
+      required this.byTerapeuta,
+      required this.visible});
 
   ///Crea una instancia de SituacionRutina a partir de un mapa de datos, dicho mapa debe contener:
   ///id, enunciado, personajeImg, nivelId, fecha y byTerapeuta
@@ -35,7 +37,8 @@ class SituacionRutina {
         personajeImg = item["personajeImg"],
         nivelId = item["nivelId"],
         fecha = item["fecha"],
-        byTerapeuta = item["byTerapeuta"];
+        byTerapeuta = item["byTerapeuta"],
+        visible = item["visible"];
 
   ///Crea una instancia de SituacionIronia a partir de un mapa de datos, dicho mapa debe contener:
   ///id, enunciado, imagen, nivelId, fecha y byTerapeuta
@@ -91,8 +94,11 @@ Future<List<SituacionRutina>> getSituacionesRutinas(int nivelId,
     [Database? db]) async {
   try {
     final Database database = db ?? await initializeDB();
-    final List<Map<String, dynamic>> preguntasMap = await database
-        .query('situacionRutina', where: 'nivelId = ?', whereArgs: [nivelId]);
+    final List<Map<String, dynamic>> preguntasMap = await database.query(
+      'situacionRutina',
+      where: 'nivelId = ? AND visible = ?',
+      whereArgs: [nivelId, 1],
+    );
     return preguntasMap
         .map((map) => SituacionRutina.situacionesFromMap(map))
         .toList();
@@ -162,30 +168,33 @@ Future<SituacionRutinaPaginacion> getSituacionRutinaPaginacion(
 ///[nivelId] Identificador del nivel al que va a pertenecer la pregunta
 ///<br><b>Salida</b><br>
 ///Identificador de la pregunta que se ha añadido
-Future<int> insertSituacionRutina(Database database, String enunciado,
-    List<int> imgPersonaje, int nivelId) async {
+Future<int> insertSituacionRutina(
+    Database database, String enunciado, List<int> imgPersonaje, int nivelId,
+    {int visibility = 1}) async {
   int id = -1;
   await database.transaction((txn) async {
     if (imgPersonaje.isEmpty)
       id = await txn.rawInsert(
-        "INSERT INTO situacionRutina (enunciado, personajeImg, nivelId, byTerapeuta, fecha) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO situacionRutina (enunciado, personajeImg, nivelId, byTerapeuta, fecha, visible) VALUES (?, ?, ?, ?, ?, ?)",
         [
           enunciado,
           null,
           nivelId,
           1,
-          DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
+          DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+          visibility
         ],
       );
     else
       id = await txn.rawInsert(
-        "INSERT INTO situacionRutina (enunciado, personajeImg, nivelId, byTerapeuta, fecha) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO situacionRutina (enunciado, personajeImg, nivelId, byTerapeuta, fecha, visible) VALUES (?, ?, ?, ?, ?, ?)",
         [
           enunciado,
           imgPersonaje,
           nivelId,
           1,
-          DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
+          DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+          visibility
         ],
       );
   });
@@ -247,7 +256,8 @@ Future<void> removePreguntaRutinas(int situacionRutinaId,
 ///[imgPersonaje] Nueva lista de enteros que representa la imagen<br>
 ///[nivelId] Nuevo valor del nivel al que pertenece la pregunta<br>
 Future<void> updatePregunta(Database database, int id, String enunciado,
-    List<int> imgPersonaje, int nivelId) async {
+    List<int> imgPersonaje, int nivelId,
+    {int visibility = 1}) async {
   if (imgPersonaje.isEmpty)
     await database.update(
       'situacionRutina',
@@ -255,7 +265,8 @@ Future<void> updatePregunta(Database database, int id, String enunciado,
         'enunciado': enunciado,
         'personajeImg': null,
         'nivelId': nivelId,
-        'fecha': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
+        'fecha': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+        'visible': visibility
       },
       where: 'id = ?',
       whereArgs: [id],
@@ -267,11 +278,44 @@ Future<void> updatePregunta(Database database, int id, String enunciado,
         'enunciado': enunciado,
         'personajeImg': imgPersonaje,
         'nivelId': nivelId,
-        'fecha': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
+        'fecha': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+        'visible': visibility
       },
       where: 'id = ?',
       whereArgs: [id],
     );
+}
+
+///Método que nos permite cambiar la visibilidad de la situacionId
+Future<void> changeVisibility(int situacionId, [Database? db]) async {
+  try {
+    final Database database = db ?? await initializeDB();
+
+    // Obtener el valor actual de 'visible' para la situación especificada
+    final List<Map<String, dynamic>> result = await database.query(
+      'situacionRutina',
+      columns: ['visible'],
+      where: 'id = ?',
+      whereArgs: [situacionId],
+      limit: 1,
+    );
+
+    if (result.isNotEmpty) {
+      // Invertir el valor de 'visible' (0 -> 1 o 1 -> 0)
+      int currentVisible = result.first['visible'] ?? 0;
+      int newVisible = currentVisible == 0 ? 1 : 0;
+
+      // Actualizar el valor de 'visible' en la base de datos
+      await database.update(
+        'situacionRutina',
+        {'visible': newVisible},
+        where: 'id = ?',
+        whereArgs: [situacionId],
+      );
+    }
+  } catch (e) {
+    print("Error al cambiar visibilidad: $e");
+  }
 }
 
 ///Método que se encarga de hacer la insercción de las preguntas del juego Rutinas que están presentes inicialmente

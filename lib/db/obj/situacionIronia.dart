@@ -17,6 +17,7 @@ class SituacionIronia {
   final int nivelId;
   final String fecha;
   final int byTerapeuta;
+  int visible;
 
   ///Constructor de la clase SituacionIronia
   SituacionIronia(
@@ -25,7 +26,8 @@ class SituacionIronia {
       this.imagen,
       required this.nivelId,
       required this.fecha,
-      required this.byTerapeuta});
+      required this.byTerapeuta,
+      required this.visible});
 
   ///Crea una instancia de SituacionIronia a partir de un mapa de datos, dicho mapa debe contener:
   ///id, enunciado, imagen, nivelId, fecha y byTerapeuta
@@ -35,7 +37,8 @@ class SituacionIronia {
         imagen = item["imagen"],
         nivelId = item["nivelId"],
         fecha = item["fecha"],
-        byTerapeuta = item["byTerapeuta"];
+        byTerapeuta = item["byTerapeuta"],
+        visible = item["visible"];
 
   ///Convierte una instancia de SituacionIronia a un mapa de datos
   Map<String, Object> situacionesToMap() {
@@ -43,7 +46,8 @@ class SituacionIronia {
       'enunciado': enunciado,
       'nivelId': nivelId,
       'fecha': fecha,
-      'byTerapeuta': byTerapeuta
+      'byTerapeuta': byTerapeuta,
+      'visible': visible
     };
   }
 
@@ -57,7 +61,8 @@ class SituacionIronia {
         other.enunciado == enunciado &&
         other.nivelId == nivelId &&
         other.fecha == fecha &&
-        other.byTerapeuta == byTerapeuta;
+        other.byTerapeuta == byTerapeuta &&
+        other.visible == visible;
   }
 
   ///Sobreescritura del método hashCode
@@ -67,16 +72,18 @@ class SituacionIronia {
       enunciado.hashCode ^
       nivelId.hashCode ^
       fecha.hashCode ^
-      byTerapeuta.hashCode;
+      byTerapeuta.hashCode ^
+      visible.hashCode;
 
   ///Sobreescritura del método toString
   @override
   String toString() {
     return 'SituacionIronia {id: $id, enunciado: $enunciado,'
         ' imagen: $imagen, '
-        'nivelId: $nivelId}, '
-        'fecha: $fecha}, '
-        'byTerapeuta: $byTerapeuta, ';
+        'nivelId: $nivelId, '
+        'fecha: $fecha, '
+        'byTerapeuta: $byTerapeuta, '
+        'visible: $visible';
   }
 }
 
@@ -91,7 +98,7 @@ Future<List<SituacionIronia>> getSituacionesIronias(int nivelId,
   try {
     final Database database = db ?? await initializeDB();
     final List<Map<String, dynamic>> preguntasMap = await database
-        .query('situacionIronia', where: 'nivelId = ?', whereArgs: [nivelId]);
+        .query('situacionIronia', where: 'nivelId = ? AND visible = ?', whereArgs: [nivelId,1]);
     return preguntasMap
         .map((map) => SituacionIronia.situacionesFromMap(map))
         .toList();
@@ -162,29 +169,31 @@ Future<SituacionIroniaPaginacion> getSituacionIroniaPaginacion(
 ///<br><b>Salida</b><br>
 ///Identificador de la pregunta añadida
 Future<int> insertSituacionIronia(
-    Database database, String enunciado, List<int> imagen, int nivelId) async {
+    Database database, String enunciado, List<int> imagen, int nivelId, {int visibility = 1}) async {
   int id = -1;
   await database.transaction((txn) async {
     if (imagen.isEmpty)
       id = await txn.rawInsert(
-        "INSERT INTO situacionIronia (enunciado, imagen, nivelId, byTerapeuta, fecha) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO situacionIronia (enunciado, imagen, nivelId, byTerapeuta, fecha, visible) VALUES (?, ?, ?, ?, ?, ?)",
         [
           enunciado,
           null,
           nivelId,
           1,
-          DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
+          DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+          visibility
         ],
       );
     else
       id = await txn.rawInsert(
-        "INSERT INTO situacionIronia (enunciado, imagen, nivelId, byTerapeuta, fecha) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO situacionIronia (enunciado, imagen, nivelId, byTerapeuta, fecha, visible) VALUES (?, ?, ?, ?, ?, ?)",
         [
           enunciado,
           imagen,
           nivelId,
           1,
-          DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
+          DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+          visibility
         ],
       );
   });
@@ -247,18 +256,51 @@ Future<void> removePreguntaIronia(int situacionIroniaId, [Database? db]) async {
 ///<br><b>Salida</b><br>
 ///Identificador de la pregunta que ha sido actualizada
 Future<int> updatePreguntaIronia(Database database, int id, String enunciado,
-    List<int> imagen, int nivelId) async {
+    List<int> imagen, int nivelId, {int visibility = 1}) async {
   return await database.update(
     'situacionIronia',
     {
       'enunciado': enunciado,
       'imagen': imagen,
       'nivelId': nivelId,
-      'fecha': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())
+      'fecha': DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()),
+      'visible': visibility
     },
     where: 'id = ?',
     whereArgs: [id],
   );
+}
+
+///Método que nos permite cambiar la visibilidad de la situacionId
+Future<void> changeVisibility(int situacionId, [Database? db]) async {
+  try {
+    final Database database = db ?? await initializeDB();
+
+    // Obtener el valor actual de 'visible' para la situación especificada
+    final List<Map<String, dynamic>> result = await database.query(
+      'situacionIronia',
+      columns: ['visible'],
+      where: 'id = ?',
+      whereArgs: [situacionId],
+      limit: 1,
+    );
+
+    if (result.isNotEmpty) {
+      // Invertir el valor de 'visible' (0 -> 1 o 1 -> 0)
+      int currentVisible = result.first['visible'] ?? 0;
+      int newVisible = currentVisible == 0 ? 1 : 0;
+
+      // Actualizar el valor de 'visible' en la base de datos
+      await database.update(
+        'situacionIronia',
+        {'visible': newVisible},
+        where: 'id = ?',
+        whereArgs: [situacionId],
+      );
+    }
+  } catch (e) {
+    print("Error al cambiar visibilidad: $e");
+  }
 }
 
 ///Método que se encarga de hacer la insercción de las preguntas del juego Humor que están presentes inicialmente

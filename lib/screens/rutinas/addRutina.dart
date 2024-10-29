@@ -59,13 +59,14 @@ class AddRutinaState extends State<AddRutina> {
 
   late AlertDialog incompletedParamsDialog,
       completedParamsDialog,
-      noInternetDialog, noMinActions;
+      noInternetDialog,
+      noMinActions;
 
   late List<String> personajes;
 
   late List<ElementAccion> acciones;
 
-  late bool firstLoad;
+  late bool firstLoad, isVisible = true;
 
   late List<int> personajeImage;
 
@@ -370,6 +371,48 @@ class AddRutinaState extends State<AddRutina> {
                 SizedBox(height: espacioAlto),
                 Row(
                   children: [
+                    Text(
+                      '¿Hacer visible?',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                    Checkbox(
+                      value: isVisible, // Checkbox para "Sí"
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isVisible = true; // Establece visible a true
+                        });
+                      },
+                    ),
+                    Text(
+                      'Sí',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                    Checkbox(
+                      value: !isVisible, // Checkbox para "No"
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isVisible = false; // Establece visible a false
+                        });
+                      },
+                    ),
+                    Text(
+                      'No',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: espacioAlto),
+                Row(
+                  children: [
                     const Spacer(), // Agrega un espacio flexible
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -389,7 +432,7 @@ class AddRutinaState extends State<AddRutina> {
                             },
                           );
                         } else {
-                          if(acciones.length<2){
+                          if (acciones.length < 2) {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
@@ -621,7 +664,7 @@ class AddRutinaState extends State<AddRutina> {
       ),
       content: Text(
         'No se ha podido editar la rutina correctamente, recuerda que'
-            ' debe de haber al menos 2 acciones para que haya posibilidad de ordenarlas.',
+        ' debe de haber al menos 2 acciones para que haya posibilidad de ordenarlas.',
         style: TextStyle(
           fontFamily: 'ComicNeue',
           fontSize: textSize,
@@ -957,7 +1000,7 @@ class AddRutinaState extends State<AddRutina> {
         acciones[i] = ElementAccion(
           id: acciones[i].id,
           text1: "Acción ${i + 1}*:",
-          numberAccion: i+1,
+          numberAccion: i + 1,
           textSize: acciones[i].textSize,
           espacioPadding: acciones[i].espacioPadding,
           espacioAlto: acciones[i].espacioAlto,
@@ -1051,13 +1094,14 @@ class AddRutinaState extends State<AddRutina> {
   Future<int> _addPregunta() async {
     int preguntaId;
     Database db = await openDatabase('rutinas.db');
+    int visibility = isVisible ? 1 : 0;
 
     if (personajeImage.isEmpty)
       preguntaId =
-          await insertSituacionRutina(db, situacionText, [], selectedNivel!.id);
+          await insertSituacionRutina(db, situacionText, [], selectedNivel!.id, visibility: visibility);
     else
       preguntaId = await insertSituacionRutina(db, situacionText,
-          Uint8List.fromList(personajeImage), selectedNivel!.id);
+          Uint8List.fromList(personajeImage), selectedNivel!.id, visibility: visibility);
     return preguntaId;
   }
 

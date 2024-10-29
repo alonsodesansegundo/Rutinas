@@ -50,7 +50,7 @@ class AddSentimientoState extends State<AddSentimiento> {
       completedParamsDialog,
       noInternetDialog, noMinAnswers;
 
-  late bool firstLoad, esIronia, noEsIronia;
+  late bool firstLoad, isVisible=true;
 
   late List<int> image;
 
@@ -79,8 +79,6 @@ class AddSentimientoState extends State<AddSentimiento> {
     colorNivel = Colors.transparent;
     colorBordeImagen = Colors.transparent;
     colorCheckbox = Colors.transparent;
-    esIronia = false;
-    noEsIronia = false;
 
     _initializeState();
   }
@@ -373,6 +371,48 @@ class AddSentimientoState extends State<AddSentimiento> {
                       SizedBox(width: espacioPadding),
                     ],
                   ),
+                SizedBox(height: espacioAlto),
+                Row(
+                  children: [
+                    Text(
+                      '¿Hacer visible?',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                    Checkbox(
+                      value: isVisible, // Checkbox para "Sí"
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isVisible = true; // Establece visible a true
+                        });
+                      },
+                    ),
+                    Text(
+                      'Sí',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                    Checkbox(
+                      value: !isVisible, // Checkbox para "No"
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isVisible = false; // Establece visible a false
+                        });
+                      },
+                    ),
+                    Text(
+                      'No',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                  ],
+                ),
                 SizedBox(height: espacioAlto),
                 Row(
                   children: [
@@ -973,13 +1013,14 @@ class AddSentimientoState extends State<AddSentimiento> {
   Future<int> _addPregunta() async {
     int preguntaId;
     Database db = await openDatabase('rutinas.db');
+    int visibility = isVisible ? 1 : 0;
 
     if (image.isEmpty)
       preguntaId = await insertPreguntaSentimiento(
-          db, preguntaText, [], selectedNivel!.id);
+          db, preguntaText, [], selectedNivel!.id, visibility: visibility);
     else
       preguntaId = await insertPreguntaSentimiento(
-          db, preguntaText, Uint8List.fromList(image), selectedNivel!.id);
+          db, preguntaText, Uint8List.fromList(image), selectedNivel!.id, visibility: visibility);
     return preguntaId;
   }
 }

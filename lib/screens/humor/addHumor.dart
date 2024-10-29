@@ -52,7 +52,7 @@ class AddHumorState extends State<AddHumor> {
       completedParamsDialog,
       noInternetDialog;
 
-  late bool firstLoad, esIronia, noEsIronia;
+  late bool firstLoad, esIronia, noEsIronia, isVisible=true;
 
   late List<int> image;
 
@@ -478,6 +478,49 @@ class AddHumorState extends State<AddHumor> {
                 SizedBox(height: espacioAlto),
                 Row(
                   children: [
+                    Text(
+                      '¿Hacer visible?',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                    Checkbox(
+                      value: isVisible, // Checkbox para "Sí"
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isVisible = true; // Establece visible a true
+                        });
+                      },
+                    ),
+                    Text(
+                      'Sí',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                    Checkbox(
+                      value: !isVisible, // Checkbox para "No"
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isVisible = false; // Establece visible a false
+                        });
+                      },
+                    ),
+                    Text(
+                      'No',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: espacioAlto),
+
+                Row(
+                  children: [
                     const Spacer(), // Agrega un espacio flexible
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -868,8 +911,9 @@ class AddHumorState extends State<AddHumor> {
   Future<int> _addPregunta() async {
     int preguntaId;
     Database db = await openDatabase('rutinas.db');
+    int visibility = isVisible ? 1 : 0;
     preguntaId = await insertSituacionIronia(
-        db, situacionText, Uint8List.fromList(image), selectedNivel!.id);
+        db, situacionText, Uint8List.fromList(image), selectedNivel!.id, visibility: visibility);
     return preguntaId;
   }
 

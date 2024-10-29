@@ -336,8 +336,15 @@ class ViewAddedSentimientoState extends State<ViewAddedSentimiento> {
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    SizedBox(
-                                                        width: espacioPadding),
+                                                    IconButton(
+                                                      icon: Icon(pregunta.visible==1 ? Icons.visibility : Icons.visibility_off),
+                                                      onPressed: () {
+                                                        changeVisibility(pregunta.id!);
+                                                        setState(() {
+                                                          pregunta.visible = pregunta.visible == 1 ? 0 : 1;
+                                                        });
+                                                      },
+                                                    ),
                                                     IconButton(
                                                       icon: Icon(Icons.edit),
                                                       onPressed: () {
@@ -553,7 +560,7 @@ class ViewAddedSentimientoState extends State<ViewAddedSentimiento> {
         espacioPadding * 2;
 
     enunciadoWidth =
-        screenSize.width - (nivelWidth + 48 * 2 + espacioPadding * 3);
+        screenSize.width - (nivelWidth + 48 * 3 + espacioPadding * 3);
     espacioCeldas = espacioPadding;
   }
 

@@ -78,7 +78,7 @@ class EditRutinaState extends State<EditRutina> {
       noInternetDialog,
       removePreguntaOk,noMinActions;
 
-  late bool firstLoad = true, changeNivel, loadData;
+  late bool firstLoad = true, changeNivel, loadData, isVisible;
 
   late Nivel defaultNivel;
 
@@ -100,6 +100,7 @@ class EditRutinaState extends State<EditRutina> {
     if (firstLoad) {
       firstLoad = false;
       _getNiveles();
+      isVisible = widget.situacionRutina.visible == 1; // true si es 1, false si es 0
       situacionText = widget.situacionRutina.enunciado;
       if (widget.situacionRutina.personajeImg != null) {
         setState(() {
@@ -366,6 +367,48 @@ class EditRutinaState extends State<EditRutina> {
                       child: Text("Añadir acción"),
                     ),
                     SizedBox(width: espacioPadding),
+                  ],
+                ),
+                SizedBox(height: espacioAlto),
+                Row(
+                  children: [
+                    Text(
+                      '¿Hacer visible?',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                    Checkbox(
+                      value: isVisible, // Checkbox para "Sí"
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isVisible = true; // Establece visible a true
+                        });
+                      },
+                    ),
+                    Text(
+                      'Sí',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                    Checkbox(
+                      value: !isVisible, // Checkbox para "No"
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isVisible = false; // Establece visible a false
+                        });
+                      },
+                    ),
+                    Text(
+                      'No',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: espacioAlto),
@@ -1143,8 +1186,9 @@ class EditRutinaState extends State<EditRutina> {
   ///Método encargado de editar una pregunta juego Rutinas
   Future<void> _editPregunta() async {
     Database db = await openDatabase('rutinas.db');
+    int visibility = isVisible ? 1 : 0;
     await updatePregunta(db, widget.situacionRutina.id!, situacionText,
-        Uint8List.fromList(personajeImage), selectedNivel!.id);
+        Uint8List.fromList(personajeImage), selectedNivel!.id, visibility: visibility);
   }
 
   ///Método encargado de editar las respuestas a una pregunta del juego Rutinas

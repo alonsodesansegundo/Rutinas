@@ -56,7 +56,7 @@ class EditSentimientoState extends State<EditSentimiento> {
       noInternetDialog,
       noMinAnswers;
 
-  late bool firstLoad = true, changeNivel;
+  late bool firstLoad = true, changeNivel, isVisible;
 
   late List<int> image;
 
@@ -95,6 +95,7 @@ class EditSentimientoState extends State<EditSentimiento> {
     if (firstLoad) {
       firstLoad = false;
       _getNivels();
+      isVisible = widget.preguntaSentimiento.visible == 1; // true si es 1, false si es 0
       preguntaText = widget.preguntaSentimiento.enunciado;
       if (widget.preguntaSentimiento.imagen != null) {
         setState(() {
@@ -374,6 +375,48 @@ class EditSentimientoState extends State<EditSentimiento> {
                 SizedBox(height: espacioAlto),
                 Row(
                   children: [
+                    Text(
+                      '¿Hacer visible?',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                    Checkbox(
+                      value: isVisible, // Checkbox para "Sí"
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isVisible = true; // Establece visible a true
+                        });
+                      },
+                    ),
+                    Text(
+                      'Sí',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                    Checkbox(
+                      value: !isVisible, // Checkbox para "No"
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isVisible = false; // Establece visible a false
+                        });
+                      },
+                    ),
+                    Text(
+                      'No',
+                      style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: espacioAlto),
+                Row(
+                  children: [
                     const Spacer(), // Agrega un espacio flexible
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -599,8 +642,10 @@ class EditSentimientoState extends State<EditSentimiento> {
   ///Método encargado de editar una pregunta juego Sentimientos
   Future<void> _editPregunta() async {
     Database db = await openDatabase('rutinas.db');
+    int visibility = isVisible ? 1 : 0;
+
     await updatePregunta(db, widget.preguntaSentimiento.id!, preguntaText,
-        Uint8List.fromList(image), selectedNivel!.id);
+        Uint8List.fromList(image), selectedNivel!.id, visibility: visibility);
   }
 
   ///Método encargado de editar las respuestas a una pregunta del juego Sentimientos

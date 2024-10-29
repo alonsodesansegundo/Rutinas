@@ -99,6 +99,7 @@ void createTableSituacionRutina(Database database) {
       nivelId INTEGER NOT NULL,
       fecha TEXT NOT NULL,
       byTerapeuta INTEGER DEFAULT 0 NOT NULL,
+      visible INTEGER DEFAULT 1 NOT NULL,
       FOREIGN KEY (nivelId) REFERENCES nivel(id)
       ON DELETE CASCADE 
     )""");
@@ -132,6 +133,7 @@ void createTableSituacionIronia(Database database) {
       nivelId INTEGER NOT NULL,
       fecha TEXT NOT NULL,
       byTerapeuta INTEGER DEFAULT 0 NOT NULL,
+      visible INTEGER DEFAULT 1 NOT NULL,
       FOREIGN KEY (nivelId) REFERENCES nivel(id)
       ON DELETE CASCADE 
     )""");
@@ -164,6 +166,7 @@ void createTablePreguntaSentimiento(Database database) {
       nivelId INTEGER NOT NULL,
       fecha TEXT NOT NULL,
       byTerapeuta INTEGER DEFAULT 0 NOT NULL,
+      visible INTEGER DEFAULT 1 NOT NULL,
       FOREIGN KEY (nivelId) REFERENCES nivel(id)
       ON DELETE CASCADE 
     )""");
