@@ -65,7 +65,7 @@ void main() async {
         nivelId: 1,
         fecha: preguntas[0].fecha,
         byTerapeuta: 0,
-        imagen: preguntas[0].imagen);
+        imagen: preguntas[0].imagen, visible: 1);
     expect(preguntas[0], preguntaSentimientoExpected);
   });
 
@@ -84,7 +84,7 @@ void main() async {
         nivelId: 1,
         fecha: preguntas[0].fecha,
         byTerapeuta: 0,
-        imagen: preguntas[0].imagen);
+        imagen: preguntas[0].imagen, visible: 1);
     expect(preguntas[0].hashCode, preguntaSentimientoExpected.hashCode);
   });
 
@@ -103,7 +103,7 @@ void main() async {
         nivelId: 1,
         fecha: preguntas[0].fecha,
         byTerapeuta: 0,
-        imagen: preguntas[0].imagen);
+        imagen: preguntas[0].imagen, visible: 1);
     expect(preguntas[0].toString(), preguntaSentimientoExpected.toString());
   });
 
@@ -299,7 +299,7 @@ void main() async {
         await getPreguntasSentimiento(1, database);
 
     updatePregunta(database, preguntas[0].id!, preguntas[0].enunciado,
-        Uint8List.fromList([111, 123, 321]), preguntas[0].nivelId, database);
+        Uint8List.fromList([111, 123, 321]), preguntas[0].nivelId, db: database);
     preguntas = await getPreguntasSentimiento(1, database);
     expect(preguntas[0].imagen, Uint8List.fromList([111, 123, 321]));
   });
@@ -313,7 +313,7 @@ void main() async {
         await getPreguntasSentimiento(1, database);
 
     updatePregunta(database, preguntas[0].id!, preguntas[0].enunciado, [],
-        preguntas[0].nivelId, database);
+        preguntas[0].nivelId, db: database);
     preguntas = await getPreguntasSentimiento(1, database);
     expect(preguntas[0].imagen, null);
   });
@@ -329,7 +329,7 @@ void main() async {
         nivelId: 1,
         fecha: preguntas[0].fecha,
         byTerapeuta: 1,
-        imagen: preguntas[0].imagen);
+        imagen: preguntas[0].imagen, visible: 1);
     expect(preguntas[0].sentimientosToMap(),
         preguntaSentimientoExpected.sentimientosToMap());
   });

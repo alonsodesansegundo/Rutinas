@@ -65,7 +65,7 @@ void main() async {
         nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 0,
-        imagen: situaciones[0].imagen);
+        imagen: situaciones[0].imagen, visible: 1);
     expect(situaciones[0], situacionIroniaExpected);
   });
 
@@ -84,7 +84,7 @@ void main() async {
         nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 0,
-        imagen: situaciones[0].imagen);
+        imagen: situaciones[0].imagen, visible: 1);
     expect(situaciones[0].hashCode, situacionIroniaExpected.hashCode);
   });
 
@@ -103,7 +103,7 @@ void main() async {
         nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 0,
-        imagen: situaciones[0].imagen);
+        imagen: situaciones[0].imagen, visible: 1);
     expect(situaciones[0].toString(), situacionIroniaExpected.toString());
   });
 
@@ -291,7 +291,7 @@ void main() async {
         nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 1,
-        imagen: Uint8List.fromList([111, 123, 321]));
+        imagen: Uint8List.fromList([111, 123, 321]), visible: 1);
     expect(situaciones[0].situacionesToMap(),
         situacionRutinaExpected.situacionesToMap());
   });

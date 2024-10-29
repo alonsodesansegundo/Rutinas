@@ -67,7 +67,7 @@ void main() async {
         nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 0,
-        personajeImg: situaciones[0].personajeImg);
+        personajeImg: situaciones[0].personajeImg, visible: 1);
     expect(situaciones[0], situacionRutinaExpected);
   });
 
@@ -87,7 +87,7 @@ void main() async {
         nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 0,
-        personajeImg: situaciones[0].personajeImg);
+        personajeImg: situaciones[0].personajeImg, visible: 1);
     expect(situaciones[0].hashCode, situacionRutinaExpected.hashCode);
   });
 
@@ -107,7 +107,7 @@ void main() async {
         nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 0,
-        personajeImg: situaciones[0].personajeImg);
+        personajeImg: situaciones[0].personajeImg, visible: 1);
     expect(situaciones[0].toString(), situacionRutinaExpected.toString());
   });
 
@@ -330,7 +330,7 @@ void main() async {
         nivelId: 1,
         fecha: situaciones[0].fecha,
         byTerapeuta: 1,
-        personajeImg: Uint8List.fromList([111, 123, 321]));
+        personajeImg: Uint8List.fromList([111, 123, 321]), visible: 1);
     expect(situaciones[0].situacionesToMap(),
         situacionRutinaExpected.situacionesToMap());
   });
