@@ -76,7 +76,7 @@ class EditRutinaState extends State<EditRutina> {
   late AlertDialog incompletedParamsDialog,
       completedParamsDialog,
       noInternetDialog,
-      removePreguntaOk;
+      removePreguntaOk,noMinActions;
 
   late bool firstLoad = true, changeNivel, loadData;
 
@@ -240,6 +240,7 @@ class EditRutinaState extends State<EditRutina> {
                                     imgWidth: imgWidth,
                                     onPressedGaleria: accion.onPressedGaleria,
                                     onPressedArasaac: accion.onPressedArasaac,
+                                    onPressedRemove: accion.onPressedRemove,
                                     accionText: accion.accionText,
                                     accionImage: accion.accionImage,
                                     color: accion.color,
@@ -365,19 +366,6 @@ class EditRutinaState extends State<EditRutina> {
                       child: Text("Añadir acción"),
                     ),
                     SizedBox(width: espacioPadding),
-                    if (acciones.length > 2)
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          textStyle: TextStyle(
-                            fontFamily: 'ComicNeue',
-                            fontSize: textSize,
-                            color: Colors.blue,
-                          ),
-                        ),
-                        onPressed: _removeAccion,
-                        child: Text("Eliminar acción"),
-                      ),
                   ],
                 ),
                 SizedBox(height: espacioAlto),
@@ -409,6 +397,15 @@ class EditRutinaState extends State<EditRutina> {
                             },
                           );
                         } else {
+                          if(acciones.length<2){
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return noMinActions;
+                              },
+                            );
+                            return;
+                          }
                           _editRutina();
                           showDialog(
                             context: context,
@@ -894,6 +891,44 @@ class EditRutinaState extends State<EditRutina> {
         ),
       ],
     );
+
+    //cuadro de dialogo para cuando no hay al menos 2 acciones
+    noMinActions = AlertDialog(
+      title: Text(
+        'Error',
+        style: TextStyle(
+          fontFamily: 'ComicNeue',
+          fontSize: titleSize * 0.75,
+        ),
+      ),
+      content: Text(
+        'No se ha podido editar la rutina correctamente, recuerda que'
+            ' debe de haber al menos 2 acciones para que haya posibilidad de ordenarlas.',
+        style: TextStyle(
+          fontFamily: 'ComicNeue',
+          fontSize: textSize,
+        ),
+      ),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Aceptar',
+                style: TextStyle(
+                  fontFamily: 'ComicNeue',
+                  fontSize: textSize,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   ///Método que nos permite seleccionar una nueva imagen para el personaje a través de la galería
@@ -909,6 +944,36 @@ class EditRutinaState extends State<EditRutina> {
       });
     }
   }
+
+  ///Método que nos permite eliminar la acción [index]
+  Future<void> _removeAccionButton(int index) async {
+    accionesToDelete.add(acciones[index]);
+    acciones.removeAt(index);
+    setState(() {
+      for (int i = index; i < acciones.length; i++) {
+        acciones[i] = ElementAccion(
+          id: acciones[i].id,
+          text1: "Acción "+(i+1).toString(),
+          numberAccion: i+1,
+          textSize: acciones[i].textSize,
+          espacioPadding: acciones[i].espacioPadding,
+          espacioAlto: acciones[i].espacioAlto,
+          btnWidth: acciones[i].btnWidth,
+          btnHeight: acciones[i].btnHeight,
+          textSituacionWidth: acciones[i].textSituacionWidth,
+          imgWidth: imgWidth,
+          onPressedGaleria: acciones[i].onPressedGaleria,
+          onPressedArasaac: acciones[i].onPressedArasaac,
+          onPressedRemove: () => _removeAccionButton(i),
+          accionText: acciones[i].accionText,
+          accionImage: acciones[i].accionImage,
+          color: acciones[i].color,
+          flagDificil: acciones[i].flagDificil,
+        );
+      }
+    });
+  }
+
 
   ///Método que nos permite seleccionar una imagen de nuestra galería para la accion [index]
   Future<void> _selectNewActionGallery(int index) async {
@@ -932,6 +997,7 @@ class EditRutinaState extends State<EditRutina> {
           imgWidth: imgWidth,
           onPressedGaleria: acciones[index].onPressedGaleria,
           onPressedArasaac: acciones[index].onPressedArasaac,
+          onPressedRemove: acciones[index].onPressedRemove,
           accionText: acciones[index].accionText,
           accionImage: bytes,
           color: acciones[index].color,
@@ -977,6 +1043,7 @@ class EditRutinaState extends State<EditRutina> {
               imgWidth: imgWidth,
               onPressedGaleria: acciones[index].onPressedGaleria,
               onPressedArasaac: acciones[index].onPressedArasaac,
+              onPressedRemove: acciones[index].onPressedRemove,
               accionText: acciones[index].accionText,
               accionImage: bytes,
               color: acciones[index].color,
@@ -1029,16 +1096,9 @@ class EditRutinaState extends State<EditRutina> {
         imgWidth: imgWidth,
         onPressedGaleria: () => _selectNewActionGallery(acciones.length - 1),
         onPressedArasaac: () => _selectNewActionArasaac(acciones.length - 1),
+        onPressedRemove: () => _removeAccionButton(acciones.length - 1),
         flagDificil: flag,
       ));
-    });
-  }
-
-  ///Método que nos permite eliminar el útlimo [ElementAccion] para que haya menos acciones en la pregunta
-  Future<void> _removeAccion() async {
-    setState(() {
-      accionesToDelete.add(acciones[acciones.length - 1]);
-      acciones.removeLast();
     });
   }
 
@@ -1074,6 +1134,7 @@ class EditRutinaState extends State<EditRutina> {
   ///Método encargado de editar una pregunta y sus respectivas acciones a ordenar
   Future<void> _editRutina() async {
     _editPregunta();
+    print("longitud --> "+acciones.length.toString());
     _editAcciones();
   }
 
@@ -1096,7 +1157,7 @@ class EditRutinaState extends State<EditRutina> {
               'texto': acciones[i].accionText,
               'orden': i,
               'imagen': acciones[i].accionImage,
-              'preguntaId': widget.situacionRutina.id,
+              'situacionRutinaId': widget.situacionRutina.id,
             },
             where: 'id = ?',
             whereArgs: [acciones[i].id],
@@ -1108,7 +1169,7 @@ class EditRutinaState extends State<EditRutina> {
               'texto': "",
               'orden': i,
               'imagen': acciones[i].accionImage,
-              'preguntaId': widget.situacionRutina.id,
+              'situacionRutinaId': widget.situacionRutina.id,
             },
             where: 'id = ?',
             whereArgs: [acciones[i].id],
@@ -1122,7 +1183,7 @@ class EditRutinaState extends State<EditRutina> {
               'texto': acciones[i].accionText,
               'orden': i,
               'imagen': acciones[i].accionImage,
-              'preguntaId': widget.situacionRutina.id,
+              'situacionRutinaId': widget.situacionRutina.id,
             },
           );
         } else {
@@ -1132,7 +1193,7 @@ class EditRutinaState extends State<EditRutina> {
               'texto': "",
               'orden': i,
               'imagen': acciones[i].accionImage,
-              'preguntaId': widget.situacionRutina.id,
+              'situacionRutinaId': widget.situacionRutina.id,
             },
           );
         }
@@ -1159,11 +1220,7 @@ class EditRutinaState extends State<EditRutina> {
     List<Accion> aux = await getAcciones(widget.situacionRutina.id!);
 
     for (int i = 0; i < aux.length; i++) {
-      String txt;
-      if (i == 0 || i == 1)
-        txt = "Acción ${i + 1}*:";
-      else
-        txt = "Acción ${i + 1}:";
+      String txt="Acción ${i + 1}*:";
 
       ElementAccion elementAccion = new ElementAccion(
         id: aux[i].id,
@@ -1178,6 +1235,7 @@ class EditRutinaState extends State<EditRutina> {
         imgWidth: imgWidth,
         onPressedGaleria: () => _selectNewActionGallery(i),
         onPressedArasaac: () => _selectNewActionArasaac(i),
+        onPressedRemove: ()=> _removeAccionButton(i),
         accionText: aux[i].texto,
         flagDificil: widget.nivel.nombre == "Difícil",
         accionImage: aux[i].imagen!.toList(),

@@ -16,6 +16,7 @@ class ElementAccion extends StatefulWidget {
   double imgWidth;
   final Function() onPressedGaleria;
   final Function() onPressedArasaac;
+  final Function() onPressedRemove;
   String accionText;
   List<int> accionImage;
   Color color;
@@ -35,6 +36,7 @@ class ElementAccion extends StatefulWidget {
     required this.textSituacionWidth,
     required this.onPressedGaleria,
     required this.onPressedArasaac,
+    required this.onPressedRemove,
     required this.imgWidth,
     this.accionText = "",
     this.accionImage = const [],
@@ -153,6 +155,21 @@ class _ElementAccionState extends State<ElementAccion> {
                     ),
                   ),
                   onPressed: widget.onPressedArasaac,
+                ),
+                SizedBox(height: widget.espacioAlto / 3),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    minimumSize: Size(widget.btnWidth, widget.btnHeight/2),
+                  ),
+                  child: Text(
+                    'Eliminar acción',
+                    style: TextStyle(
+                      fontFamily: 'ComicNeue',
+                      fontSize: widget.textSize,
+                    ),
+                  ),
+                  onPressed: widget.onPressedRemove,
                 ),
               ],
             ),

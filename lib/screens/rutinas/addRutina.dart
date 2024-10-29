@@ -59,7 +59,7 @@ class AddRutinaState extends State<AddRutina> {
 
   late AlertDialog incompletedParamsDialog,
       completedParamsDialog,
-      noInternetDialog;
+      noInternetDialog, noMinActions;
 
   late List<String> personajes;
 
@@ -116,6 +116,7 @@ class AddRutinaState extends State<AddRutina> {
           onPressedGaleria: () => _selectNewActionGallery(0),
           onPressedArasaac: () => _selectNewActionArasaac(0),
           textSituacionWidth: textSituacionWidth * 0.75,
+          onPressedRemove: () => _removeAccionButton(0),
         ),
         ElementAccion(
           text1: 'Acción 2*:',
@@ -129,6 +130,7 @@ class AddRutinaState extends State<AddRutina> {
           onPressedGaleria: () => _selectNewActionGallery(1),
           onPressedArasaac: () => _selectNewActionArasaac(1),
           textSituacionWidth: textSituacionWidth * 0.75,
+          onPressedRemove: () => _removeAccionButton(1),
         ),
       ];
     }
@@ -248,6 +250,7 @@ class AddRutinaState extends State<AddRutina> {
                                     color: accion.color,
                                     flagDificil:
                                         selectedNivel?.nombre == "Difícil",
+                                    onPressedRemove: accion.onPressedRemove,
                                   );
                                 }).toList();
                               });
@@ -400,6 +403,15 @@ class AddRutinaState extends State<AddRutina> {
                             },
                           );
                         } else {
+                          if(acciones.length<2){
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return noMinActions;
+                              },
+                            );
+                            return;
+                          }
                           _addRutina();
                           showDialog(
                             context: context,
@@ -429,7 +441,7 @@ class AddRutinaState extends State<AddRutina> {
         nivels = nivelsList;
       });
     } catch (e) {
-      print("Error al obtener la lista de nivels: $e");
+      print("Error al obtener la lista de niveles: $e");
     }
   }
 
@@ -612,6 +624,44 @@ class AddRutinaState extends State<AddRutina> {
 
   ///Método encargado de inicializar los cuadros de dialogo que tendrá la pantalla
   void _createDialogs() {
+    //cuadro de dialogo para cuando no hay al menos 2 acciones
+    noMinActions = AlertDialog(
+      title: Text(
+        'Error',
+        style: TextStyle(
+          fontFamily: 'ComicNeue',
+          fontSize: titleSize * 0.75,
+        ),
+      ),
+      content: Text(
+        'No se ha podido editar la rutina correctamente, recuerda que'
+            ' debe de haber al menos 2 acciones para que haya posibilidad de ordenarlas.',
+        style: TextStyle(
+          fontFamily: 'ComicNeue',
+          fontSize: textSize,
+        ),
+      ),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Aceptar',
+                style: TextStyle(
+                  fontFamily: 'ComicNeue',
+                  fontSize: textSize,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+
     // cuadro de dialogo para escoger un personaje ya existente
     existPersonajeDialog = Dialog(
       child: Column(
@@ -851,6 +901,7 @@ class AddRutinaState extends State<AddRutina> {
           accionImage: bytes,
           color: acciones[index].color,
           flagDificil: acciones[index].flagDificil,
+          onPressedRemove: acciones[index].onPressedRemove,
         );
       });
     }
@@ -898,6 +949,7 @@ class AddRutinaState extends State<AddRutina> {
               accionImage: bytes,
               color: acciones[index].color,
               flagDificil: acciones[index].flagDificil,
+              onPressedRemove: acciones[index].onPressedRemove,
             );
           });
         },
@@ -909,6 +961,34 @@ class AddRutinaState extends State<AddRutina> {
         },
       );
     }
+  }
+
+  ///Método que nos permite eliminar la acción [index]
+  Future<void> _removeAccionButton(int index) async {
+    acciones.removeAt(index);
+    setState(() {
+      for (int i = index; i < acciones.length; i++) {
+        acciones[i] = ElementAccion(
+          id: acciones[i].id,
+          text1: "Acción ${i + 1}*:",
+          numberAccion: i+1,
+          textSize: acciones[i].textSize,
+          espacioPadding: acciones[i].espacioPadding,
+          espacioAlto: acciones[i].espacioAlto,
+          btnWidth: acciones[i].btnWidth,
+          btnHeight: acciones[i].btnHeight,
+          textSituacionWidth: acciones[i].textSituacionWidth,
+          imgWidth: imgWidth,
+          onPressedGaleria: acciones[i].onPressedGaleria,
+          onPressedArasaac: acciones[i].onPressedArasaac,
+          onPressedRemove: () => _removeAccionButton(i),
+          accionText: acciones[i].accionText,
+          accionImage: acciones[i].accionImage,
+          color: acciones[i].color,
+          flagDificil: acciones[i].flagDificil,
+        );
+      }
+    });
   }
 
   ///Método que nos permite añadir un nuevo [ElementAccion] para que haya más acciones en la pregunta
@@ -929,6 +1009,7 @@ class AddRutinaState extends State<AddRutina> {
         onPressedGaleria: () => _selectNewActionGallery(acciones.length - 1),
         onPressedArasaac: () => _selectNewActionArasaac(acciones.length - 1),
         flagDificil: selectedNivel?.nombre == "Difícil",
+        onPressedRemove: () => _removeAccionButton(acciones.length - 1),
       ));
     });
   }
