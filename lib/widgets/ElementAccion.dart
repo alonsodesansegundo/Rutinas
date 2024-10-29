@@ -14,9 +14,9 @@ class ElementAccion extends StatefulWidget {
   double btnHeight;
   double textSituacionWidth;
   double imgWidth;
-  final Function() onPressedGaleria;
-  final Function() onPressedArasaac;
-  final Function() onPressedRemove;
+  Function() onPressedGaleria;
+  Function() onPressedArasaac;
+  Function() onPressedRemove;
   String accionText;
   List<int> accionImage;
   Color color;
@@ -160,7 +160,7 @@ class _ElementAccionState extends State<ElementAccion> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    minimumSize: Size(widget.btnWidth, widget.btnHeight/2),
+                    minimumSize: Size(widget.btnWidth, widget.btnHeight / 2),
                   ),
                   child: Text(
                     'Eliminar acción',

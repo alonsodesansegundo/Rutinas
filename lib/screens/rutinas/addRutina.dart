@@ -965,8 +965,8 @@ class AddRutinaState extends State<AddRutina> {
           btnHeight: acciones[i].btnHeight,
           textSituacionWidth: acciones[i].textSituacionWidth,
           imgWidth: imgWidth,
-          onPressedGaleria: acciones[i].onPressedGaleria,
-          onPressedArasaac: acciones[i].onPressedArasaac,
+          onPressedGaleria: () => _selectNewActionGallery(i),
+          onPressedArasaac: () => _selectNewActionArasaac(i),
           onPressedRemove: () => _removeAccionButton(i),
           accionText: acciones[i].accionText,
           accionImage: acciones[i].accionImage,
@@ -980,6 +980,8 @@ class AddRutinaState extends State<AddRutina> {
   ///Método que nos permite añadir un nuevo [ElementAccion] para que haya más acciones en la pregunta
   void _addAccion() {
     setState(() {
+      int currentIndex = acciones.length; // Captura el índice actual
+
       String accionText = 'Acción ' + (acciones.length + 1).toString() + "*";
 
       acciones.add(ElementAccion(
@@ -992,10 +994,10 @@ class AddRutinaState extends State<AddRutina> {
         btnHeight: btnHeight,
         textSituacionWidth: textSituacionWidth,
         imgWidth: imgWidth,
-        onPressedGaleria: () => _selectNewActionGallery(acciones.length - 1),
-        onPressedArasaac: () => _selectNewActionArasaac(acciones.length - 1),
+        onPressedGaleria: () => _selectNewActionGallery(currentIndex),
+        onPressedArasaac: () => _selectNewActionArasaac(currentIndex),
         flagDificil: selectedNivel?.nombre == "Difícil",
-        onPressedRemove: () => _removeAccionButton(acciones.length - 1),
+        onPressedRemove: () => _removeAccionButton(currentIndex),
       ));
     });
   }
