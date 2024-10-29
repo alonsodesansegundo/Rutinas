@@ -13,9 +13,9 @@ class ElementRespuestaSentimientos extends StatefulWidget {
   double btnWidth;
   double btnHeight;
   double imgWidth;
-  final Function() onPressedGaleria;
-  final Function() onPressedArasaac;
-  final Function() onRemoveAnswer;
+  Function() onPressedGaleria;
+  Function() onPressedArasaac;
+  Function() onRemoveAnswer;
   String respuestaText;
   List<int> respuestaImage;
   Color color;

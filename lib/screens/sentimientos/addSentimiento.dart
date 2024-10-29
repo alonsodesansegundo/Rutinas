@@ -438,7 +438,9 @@ class AddSentimientoState extends State<AddSentimiento> {
   ///Método que nos permite añadir un nuevo [ElementRespuestaSentimientos] para que haya más respuestas en la pregunta
   void _addRespuesta() {
     setState(() {
-      respuestas.add(new ElementRespuestaSentimientos(
+      int currentIndex = respuestas.length; // Captura el índice actual
+
+      ElementRespuestaSentimientos aux = new ElementRespuestaSentimientos(
         text1: "Respuesta",
         textSize: textSize,
         espacioPadding: getWidthOfText("(máx. 30 caracteres)", context) +
@@ -447,16 +449,17 @@ class AddSentimientoState extends State<AddSentimiento> {
         btnWidth: btnWidth,
         btnHeight: btnHeight,
         imgWidth: imgWidth,
-        onPressedGaleria: () => _selectNewActionGallery(respuestas.length - 1),
+        onPressedGaleria: () => _selectNewActionGallery(currentIndex),
         onPressedArasaac: () =>
-            _selectNewRespuestaArasaac(respuestas.length - 1),
-        onRemoveAnswer: () => _removeAnswerButton(respuestas.length-1),
+            _selectNewRespuestaArasaac(currentIndex),
+        onRemoveAnswer: () => _removeAnswerButton(currentIndex),
         isCorrect: true,
         showPregunta: true,
         flagDificil: (selectedNivel!.nombre == "Difícil"),
         flagFacil: (selectedNivel!.nombre ==
             "Fácil"),
-      ));
+      );
+      respuestas.add(aux);
     });
   }
 
@@ -464,6 +467,25 @@ class AddSentimientoState extends State<AddSentimiento> {
   void _removeAnswerButton(int index){
     setState(() {
       respuestas.removeAt(index);
+      for(int i=index;i<respuestas.length;i++){
+        respuestas[i]= new ElementRespuestaSentimientos(
+            text1: respuestas[i].text1,
+            textSize: respuestas[i].textSize,
+            espacioPadding: respuestas[i].espacioPadding,
+            espacioAlto: respuestas[i].espacioAlto,
+            btnWidth: respuestas[i].btnWidth,
+            btnHeight: respuestas[i].btnHeight,
+            imgWidth: respuestas[i].imgWidth,
+            onPressedGaleria: () => _selectNewActionGallery(i),
+            onPressedArasaac: () => _selectNewRespuestaArasaac(i),
+            onRemoveAnswer: () => _removeAnswerButton(i),
+            isCorrect: respuestas[i].isCorrect,
+            showPregunta: respuestas[i].showPregunta,
+            respuestaText: respuestas[i].respuestaText,
+            respuestaImage: respuestas[i].respuestaImage,
+            flagDificil: respuestas[i].flagDificil,
+            flagFacil: respuestas[i].flagFacil);
+      }
     });
   }
 

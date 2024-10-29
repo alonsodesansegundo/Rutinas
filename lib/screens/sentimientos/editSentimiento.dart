@@ -219,7 +219,6 @@ class EditSentimientoState extends State<EditSentimiento> {
                                 changeNivel = true;
                                 selectedNivel = nivel;
                                 respuestas = respuestas.asMap().entries.map((entry) {
-                                  int index = entry.key; // Obtener el índice actual
                                   var respuesta = entry.value; // Obtener el elemento actual
 
                                   return ElementRespuestaSentimientos(
@@ -239,7 +238,7 @@ class EditSentimientoState extends State<EditSentimiento> {
                                     showPregunta: respuesta.showPregunta,
                                     flagDificil: (selectedNivel!.nombre == "Difícil"),
                                     flagFacil: (selectedNivel!.nombre == "Fácil"),
-                                    onRemoveAnswer: () => _removeAnswerButton(index), // Cambiar a usar el índice
+                                    onRemoveAnswer: () => respuesta.onRemoveAnswer,
                                   );
                                 }).toList();
                                 if(selectedNivel!.nombre=="Fácil"){
@@ -531,26 +530,29 @@ class EditSentimientoState extends State<EditSentimiento> {
   ///Método que nos permite añadir un nuevo [ElementRespuestaSentimientos] para que haya más respuestas en la pregunta
   void _addRespuesta() {
     setState(() {
-      respuestas.add(new ElementRespuestaSentimientos(
-          text1: "Respuesta",
-          textSize: textSize,
-          espacioPadding: getWidthOfText("(máx. 30 caracteres)", context) +
-              espacioPadding * 1.5,
-          espacioAlto: espacioAlto,
-          btnWidth: btnWidth,
-          btnHeight: btnHeight,
-          imgWidth: imgWidth,
-          onPressedGaleria: () =>
-              _selectNewActionGallery(respuestas.length - 1),
-          onPressedArasaac: () =>
-              _selectNewRespuestaArasaac(respuestas.length - 1),
-          onRemoveAnswer: () => _removeAnswerButton(respuestas.length - 1),
-          isCorrect: true,
-          showPregunta: true,
-          flagFacil: (!changeNivel && defaultNivel!.nombre == "Fácil") ||
-              (changeNivel && selectedNivel!.nombre == "Fácil"),
-          flagDificil: (!changeNivel && defaultNivel!.nombre == "Difícil") ||
-              (changeNivel && selectedNivel!.nombre == "Difícil")));
+      int currentIndex = respuestas.length; // Captura el índice actual
+
+      ElementRespuestaSentimientos aux = new ElementRespuestaSentimientos(
+        text1: "Respuesta",
+        textSize: textSize,
+        espacioPadding: getWidthOfText("(máx. 30 caracteres)", context) +
+            espacioPadding * 1.5,
+        espacioAlto: espacioAlto,
+        btnWidth: btnWidth,
+        btnHeight: btnHeight,
+        imgWidth: imgWidth,
+        onPressedGaleria: () => _selectNewActionGallery(currentIndex),
+        onPressedArasaac: () => _selectNewRespuestaArasaac(currentIndex),
+        onRemoveAnswer: () => _removeAnswerButton(currentIndex),
+        isCorrect: true,
+        showPregunta: true,
+        flagFacil: (!changeNivel && defaultNivel!.nombre == "Fácil") ||
+            (changeNivel && selectedNivel!.nombre == "Fácil"),
+        flagDificil: (!changeNivel && defaultNivel!.nombre == "Difícil") ||
+            (changeNivel && selectedNivel!.nombre == "Difícil"),
+      );
+
+      respuestas.add(aux); // Agrega el elemento a la lista
     });
   }
 
@@ -559,6 +561,25 @@ class EditSentimientoState extends State<EditSentimiento> {
     setState(() {
       situacionesToDelete.add(respuestas[index]);
       respuestas.removeAt(index);
+      for(int i=index;i<respuestas.length;i++){
+        respuestas[i]= new ElementRespuestaSentimientos(
+            text1: respuestas[i].text1,
+            textSize: respuestas[i].textSize,
+            espacioPadding: respuestas[i].espacioPadding,
+            espacioAlto: respuestas[i].espacioAlto,
+            btnWidth: respuestas[i].btnWidth,
+            btnHeight: respuestas[i].btnHeight,
+            imgWidth: respuestas[i].imgWidth,
+            onPressedGaleria: () => _selectNewActionGallery(i),
+            onPressedArasaac: () => _selectNewRespuestaArasaac(i),
+      onRemoveAnswer: () => _removeAnswerButton(i),
+      isCorrect: respuestas[i].isCorrect,
+      showPregunta: respuestas[i].showPregunta,
+      respuestaText: respuestas[i].respuestaText,
+      respuestaImage: respuestas[i].respuestaImage,
+      flagDificil: respuestas[i].flagDificil,
+      flagFacil: respuestas[i].flagFacil);
+      }
     });
   }
 
@@ -1134,7 +1155,7 @@ class EditSentimientoState extends State<EditSentimiento> {
         respuestaText: aux[i].texto,
         respuestaImage: aux[i].imagen!.toList(),
         imgWidth: imgWidth,
-        onPressedGaleria: () => _selectNewActionGallery(i),
+            onPressedGaleria: () =>_selectNewActionGallery(i),
         onPressedArasaac: () => _selectNewRespuestaArasaac(i),
         onRemoveAnswer: () => _removeAnswerButton(i),
         showPregunta: (i != 0 && i != 1),
