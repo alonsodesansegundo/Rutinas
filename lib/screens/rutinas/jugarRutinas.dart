@@ -39,7 +39,8 @@ class JugarRutinasState extends State<JugarRutinas>
 
   late List<SituacionRutina> situacionRutinaList; // lista de preguntas
 
-  late List<CartaAccion> cartasAcciones; // acciones de la pregunta actual
+  late List<CartaAccion> cartasAcciones,
+      accionesOrdenadas; // acciones de la pregunta actual
 
   late int indiceActual; // índice de la pregunta actual
 
@@ -61,7 +62,7 @@ class JugarRutinasState extends State<JugarRutinas>
       btnSalir,
       btnMenu;
 
-  late ExitDialog exitDialog, incorrectDialog, correctDialog, endGameDialog;
+  late ExitDialog exitDialog, incorrectDialog, correctDialog, endGameDialog, accionesDisponiblesDialog;
 
   late int aciertos, fallos;
 
@@ -80,6 +81,7 @@ class JugarRutinasState extends State<JugarRutinas>
     flag = false;
     situacionRutinaList = [];
     cartasAcciones = [];
+    accionesOrdenadas = [];
     indiceActual = -1;
     aciertos = 0;
     fallos = 0;
@@ -199,6 +201,13 @@ class JugarRutinasState extends State<JugarRutinas>
                       }
                     },
                   ),
+                  Text(
+                    "Acciones disponibles:",
+                    style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                        color: Colors.black),
+                  ),
                   //mostrar cada una de las CartaAccion de la lista cartaAcciones
                   SizedBox(
                     height: _calcularAltura(
@@ -260,9 +269,84 @@ class JugarRutinasState extends State<JugarRutinas>
                       },
                     ),
                   ),
+                  Text(
+                    "Acciones ordenadas:",
+                    style: TextStyle(
+                        fontFamily: 'ComicNeue',
+                        fontSize: textSize,
+                        color: Colors.black),
+                  ),
+                // Aquí agregamos la parte que muestra las acciones ordenadas en la parte inferior
+                  SizedBox(
+                    height: _calcularAltura(
+                      ancho,
+                      cartasFila,
+                      espacioPadding,
+                      espacioCartas,
+                      (accionesOrdenadas.length / cartasFila).ceil(),
+                    ),
+                    child: GridView.builder(
+                      physics: NeverScrollableScrollPhysics(), // Deshabilita el scroll vertical
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: cartasFila,
+                        crossAxisSpacing: espacioCartas,
+                        mainAxisSpacing: espacioCartas,
+                        childAspectRatio: (1 / 1.6),
+                      ),
+                      itemCount: accionesOrdenadas.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            CartaAccion copia=accionesOrdenadas[index];
+                            copia.backgroundColor = Colors.transparent;
+                            setState(() {
+                              accionesOrdenadas.removeAt(index);
+                              cartasAcciones.add(copia);
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 2.0,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: accionesOrdenadas[index].backgroundColor,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  child: Image.memory(
+                                    accionesOrdenadas[index].accion.imagen!,
+                                  ),
+                                  width: imgWidth,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: accionesOrdenadas[index].backgroundColor,
+                                  ),
+                                  padding: EdgeInsets.all(espacioPadding / 3),
+                                  child: Text(
+                                    accionesOrdenadas[index].accion.texto,
+                                    style: TextStyle(
+                                      fontFamily: 'ComicNeue',
+                                      fontSize: textSize,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
                   SizedBox(
                     height: espacioAlto,
                   ),
+
                   ImageTextButton(
                     image: Image.asset(
                       'assets/img/botones/fin.png',
@@ -276,6 +360,16 @@ class JugarRutinasState extends State<JugarRutinas>
                           color: Colors.black),
                     ),
                     onPressed: () {
+                      if(cartasAcciones.length!=0){
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                              _speak('Error');
+                              return accionesDisponiblesDialog;
+                          },
+                        );
+                        return;
+                      }
                       if (_comprobarRespuestas()) {
                         showDialog(
                           context: context,
@@ -472,6 +566,20 @@ class JugarRutinasState extends State<JugarRutinas>
           'assets/img/medallas/trofeo.png',
           width: imgWidth,
         ));
+
+    // cuadro de dialogo para cuando confirmamos la respuesta y todavía hay cartas de acciones disponibles
+    accionesDisponiblesDialog=ExitDialog(
+        title: 'Error',
+        titleSize: titleSize,
+        content:
+        "Por favor, recuerda que debes de ordenar todas las acciones antes de confirmar tu respuesta.",
+        contentSize: textSize,
+        leftImageTextButton: btnSeguirJugando,
+        rightImageTextButton: btnSalir,
+        optionalImage: Image.asset(
+          'assets/img/medallas/incorrecto.png',
+          width: imgWidth,
+        ));
   }
 
   ///Método para cargar todas las preguntas del juego Rutinas en la variable [situacionRutinaList], desordenarlas y seleccionar una para comenzar [indiceActual]
@@ -503,6 +611,7 @@ class JugarRutinasState extends State<JugarRutinas>
       List<Accion> acciones =
           await getAcciones(situacionRutinaList[indiceActual].id ?? -1);
       setState(() {
+        accionesOrdenadas=[];
         acciones.shuffle(); // desordenar acciones
         // creo las cartas
         cartasAcciones = acciones.map((accion) {
@@ -523,14 +632,20 @@ class JugarRutinasState extends State<JugarRutinas>
   bool _comprobarRespuestas() {
     bool correcto = true;
     setState(() {
-      for (int i = 0; i < cartasAcciones.length; i++) {
-        cartasAcciones[i].selected = false;
-        if (i != cartasAcciones[i].accion.orden) {
-          correcto = false;
-          cartasAcciones[i].backgroundColor = Colors.red;
-        } else
-          cartasAcciones[i].backgroundColor = Colors.green;
+      if(cartasAcciones.length!=0)
+        correcto=false;
+      else{
+        print("HOLA");
+        for (int i = 0; i < accionesOrdenadas.length; i++) {
+          accionesOrdenadas[i].selected = false;
+          if (i != accionesOrdenadas[i].accion.orden) {
+            correcto = false;
+            accionesOrdenadas[i].backgroundColor = Colors.red;
+          } else
+            accionesOrdenadas[i].backgroundColor = Colors.green;
+        }
       }
+
     });
     if (correcto)
       aciertos += 1;
@@ -568,7 +683,15 @@ class JugarRutinasState extends State<JugarRutinas>
   ///Método que nos permite intercambiar o marcar una carta seleccionada según sea necesario
   ///<br><b>Parámetros</b><br>
   ///[cartasAccion] Carta que acaba de ser pulsada o seleccionada
-  void _cartaPulsada(CartaAccion cartasAccion) {
+  void _cartaPulsada(CartaAccion cartaAccion) {
+    _speak(cartaAccion.accion.texto);
+    CartaAccion copia = cartaAccion;
+    setState(() {
+
+      cartasAcciones.remove(cartaAccion);
+      accionesOrdenadas.add(copia);
+    });
+    /*
     cartasAccion.selected = !cartasAccion.selected;
     reproduceVoice = !reproduceVoice;
     setState(() {
@@ -600,6 +723,8 @@ class JugarRutinasState extends State<JugarRutinas>
         cartasAccion.backgroundColor = Colors.transparent;
       }
     });
+
+     */
   }
 
   ///Método que permite la reproducción por audio de un texto
