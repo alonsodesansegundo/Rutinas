@@ -114,189 +114,196 @@ class JugarRutinasState extends State<JugarRutinas>
       loadProvider = true;
     }
 
-    return Scaffold(
-      body: DynMouseScroll(
-        durationMS: myDurationMS,
-        scrollSpeed: myScrollSpeed,
-        animationCurve: Curves.easeOutQuart,
-        builder: (context, controller, physics) => SingleChildScrollView(
-          controller: controller,
-          physics: physics, // Habilita el scroll vertical siempre
-          child: Padding(
-            padding: EdgeInsets.all(espacioPadding),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment
-                          .start, // Alinea los elementos a la izquierda
-                      children: [
-                        Text(
-                          'Rutinas',
-                          style: TextStyle(
-                            fontFamily: 'ComicNeue',
-                            fontSize: titleSize,
+    return WillPopScope(
+      onWillPop: () async {
+        _stopSpeaking();
+        return true; // Permite que la pantalla se cierre
+      },
+      child: Scaffold(
+        body: DynMouseScroll(
+          durationMS: myDurationMS,
+          scrollSpeed: myScrollSpeed,
+          animationCurve: Curves.easeOutQuart,
+          builder: (context, controller, physics) => SingleChildScrollView(
+            controller: controller,
+            physics: physics, // Habilita el scroll vertical siempre
+            child: Padding(
+              padding: EdgeInsets.all(espacioPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment
+                            .start, // Alinea los elementos a la izquierda
+                        children: [
+                          Text(
+                            'Rutinas',
+                            style: TextStyle(
+                              fontFamily: 'ComicNeue',
+                              fontSize: titleSize,
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Juego',
-                          style: TextStyle(
-                            fontFamily: 'ComicNeue',
-                            fontSize: titleSize / 2,
+                          Text(
+                            'Juego',
+                            style: TextStyle(
+                              fontFamily: 'ComicNeue',
+                              fontSize: titleSize / 2,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    ImageTextButton(
-                      image: Image.asset('assets/img/botones/salir.png',
-                          height: imgVolverHeight * 1.5),
-                      text: Text(
-                        'Salir',
-                        style: TextStyle(
-                            fontFamily: 'ComicNeue',
-                            fontSize: textSize,
-                            color: Colors.black),
+                        ],
                       ),
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return exitDialog;
+                      ImageTextButton(
+                        image: Image.asset('assets/img/botones/salir.png',
+                            height: imgVolverHeight * 1.5),
+                        text: Text(
+                          'Salir',
+                          style: TextStyle(
+                              fontFamily: 'ComicNeue',
+                              fontSize: textSize,
+                              color: Colors.black),
+                        ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return exitDialog;
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  FutureBuilder<void>(
+                    future: _cargarPreguntas(),
+                    builder: (context, snapshot) {
+                      if (situacionRutinaList.isEmpty) {
+                        return Text("Cargando...");
+                      } else {
+                        return Column(
+                          children: [
+                            PreguntaWidget(
+                              enunciado:
+                                  situacionRutinaList[indiceActual].enunciado,
+                              isLoading: false,
+                              subtextSize: textSize,
+                              imgWidth: personajeWidth,
+                              personajeImg: situacionRutinaList[indiceActual]
+                                  .personajeImg,
+                              rightSpace: espacioPadding,
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  ),
+                  //mostrar cada una de las CartaAccion de la lista cartaAcciones
+                  SizedBox(
+                    height: _calcularAltura(
+                        ancho,
+                        cartasFila,
+                        espacioPadding,
+                        espacioCartas,
+                        (cartasAcciones.length / cartasFila).ceil()),
+                    child: GridView.builder(
+                      physics:
+                          NeverScrollableScrollPhysics(), // Deshabilita el scroll vertical
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: cartasFila,
+                        crossAxisSpacing: espacioCartas,
+                        mainAxisSpacing: espacioCartas,
+                        childAspectRatio: (1 / 1.6),
+                      ),
+                      itemCount: cartasAcciones.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            _cartaPulsada(cartasAcciones[index]);
                           },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 2.0,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: cartasAcciones[index].backgroundColor,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  child: Image.memory(
+                                      cartasAcciones[index].accion.imagen!),
+                                  width: imgWidth,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color:
+                                        cartasAcciones[index].backgroundColor,
+                                  ),
+                                  padding: EdgeInsets.all(espacioPadding / 3),
+                                  child: Text(
+                                    cartasAcciones[index].accion.texto,
+                                    style: TextStyle(
+                                      fontFamily: 'ComicNeue',
+                                      fontSize: textSize,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         );
                       },
                     ),
-                  ],
-                ),
-                FutureBuilder<void>(
-                  future: _cargarPreguntas(),
-                  builder: (context, snapshot) {
-                    if (situacionRutinaList.isEmpty) {
-                      return Text("Cargando...");
-                    } else {
-                      return Column(
-                        children: [
-                          PreguntaWidget(
-                            enunciado:
-                                situacionRutinaList[indiceActual].enunciado,
-                            isLoading: false,
-                            subtextSize: textSize,
-                            imgWidth: personajeWidth,
-                            personajeImg:
-                                situacionRutinaList[indiceActual].personajeImg,
-                            rightSpace: espacioPadding,
-                          ),
-                        ],
-                      );
-                    }
-                  },
-                ),
-                //mostrar cada una de las CartaAccion de la lista cartaAcciones
-                SizedBox(
-                  height: _calcularAltura(
-                      ancho,
-                      cartasFila,
-                      espacioPadding,
-                      espacioCartas,
-                      (cartasAcciones.length / cartasFila).ceil()),
-                  child: GridView.builder(
-                    physics:
-                        NeverScrollableScrollPhysics(), // Deshabilita el scroll vertical
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: cartasFila,
-                      crossAxisSpacing: espacioCartas,
-                      mainAxisSpacing: espacioCartas,
-                      childAspectRatio: (1 / 1.6),
+                  ),
+                  SizedBox(
+                    height: espacioAlto,
+                  ),
+                  ImageTextButton(
+                    image: Image.asset(
+                      'assets/img/botones/fin.png',
+                      width: imgWidth * 0.75,
                     ),
-                    itemCount: cartasAcciones.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          _cartaPulsada(cartasAcciones[index]);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.black,
-                              width: 2.0,
-                            ),
-                            borderRadius: BorderRadius.circular(10.0),
-                            color: cartasAcciones[index].backgroundColor,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                child: Image.memory(
-                                    cartasAcciones[index].accion.imagen!),
-                                width: imgWidth,
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: cartasAcciones[index].backgroundColor,
-                                ),
-                                padding: EdgeInsets.all(espacioPadding / 3),
-                                child: Text(
-                                  cartasAcciones[index].accion.texto,
-                                  style: TextStyle(
-                                    fontFamily: 'ComicNeue',
-                                    fontSize: textSize,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
+                    text: Text(
+                      'Confirmar',
+                      style: TextStyle(
+                          fontFamily: 'ComicNeue',
+                          fontSize: textSize,
+                          color: Colors.black),
+                    ),
+                    onPressed: () {
+                      if (_comprobarRespuestas()) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            if (situacionRutinaList.length != 1) {
+                              _cambiarPregunta();
+                              _speak('Fantástico');
+                              return correctDialog;
+                            } else {
+                              _speak("¡Enhorabuena!");
+                              return this.endGameDialog;
+                            }
+                          },
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            _speak('¡Oops!');
+                            return incorrectDialog;
+                          },
+                        );
+                      }
                     },
                   ),
-                ),
-                SizedBox(
-                  height: espacioAlto,
-                ),
-                ImageTextButton(
-                  image: Image.asset(
-                    'assets/img/botones/fin.png',
-                    width: imgWidth * 0.75,
-                  ),
-                  text: Text(
-                    'Confirmar',
-                    style: TextStyle(
-                        fontFamily: 'ComicNeue',
-                        fontSize: textSize,
-                        color: Colors.black),
-                  ),
-                  onPressed: () {
-                    if (_comprobarRespuestas()) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          if (situacionRutinaList.length != 1) {
-                            _cambiarPregunta();
-                            _speak('Fantástico');
-                            return correctDialog;
-                          } else {
-                            _speak("¡Enhorabuena!");
-                            return this.endGameDialog;
-                          }
-                        },
-                      );
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          _speak('¡Oops!');
-                          return incorrectDialog;
-                        },
-                      );
-                    }
-                  },
-                ),
-                SizedBox(height: espacioAlto),
-              ],
+                  SizedBox(height: espacioAlto),
+                ],
+              ),
             ),
           ),
         ),
