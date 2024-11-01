@@ -219,7 +219,7 @@ class JugarHumorState extends State<JugarHumor> with WidgetsBindingObserver {
                                                     i++) {
                                                   respuestasActuales[i]
                                                           .backgroundColor =
-                                                      Colors.redAccent;
+                                                      Colors.blue;
                                                   if (respuesta !=
                                                       respuestasActuales[i]) {
                                                     respuestasActuales[i]
@@ -228,7 +228,7 @@ class JugarHumorState extends State<JugarHumor> with WidgetsBindingObserver {
                                                 }
                                                 setState(() {
                                                   respuesta.backgroundColor =
-                                                      Colors.lightGreen;
+                                                      Colors.grey;
                                                   respuestaSelected =
                                                       respuesta.respuesta;
                                                 });
