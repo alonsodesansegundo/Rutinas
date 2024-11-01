@@ -231,6 +231,13 @@ class AllProgressState extends State<AllProgress> {
                             selectedNivelAux = null;
                           else
                             selectedNivelAux = nivel;
+                          paginaActual = 1;
+                          selectedNivel = selectedNivelAux;
+                          txtBuscar = txtBuscarAux;
+                          flagCheck = [];
+                          partidasToRemove = [];
+                          FocusScope.of(context).unfocus();
+                          _loadProgresos();
                         });
                       },
                     ),

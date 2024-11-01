@@ -193,6 +193,11 @@ class RemovePlayerState extends State<RemovePlayer> {
                               selectedNivelAux = null;
                             else
                               selectedNivelAux = nivel;
+                            paginaActual = 1;
+                            selectedNivel = selectedNivelAux;
+                            txtBuscar = txtBuscarAux;
+                            FocusScope.of(context).unfocus();
+                            _loadJugadores();
                           });
                         },
                       ),
