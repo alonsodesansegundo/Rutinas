@@ -242,10 +242,6 @@ class AyudaHumorState extends State<AyudaHumor> {
                     width: btnRespuestaWidth,
                     child: ElevatedButton(
                       onPressed: () {},
-
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.redAccent,
-                      ), // Esto desactiva el botón
                       child: Text(
                         'No, no es una ironía.',
                         style: TextStyle(
@@ -261,7 +257,7 @@ class AyudaHumorState extends State<AyudaHumor> {
                     child: ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.lightGreen,
+                        primary: Colors.grey,
                       ),
                       child: Text(
                         'Sí, es una ironía.',
