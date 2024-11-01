@@ -122,6 +122,22 @@ class InformacionState extends State<Informacion> {
                 ),
                 SizedBox(height: espacioAlto),
                 Text(
+                  'Licencia de la app: ',
+                  style: TextStyle(
+                    fontFamily: 'ComicNeue',
+                    fontSize: textSize,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'MPL-2.0 license',
+                  style: TextStyle(
+                    fontFamily: 'ComicNeue',
+                    fontSize: textSize,
+                  ),
+                ),
+                SizedBox(height: espacioAlto),
+                Text(
                   'Recursos utilizados:',
                   style: TextStyle(
                     fontFamily: 'ComicNeue',
