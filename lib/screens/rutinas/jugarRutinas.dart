@@ -635,7 +635,6 @@ class JugarRutinasState extends State<JugarRutinas>
       if(cartasAcciones.length!=0)
         correcto=false;
       else{
-        print("HOLA");
         for (int i = 0; i < accionesOrdenadas.length; i++) {
           accionesOrdenadas[i].selected = false;
           if (i != accionesOrdenadas[i].accion.orden) {
@@ -649,8 +648,11 @@ class JugarRutinasState extends State<JugarRutinas>
     });
     if (correcto)
       aciertos += 1;
-    else
+    else {
       fallos += 1;
+      cartasAcciones = accionesOrdenadas;
+      accionesOrdenadas = [];
+    }
     return correcto;
   }
 
@@ -686,45 +688,12 @@ class JugarRutinasState extends State<JugarRutinas>
   void _cartaPulsada(CartaAccion cartaAccion) {
     _speak(cartaAccion.accion.texto);
     CartaAccion copia = cartaAccion;
+    copia.backgroundColor=Colors.transparent;
     setState(() {
 
       cartasAcciones.remove(cartaAccion);
       accionesOrdenadas.add(copia);
     });
-    /*
-    cartasAccion.selected = !cartasAccion.selected;
-    reproduceVoice = !reproduceVoice;
-    setState(() {
-      // si la carta actualmente es pulsada
-      if (cartasAccion.selected) {
-        if (reproduceVoice) _speak(cartasAccion.accion.texto);
-        cartasAccion.backgroundColor = Colors.grey;
-        // miro si hay otra que haya sido pulsada
-        for (int i = 0; i < cartasAcciones.length; i++) {
-          // si ha sido pulsada y no es la misma que he pulsado ahora
-          if (cartasAcciones[i].selected && cartasAcciones[i] != cartasAccion) {
-            // hago el intercambio
-            // las marco como deseleccionadas
-            cartasAcciones[i].selected = false;
-            cartasAccion.selected = false;
-
-            //hago el intercambio
-            CartaAccion copia = cartasAccion;
-            int pos = cartasAcciones.indexOf(cartasAccion);
-            cartasAcciones[pos] = cartasAcciones[i];
-            cartasAcciones[i] = copia;
-
-            cartasAcciones[pos].backgroundColor = Colors.transparent;
-            cartasAcciones[i].backgroundColor = Colors.transparent;
-            return;
-          }
-        }
-      } else {
-        cartasAccion.backgroundColor = Colors.transparent;
-      }
-    });
-
-     */
   }
 
   ///Método que permite la reproducción por audio de un texto
