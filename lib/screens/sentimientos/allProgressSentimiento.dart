@@ -236,7 +236,6 @@ class AllProgressSentimientoState extends State<AllProgressSentimiento> {
                           txtBuscar = txtBuscarAux;
                           flagCheck = [];
                           partidasToRemove = [];
-                          FocusScope.of(context).unfocus();
                           _loadProgresos();
                         });
                       },

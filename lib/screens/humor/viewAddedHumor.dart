@@ -209,7 +209,6 @@ class ViewAddedHumorState extends State<ViewAddedHumor> {
                             paginaActual = 1;
                             selectedNivel = selectedNivelAux;
                             txtBuscar = txtBuscarAux;
-                            FocusScope.of(context).unfocus();
                             _loadPreguntas();
                           });
                         },

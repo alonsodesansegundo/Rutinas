@@ -209,7 +209,6 @@ class ViewAddedSentimientoState extends State<ViewAddedSentimiento> {
                             paginaActual = 1;
                             selectedNivel = selectedNivelAux;
                             txtBuscar = txtBuscarAux;
-                            FocusScope.of(context).unfocus();
                             _loadPreguntas();
                           });
                         },

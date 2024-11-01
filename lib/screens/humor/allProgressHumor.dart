@@ -236,7 +236,6 @@ class AllProgressHumorState extends State<AllProgressHumor> {
                           txtBuscar = txtBuscarAux;
                           flagCheck = [];
                           partidasToRemove = [];
-                          FocusScope.of(context).unfocus();
                           _loadProgresos();
                         });
                       },
