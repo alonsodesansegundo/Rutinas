@@ -14,7 +14,7 @@ Future<Database> initializeDB() async {
   String path = await getDatabasesPath();
 
   return openDatabase(
-    join(path, 'rutinas.db'),
+    join(path, 'rutirse.db'),
     onCreate: (database, version) async {
       // creación de tablas
       createTables(database);
@@ -26,7 +26,7 @@ Future<Database> initializeDB() async {
       insertIronias(database);
       insertSentimientos(database);
     },
-    version: 1,
+    version: 2,
   );
 }
 

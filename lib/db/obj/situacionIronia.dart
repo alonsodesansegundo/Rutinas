@@ -4,9 +4,9 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../obj/SituacionIroniaPaginacion.dart';
 import '../db.dart';
-import '../ironiasScripts/dificil.dart';
-import '../ironiasScripts/facil.dart';
-import '../ironiasScripts/medio.dart';
+import '../ironiasScripts/nivel3.dart';
+import '../ironiasScripts/nivel1.dart';
+import '../ironiasScripts/nivel2.dart';
 import 'nivel.dart';
 
 ///Clase relativa a la tabla SituacionIronia
@@ -307,7 +307,7 @@ Future<void> changeVisibility(int situacionId, [Database? db]) async {
 ///<br><b>Parámetros</b><br>
 ///[database] Objeto Database sobre la cual se ejecutan las insercciones
 void insertIronias(Database database) {
-  insertIroniasInitialDataFacil(database);
-  insertIroniasInitialDataMedio(database);
-  insertIroniasInitialDataDificil(database);
+  insertIroniasInitialDataNivel1(database);
+  insertIroniasInitialDataNivel2(database);
+  insertIroniasInitialDataNivel3(database);
 }

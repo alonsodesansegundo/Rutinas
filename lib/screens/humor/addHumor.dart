@@ -198,10 +198,10 @@ class AddHumorState extends State<AddHumor> {
                               setState(() {
                                 selectedNivel = nivel;
                                 respuestasIncorrectas = [];
-                                if (selectedNivel!.nombre == "Medio")
+                                if (selectedNivel!.nombre == "Nivel 2")
                                   respuestasIncorrectas.add(new Respuesta(
                                       texto: "", color: Colors.transparent));
-                                if (selectedNivel!.nombre == "Difícil") {
+                                if (selectedNivel!.nombre == "Nivel 3") {
                                   respuestasIncorrectas.add(new Respuesta(
                                       texto: "", color: Colors.transparent));
                                   respuestasIncorrectas.add(new Respuesta(
@@ -296,7 +296,7 @@ class AddHumorState extends State<AddHumor> {
                 ),
                 SizedBox(height: espacioAlto),
                 if (selectedNivel != null &&
-                    selectedNivel!.nombre == 'Fácil')
+                    selectedNivel!.nombre == 'Nivel 1')
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -353,7 +353,7 @@ class AddHumorState extends State<AddHumor> {
                     ),
                   ),
                 if (selectedNivel != null &&
-                    selectedNivel!.nombre != 'Fácil')
+                    selectedNivel!.nombre != 'Nivel 1')
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
@@ -389,7 +389,7 @@ class AddHumorState extends State<AddHumor> {
                       SizedBox(
                         height: espacioAlto / 2,
                       ),
-                      if (selectedNivel!.nombre == 'Medio')
+                      if (selectedNivel!.nombre == 'Nivel 2')
                         Text(
                           "Respuesta incorrecta*:",
                           style: TextStyle(
@@ -397,7 +397,7 @@ class AddHumorState extends State<AddHumor> {
                             fontSize: textSize,
                           ),
                         ),
-                      if (selectedNivel!.nombre == 'Difícil')
+                      if (selectedNivel!.nombre == 'Nivel 3')
                         Text(
                           "Respuestas incorrectas*:",
                           style: TextStyle(
@@ -429,7 +429,7 @@ class AddHumorState extends State<AddHumor> {
                       SizedBox(
                         height: espacioAlto / 2,
                       ),
-                      if (selectedNivel!.nombre == 'Difícil')
+                      if (selectedNivel!.nombre == 'Nivel 3')
                         Column(
                           children: [
                             Container(
@@ -867,7 +867,7 @@ class AddHumorState extends State<AddHumor> {
       colorBordeImagen = Colors.transparent;
 
     if (selectedNivel != null &&
-        selectedNivel!.nombre == "Fácil" &&
+        selectedNivel!.nombre == "Nivel 1" &&
         !esIronia &&
         !noEsIronia) {
       correct = false;
@@ -878,7 +878,7 @@ class AddHumorState extends State<AddHumor> {
       colorCheckbox = Colors.transparent;
 
     if (selectedNivel != null &&
-        selectedNivel!.nombre != "Fácil" &&
+        selectedNivel!.nombre != "Nivel 1" &&
         correctText.trim().isEmpty) {
       correct = false;
       setState(() {
@@ -910,7 +910,7 @@ class AddHumorState extends State<AddHumor> {
   ///Identificador de la pregunta que se acaba de añadir
   Future<int> _addPregunta() async {
     int preguntaId;
-    Database db = await openDatabase('rutinas.db');
+    Database db = await openDatabase('rutirse.db');
     int visibility = isVisible ? 1 : 0;
     preguntaId = await insertSituacionIronia(
         db, situacionText, Uint8List.fromList(image), selectedNivel!.id, visibility: visibility);
@@ -921,9 +921,9 @@ class AddHumorState extends State<AddHumor> {
   ///<br><b>Parámetros</b><br>
   ///[ironiaId] Identificador de la pregunta a la que corresponde la respuesta que queremos añadir
   Future<void> _addRespuestas(int ironiaId) async {
-    Database db = await openDatabase('rutinas.db');
+    Database db = await openDatabase('rutirse.db');
 
-    if (selectedNivel!.nombre == "Fácil") {
+    if (selectedNivel!.nombre == "Nivel 1") {
       int aux, aux2;
       if (esIronia)
         aux = 1;

@@ -214,9 +214,9 @@ class AddSentimientoState extends State<AddSentimiento> {
                                     onRemoveAnswer: () => _removeAnswerButton(0),
                                     showPregunta: false,
                                     flagDificil: (selectedNivel!.nombre ==
-                                        "Difícil"),
+                                        "Nivel 3"),
                                     flagFacil: (selectedNivel!.nombre ==
-                                        "Fácil"),
+                                        "Nivel 1"),
                                   ));
 
                                   respuestas
@@ -238,9 +238,9 @@ class AddSentimientoState extends State<AddSentimiento> {
                                     onRemoveAnswer: () => _removeAnswerButton(1),
                                     showPregunta: false,
                                     flagDificil: (selectedNivel!.nombre ==
-                                        "Difícil"),
+                                        "Nivel 3"),
                                     flagFacil: (selectedNivel!.nombre ==
-                                        "Fácil"),
+                                        "Nivel 1"),
                                   ));
                                 });
                               });
@@ -356,7 +356,7 @@ class AddSentimientoState extends State<AddSentimiento> {
                   Row(
                     children: [
                       if (selectedNivel != null &&
-                          selectedNivel!.nombre != "Fácil")
+                          selectedNivel!.nombre != "Nivel 1")
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
@@ -495,9 +495,9 @@ class AddSentimientoState extends State<AddSentimiento> {
         onRemoveAnswer: () => _removeAnswerButton(currentIndex),
         isCorrect: true,
         showPregunta: true,
-        flagDificil: (selectedNivel!.nombre == "Difícil"),
+        flagDificil: (selectedNivel!.nombre == "Nivel 3"),
         flagFacil: (selectedNivel!.nombre ==
-            "Fácil"),
+            "Nivel 1"),
       );
       respuestas.add(aux);
     });
@@ -961,7 +961,7 @@ class AddSentimientoState extends State<AddSentimiento> {
     for (int i = 0; i < respuestas.length; i++)
       if (respuestas[i].respuestaImage.isEmpty ||
           (respuestas[i].respuestaText.trim().isEmpty &&
-              selectedNivel!.nombre != "Difícil")) {
+              selectedNivel!.nombre != "Nivel 3")) {
         correct = false;
         setState(() {
           respuestas[i].color = Colors.red;
@@ -976,9 +976,9 @@ class AddSentimientoState extends State<AddSentimiento> {
   ///<br><b>Parámetros</b><br>
   ///[preguntaId] Identificador de la pregunta a la que corresponde la respuesta que queremos añadir
   Future<void> _addRespuestas(int preguntaId) async {
-    Database db = await openDatabase('rutinas.db');
+    Database db = await openDatabase('rutirse.db');
     for (int i = 0; i < respuestas.length; i++) {
-      if (selectedNivel!.nombre != "Difícil")
+      if (selectedNivel!.nombre != "Nivel 3")
         await db.rawInsert(
           'INSERT INTO situacion (texto, correcta, imagen, preguntaSentimientoId) VALUES (?,?,?,?)',
           [
@@ -1012,7 +1012,7 @@ class AddSentimientoState extends State<AddSentimiento> {
   ///Identificador de la pregunta que se acaba de añadir
   Future<int> _addPregunta() async {
     int preguntaId;
-    Database db = await openDatabase('rutinas.db');
+    Database db = await openDatabase('rutirse.db');
     int visibility = isVisible ? 1 : 0;
 
     if (image.isEmpty)

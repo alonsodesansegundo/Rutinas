@@ -237,12 +237,12 @@ class EditSentimientoState extends State<EditSentimiento> {
                                     onPressedGaleria: () => respuesta.onPressedGaleria,
                                     onPressedArasaac: () => respuesta.onPressedArasaac,
                                     showPregunta: respuesta.showPregunta,
-                                    flagDificil: (selectedNivel!.nombre == "Difícil"),
-                                    flagFacil: (selectedNivel!.nombre == "Fácil"),
+                                    flagDificil: (selectedNivel!.nombre == "Nivel 3"),
+                                    flagFacil: (selectedNivel!.nombre == "Nivel 1"),
                                     onRemoveAnswer: () => respuesta.onRemoveAnswer,
                                   );
                                 }).toList();
-                                if(selectedNivel!.nombre=="Fácil"){
+                                if(selectedNivel!.nombre=="Nivel 1"){
                                   setState(() {
                                     respuestas.removeRange(2, respuestas.length);
                                   });
@@ -355,8 +355,8 @@ class EditSentimientoState extends State<EditSentimiento> {
                     );
                   },
                 ),
-                if ((changeNivel && selectedNivel!.nombre != "Fácil") ||
-                    (!changeNivel && defaultNivel!.nombre != "Fácil"))
+                if ((changeNivel && selectedNivel!.nombre != "Nivel 1") ||
+                    (!changeNivel && defaultNivel!.nombre != "Nivel 1"))
                   Row(
                     children: [
                       ElevatedButton(
@@ -589,10 +589,10 @@ class EditSentimientoState extends State<EditSentimiento> {
         onRemoveAnswer: () => _removeAnswerButton(currentIndex),
         isCorrect: true,
         showPregunta: true,
-        flagFacil: (!changeNivel && defaultNivel!.nombre == "Fácil") ||
-            (changeNivel && selectedNivel!.nombre == "Fácil"),
-        flagDificil: (!changeNivel && defaultNivel!.nombre == "Difícil") ||
-            (changeNivel && selectedNivel!.nombre == "Difícil"),
+        flagFacil: (!changeNivel && defaultNivel!.nombre == "Nivel 1") ||
+            (changeNivel && selectedNivel!.nombre == "Nivel 1"),
+        flagDificil: (!changeNivel && defaultNivel!.nombre == "Nivel 3") ||
+            (changeNivel && selectedNivel!.nombre == "Nivel 3"),
       );
 
       respuestas.add(aux); // Agrega el elemento a la lista
@@ -641,7 +641,7 @@ class EditSentimientoState extends State<EditSentimiento> {
 
   ///Método encargado de editar una pregunta juego Sentimientos
   Future<void> _editPregunta() async {
-    Database db = await openDatabase('rutinas.db');
+    Database db = await openDatabase('rutirse.db');
     int visibility = isVisible ? 1 : 0;
 
     await updatePregunta(db, widget.preguntaSentimiento.id!, preguntaText,
@@ -650,10 +650,10 @@ class EditSentimientoState extends State<EditSentimiento> {
 
   ///Método encargado de editar las respuestas a una pregunta del juego Sentimientos
   Future<void> _editRespuestas() async {
-    Database db = await openDatabase('rutinas.db');
+    Database db = await openDatabase('rutirse.db');
     for (int i = 0; i < respuestas.length; i++) {
       if (i < this.sizeRespuestasInitial) {
-        if (selectedNivel!.nombre != "Difícil") {
+        if (selectedNivel!.nombre != "Nivel 3") {
 
           await db.update(
             'situacion',
@@ -681,7 +681,7 @@ class EditSentimientoState extends State<EditSentimiento> {
           );
         }
       } else {
-        if (selectedNivel!.nombre != "Difícil") {
+        if (selectedNivel!.nombre != "Nivel 3") {
           await db.insert(
             'situacion',
             {
@@ -1171,7 +1171,7 @@ class EditSentimientoState extends State<EditSentimiento> {
     for (int i = 0; i < respuestas.length; i++)
       if (respuestas[i].respuestaImage.isEmpty ||
           (respuestas[i].respuestaText.trim().isEmpty &&
-              selectedNivel!.nombre != "Difícil")) {
+              selectedNivel!.nombre != "Nivel 3")) {
         correct = false;
         setState(() {
           respuestas[i].color = Colors.red;
@@ -1204,8 +1204,8 @@ class EditSentimientoState extends State<EditSentimiento> {
         onPressedArasaac: () => _selectNewRespuestaArasaac(i),
         onRemoveAnswer: () => _removeAnswerButton(i),
         showPregunta: (i != 0 && i != 1),
-        flagDificil: (widget.nivel.nombre == "Difícil"),
-        flagFacil: (widget.nivel.nombre == "Fácil"),
+        flagDificil: (widget.nivel.nombre == "Nivel 3"),
+        flagFacil: (widget.nivel.nombre == "Nivel 1"),
       );
       setState(() {
         this.respuestas.add(elementRespuestaSentimientos);

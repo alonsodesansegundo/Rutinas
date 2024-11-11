@@ -224,10 +224,10 @@ class EditIroniaState extends State<EditHumor> {
                                 selectedNivel = nivel;
                                 changeNivel = true;
                                 respuestasIncorrectas = [];
-                                if (selectedNivel!.nombre == "Medio")
+                                if (selectedNivel!.nombre == "Nivel 2")
                                   respuestasIncorrectas.add(new Respuesta(
                                       texto: "", color: Colors.transparent));
-                                if (selectedNivel!.nombre == "Difícil") {
+                                if (selectedNivel!.nombre == "Nivel 3") {
                                   respuestasIncorrectas.add(new Respuesta(
                                       texto: "", color: Colors.transparent));
                                   respuestasIncorrectas.add(new Respuesta(
@@ -322,9 +322,9 @@ class EditIroniaState extends State<EditHumor> {
                   ),
                 ),
                 SizedBox(height: espacioAlto),
-                if ((!changeNivel && widget.nivel.nombre == "Fácil") ||
+                if ((!changeNivel && widget.nivel.nombre == "Nivel 1") ||
                     (selectedNivel != null &&
-                        selectedNivel!.nombre == 'Fácil'))
+                        selectedNivel!.nombre == 'Nivel 1'))
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -380,9 +380,9 @@ class EditIroniaState extends State<EditHumor> {
                       ],
                     ),
                   ),
-                if ((!changeNivel && widget.nivel.nombre != "Fácil") ||
+                if ((!changeNivel && widget.nivel.nombre != "Nivel 1") ||
                     (selectedNivel != null &&
-                        selectedNivel!.nombre != 'Fácil'))
+                        selectedNivel!.nombre != 'Nivel 1'))
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
@@ -420,9 +420,9 @@ class EditIroniaState extends State<EditHumor> {
                       SizedBox(
                         height: espacioAlto / 2,
                       ),
-                      if ((!changeNivel && widget.nivel.nombre == "Medio") ||
+                      if ((!changeNivel && widget.nivel.nombre == "Nivel 2") ||
                           (selectedNivel != null &&
-                              selectedNivel!.nombre == 'Medio'))
+                              selectedNivel!.nombre == 'Nivel 2'))
                         Text(
                           "Respuesta incorrecta*:",
                           style: TextStyle(
@@ -431,9 +431,9 @@ class EditIroniaState extends State<EditHumor> {
                           ),
                         ),
                       if ((!changeNivel &&
-                              widget.nivel.nombre == "Difícil") ||
+                              widget.nivel.nombre == "Nivel 3") ||
                           (selectedNivel != null &&
-                              selectedNivel!.nombre == 'Difícil'))
+                              selectedNivel!.nombre == 'Nivel 3'))
                         Text(
                           "Respuestas incorrectas*:",
                           style: TextStyle(
@@ -472,9 +472,9 @@ class EditIroniaState extends State<EditHumor> {
                         height: espacioAlto / 2,
                       ),
                       if ((!changeNivel &&
-                              widget.nivel.nombre == "Difícil") ||
+                              widget.nivel.nombre == "Nivel 3") ||
                           (selectedNivel != null &&
-                              selectedNivel!.nombre == 'Difícil'))
+                              selectedNivel!.nombre == 'Nivel 3'))
                         Column(
                           children: [
                             Container(
@@ -1027,7 +1027,7 @@ class EditIroniaState extends State<EditHumor> {
       colorBordeImagen = Colors.transparent;
 
     if (selectedNivel != null &&
-        selectedNivel!.nombre == "Fácil" &&
+        selectedNivel!.nombre == "Nivel 1" &&
         !esIronia &&
         !noEsIronia) {
       correct = false;
@@ -1038,7 +1038,7 @@ class EditIroniaState extends State<EditHumor> {
       colorCheckbox = Colors.transparent;
 
     if (selectedNivel != null &&
-        selectedNivel!.nombre != "Fácil" &&
+        selectedNivel!.nombre != "Nivel 1" &&
         correctText.trim().isEmpty) {
       correct = false;
       setState(() {
@@ -1067,7 +1067,7 @@ class EditIroniaState extends State<EditHumor> {
 
   ///Método encargado de editar una pregunta al juego Humor
   Future<void> _editPregunta() async {
-    Database db = await openDatabase('rutinas.db');
+    Database db = await openDatabase('rutirse.db');
     int visibility = isVisible ? 1 : 0;
     if (!changeNivel)
       await updatePreguntaIronia(db, widget.situacionIronia.id!, situacionText,
@@ -1079,12 +1079,12 @@ class EditIroniaState extends State<EditHumor> {
 
   ///Método encargado de editar las respuestas de la pregunta del juego Humor
   Future<void> _editRespuestas() async {
-    Database db = await openDatabase('rutinas.db');
+    Database db = await openDatabase('rutirse.db');
     // elimino las respuestas anteriores
     deleteRespuestasBySituacionIroniaId(db, widget.situacionIronia.id!);
 
-    if ((changeNivel && selectedNivel!.nombre == "Fácil") ||
-        (!changeNivel && widget.nivel!.nombre == "Fácil")) {
+    if ((changeNivel && selectedNivel!.nombre == "Nivel 1") ||
+        (!changeNivel && widget.nivel!.nombre == "Nivel 1")) {
       int aux, aux2;
       if (esIronia)
         aux = 1;
@@ -1124,7 +1124,7 @@ class EditIroniaState extends State<EditHumor> {
         await getRespuestasIronia(widget.situacionIronia.id!);
 
     setState(() {
-      if (widget.nivel.nombre == "Fácil") {
+      if (widget.nivel.nombre == "Nivel 1") {
         print("CORRECTO: " +
             aux[0].correcta.toString() +
             " TEXTO: " +

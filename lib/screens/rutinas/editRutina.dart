@@ -246,7 +246,7 @@ class EditRutinaState extends State<EditRutina> {
                                     accionImage: accion.accionImage,
                                     color: accion.color,
                                     flagDificil:
-                                        selectedNivel!.nombre == "Difícil",
+                                        selectedNivel!.nombre == "Nivel 3",
                                   );
                                 }).toList();
                               });
@@ -1125,9 +1125,9 @@ class EditRutinaState extends State<EditRutina> {
 
       bool flag;
       if (!changeNivel)
-        flag = defaultNivel.nombre == "Difícil";
+        flag = defaultNivel.nombre == "Nivel 3";
       else
-        flag = selectedNivel!.nombre == "Difícil";
+        flag = selectedNivel!.nombre == "Nivel 3";
 
       acciones.add(ElementAccion(
         text1: accionText,
@@ -1164,7 +1164,7 @@ class EditRutinaState extends State<EditRutina> {
     for (int i = 0; i < acciones.length; i++) {
       if (acciones[i].accionImage.isEmpty ||
           (acciones[i].accionText.isEmpty &&
-              selectedNivel?.nombre != "Difícil") ||
+              selectedNivel?.nombre != "Nivel 3") ||
           acciones[i].accionText.characters.length > 30) {
         correct = false;
         setState(() {
@@ -1185,7 +1185,7 @@ class EditRutinaState extends State<EditRutina> {
 
   ///Método encargado de editar una pregunta juego Rutinas
   Future<void> _editPregunta() async {
-    Database db = await openDatabase('rutinas.db');
+    Database db = await openDatabase('rutirse.db');
     int visibility = isVisible ? 1 : 0;
     await updatePregunta(db, widget.situacionRutina.id!, situacionText,
         Uint8List.fromList(personajeImage), selectedNivel!.id, visibility: visibility);
@@ -1193,10 +1193,10 @@ class EditRutinaState extends State<EditRutina> {
 
   ///Método encargado de editar las respuestas a una pregunta del juego Rutinas
   Future<void> _editAcciones() async {
-    Database db = await openDatabase('rutinas.db');
+    Database db = await openDatabase('rutirse.db');
     for (int i = 0; i < acciones.length; i++) {
       if (i < this.sizeAccionesInitial) {
-        if (selectedNivel!.nombre != "Difícil") {
+        if (selectedNivel!.nombre != "Nivel 3") {
           await db.update(
             'accion',
             {
@@ -1222,7 +1222,7 @@ class EditRutinaState extends State<EditRutina> {
           );
         }
       } else {
-        if (selectedNivel!.nombre != "Difícil") {
+        if (selectedNivel!.nombre != "Nivel 3") {
           await db.insert(
             'accion',
             {
@@ -1283,7 +1283,7 @@ class EditRutinaState extends State<EditRutina> {
         onPressedArasaac: () => _selectNewActionArasaac(i),
         onPressedRemove: ()=> _removeAccionButton(i),
         accionText: aux[i].texto,
-        flagDificil: widget.nivel.nombre == "Difícil",
+        flagDificil: widget.nivel.nombre == "Nivel 3",
         accionImage: aux[i].imagen!.toList(),
       );
       setState(() {

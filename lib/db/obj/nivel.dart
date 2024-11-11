@@ -85,10 +85,10 @@ Future<Nivel> getNivelById(int groupId, [Database? db]) async {
 void insertNiveles(Database database) async {
   await database.transaction((txn) async {
     txn.rawInsert(
-        "INSERT INTO nivel (nombre) VALUES ('Fácil')");
+        "INSERT INTO nivel (nombre) VALUES ('Nivel 1')");
     txn.rawInsert(
-        "INSERT INTO nivel (nombre) VALUES ('Medio')");
+        "INSERT INTO nivel (nombre) VALUES ('Nivel 2')");
     txn.rawInsert(
-        "INSERT INTO nivel (nombre) VALUES ('Difícil')");
+        "INSERT INTO nivel (nombre) VALUES ('Nivel 3')");
   });
 }

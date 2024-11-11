@@ -250,7 +250,7 @@ class AddRutinaState extends State<AddRutina> {
                                     accionImage: accion.accionImage,
                                     color: accion.color,
                                     flagDificil:
-                                        selectedNivel?.nombre == "Difícil",
+                                        selectedNivel?.nombre == "Nivel 3",
                                     onPressedRemove: accion.onPressedRemove,
                                   );
                                 }).toList();
@@ -1039,7 +1039,7 @@ class AddRutinaState extends State<AddRutina> {
         imgWidth: imgWidth,
         onPressedGaleria: () => _selectNewActionGallery(currentIndex),
         onPressedArasaac: () => _selectNewActionArasaac(currentIndex),
-        flagDificil: selectedNivel?.nombre == "Difícil",
+        flagDificil: selectedNivel?.nombre == "Nivel 3",
         onPressedRemove: () => _removeAccionButton(currentIndex),
       ));
     });
@@ -1070,7 +1070,7 @@ class AddRutinaState extends State<AddRutina> {
     for (int i = 0; i < acciones.length; i++) {
       if (acciones[i].accionImage.isEmpty ||
           (acciones[i].accionText.isEmpty &&
-              selectedNivel?.nombre != "Difícil") ||
+              selectedNivel?.nombre != "Nivel 3") ||
           acciones[i].accionText.characters.length > 30) {
         correct = false;
         setState(() {
@@ -1093,7 +1093,7 @@ class AddRutinaState extends State<AddRutina> {
   ///Identificador de la pregunta que se acaba de añadir
   Future<int> _addPregunta() async {
     int preguntaId;
-    Database db = await openDatabase('rutinas.db');
+    Database db = await openDatabase('rutirse.db');
     int visibility = isVisible ? 1 : 0;
 
     if (personajeImage.isEmpty)
@@ -1109,9 +1109,9 @@ class AddRutinaState extends State<AddRutina> {
   ///<br><b>Parámetros</b><br>
   ///[preguntaId] Identificador de la pregunta a la que corresponde la accion que queremos añadir
   Future<void> _addAcciones(int preguntaId) async {
-    Database db = await openDatabase('rutinas.db');
+    Database db = await openDatabase('rutirse.db');
     for (int i = 0; i < acciones.length; i++) {
-      if (selectedNivel!.nombre != "Difícil")
+      if (selectedNivel!.nombre != "Nivel 3")
         await insertAccion(db, acciones[i].accionText, i,
             Uint8List.fromList(acciones[i].accionImage), preguntaId);
       else
